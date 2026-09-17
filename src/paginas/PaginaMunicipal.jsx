@@ -2,66 +2,79 @@ import React from 'react';
 
 function PaginaMunicipal() {
   return (
-    <div className="container py-4">
-      {/* Barra Superior: Notificación y Buscador */}
-      <header className="d-flex align-items-center justify-content-between p-3 mb-4 bg-light rounded shadow-sm">
-        <div className="d-flex align-items-center gap-3">
-          <button className="btn btn-outline-secondary rounded-circle" type="button">
-            <i className="bi bi-bell">🔔</i>
-          </button>
+    <div className="contenedor-principal">
+      
+      {/* 1. Header de Navegación */}
+      <nav className="header-muni">
+        <div className="logo-muni">Neuquén Capital</div>
+        <div className="nav-links">
+          <span>La ciudad</span>
+          <span>Trámites</span>
+          <span>La Muni</span>
+          <span className="link-activo">PRISCI Tools</span>
         </div>
+      </nav>
 
-        <div className="input-group w-50">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Buscar en el portal municipal..."
-          />
-          <button className="btn btn-primary" type="button">
-            🔍
-          </button>
-        </div>
-      </header>
-
-      {/* Bloque Principal: Mapa Municipal */}
-      <section className="mb-4">
-        <div 
-          className="border border-2 rounded p-5 text-center bg-white shadow-sm d-flex justify-content-center align-items-center"
-          style={{ minHeight: '350px' }}
-        >
-          <div className="text-muted">
-            <h2 className="fw-bold text-dark mb-2">MAPA MUNICIPAL</h2>
-            <p>Visor interactivo de la ciudad y dependencias</p>
+      {/* 2. Contenedor de Layout Principal */}
+      <main className="layout-principal">
+        
+        {/* Sección Izquierda: Mapa Municipal */}
+        <section className="tarjeta seccion-mapa">
+          <h2>Mapa Municipal de Neuquén</h2>
+          <p>Visualización interactiva de la ciudad para gestión de inspecciones urbanas.</p>
+          
+          <div className="mapa-contenedor">
+            <span className="mapa-texto">MAPA MUNICIPAL</span>
+            <img 
+              src="https://via.placeholder.com/800x400/1e1e2e/e3e5e?text=Visualizaci%C3%B3n+del+Mapa" 
+              alt="Placeholder Mapa" 
+              className="mapa-img"
+            />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Sección Inferior: Tarjetas de Categorías */}
-      <section className="row g-4">
-        <div className="col-md-6">
-          <div className="card h-100 shadow-sm border-2">
-            <div className="card-body p-4 text-center">
-              <h3 className="card-title fw-bold text-uppercase">Conservadores</h3>
-              <p className="card-text text-muted mt-2">
-                Consulta de registro, normativas y expedientes.
-              </p>
-              <button className="btn btn-outline-primary mt-3">Ingresar</button>
+        {/* Sección Derecha: Panel de Control */}
+        <aside className="tarjeta panel-lateral">
+          <div className="panel-header">
+            <div className="panel-buscador">
+              <button type="button" onClick={() => alert('Notificaciones')} className="btn-notificacion">
+                🔔
+              </button>
+              <input type="text" placeholder="Buscar..." className="input-buscar" />
+              <button type="button" className="btn-buscar">Q</button>
             </div>
           </div>
-        </div>
+          
+          <p>Accedé a los módulos técnicos de PRISCI.</p>
 
-        <div className="col-md-6">
-          <div className="card h-100 shadow-sm border-2">
-            <div className="card-body p-4 text-center">
-              <h3 className="card-title fw-bold text-uppercase">Inmuebles</h3>
-              <p className="card-text text-muted mt-2">
-                Catastro, habilitaciones y gestión tributaria.
-              </p>
-              <button className="btn btn-outline-primary mt-3">Ingresar</button>
+          <div className="panel-botones">
+            <button type="button" className="btn-lateral btn-inspecciones">
+              📋 Gestión de Inspecciones
+            </button>
+            <button type="button" className="btn-lateral btn-herramientas">
+              🛠️ Catálogo de Herramientas
+            </button>
+            <button type="button" className="btn-lateral btn-reportes">
+              📊 Reportes Urbanos
+            </button>
+            
+            <div className="elementos-referencia">
+              <p className="elementos-titulo">Elementos:</p>
+              <p>- Conservadores</p>
+              <p>- Inmuebles</p>
             </div>
           </div>
+        </aside>
+      </main>
+
+      {/* 3. Pie de Página */}
+      <footer className="footer-muni">
+        <p>Municipalidad de PRISCI | 0800-MUNI-PRISCI | Neuquén | 2026</p>
+        <div>
+          <p>© 2026 - Todos los derechos reservados.</p>
         </div>
-      </section>
+      </footer>
+
     </div>
   );
 }
