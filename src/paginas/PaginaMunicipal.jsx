@@ -51,13 +51,13 @@ function PaginaMunicipal() {
 
           <div className="panel-botones">
             <button type="button" className="btn-lateral btn-inspecciones">
-              📋 Gestión de Inspecciones
+              Gestión de Inspecciones
             </button>
             <button type="button" className="btn-lateral btn-herramientas">
-              🛠️ Catálogo de Herramientas
+              Catálogo de Herramientas
             </button>
             <button type="button" className="btn-lateral btn-reportes">
-              📊 Reportes Urbanos
+              Reportes Urbanos
             </button>
             
             <div className="elementos-referencia">
