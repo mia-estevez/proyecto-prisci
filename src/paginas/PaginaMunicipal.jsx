@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './PaginaMunicipal.css';
+
 function PaginaMunicipal() {
   return (
     <div className="contenedor-principal">
