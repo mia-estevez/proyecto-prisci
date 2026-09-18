@@ -21,7 +21,8 @@ function App() {
           <Routes>
             <Route path="/" element={<PaginaMunicipal />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/notificaciones" element={<Notificaciones />} /> {/* 2. Ruta agregada */}
+            <Route path="/notificaciones" element={<Notificaciones />} /> 
+            <Route path="/notificaciones" element={<Notificaciones />} />
           </Routes>
         </main>
 
