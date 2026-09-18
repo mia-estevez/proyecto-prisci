@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-
+import "./inspecciones.css"
 
 function Inspeccion() {
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ function Inspeccion() {
                 id="observaciones" 
                 className="input-control textarea-control" 
                 rows="4" 
-                placeholder="Escribí los hallazgos o recomendaciones de la inspección..."
+                placeholder="Escribí las recomendaciones de la inspección..."
               ></textarea>
             </div>
 
