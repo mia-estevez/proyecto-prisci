@@ -23,9 +23,11 @@ function Conservadores() {
         <aside className="tarjeta panel-lateral">
           <div className="panel-header">
             <div className="panel-buscador">
-              <button type="button" onClick={() => alert('Notificaciones')} className="btn-notificacion">
-                🔔
-              </button>
+              <Link to="/notificaciones" style={{ textDecoration: 'none' }}>
+                <button className="btn-campanita">
+                  🔔
+                </button>
+              </Link>
               <input type="text" placeholder="Buscar..." className="input-buscar" />
               <button type="button" className="btn-buscar">Q</button>
             </div>
