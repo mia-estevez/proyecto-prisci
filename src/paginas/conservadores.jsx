@@ -1,7 +1,6 @@
 import React from 'react';
 
-import './PaginaConservador.css';
-function PaginaConservador() {
+function conservadores() {
   return (
         
     <div className="contenedor-principal">
@@ -52,4 +51,4 @@ function PaginaConservador() {
       );
 }
 
-export default PaginaConservador;
+export default conservadores;
