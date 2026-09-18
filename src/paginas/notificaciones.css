@@ -1,0 +1,18 @@
+.notificaciones-container {
+  min-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 60px 20px;
+  box-sizing: border-box;
+  background-color: #12121e; /* Fondo oscuro para destacar */
+}
+
+.notificaciones-texto {
+  color: #ffffff; /* Texto blanco para que resalte */
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
