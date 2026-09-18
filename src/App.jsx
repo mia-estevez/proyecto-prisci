@@ -9,6 +9,7 @@ import Navbar from "./componentes/navbar";
 import Footer from "./componentes/footer";
 import Login from "./paginas/login";
 import Conservadores from "./paginas/conservadores";
+import Clientes from "./paginas/clientes";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<PaginaMunicipal />} />
           <Route path="/login" element={<Login />} />
           <Route path="/conservadores" element={<Conservadores />} />
+          <Route path="/clientes" element={<Clientes />} />
         </Routes>
 
         <Footer />

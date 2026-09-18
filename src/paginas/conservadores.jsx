@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import "./conservadores.css";
 
 function Conservadores() {
@@ -33,15 +34,11 @@ function Conservadores() {
           <p>Accedé a los registros de tus clientes.</p>
 
           <div className="panel-botones">
-            <button type="button" className="btn-lateral btn-cliente1">
-              Cliente1
-            </button>
-            <button type="button" className="btn-lateral btn-cliente2">
-              Cliente2
-            </button>
-            <button type="button" className="btn-lateral btn-cliente3">
-              Cliente3
-            </button>
+            <Link className="nav-link" to="/clientes">Cliente 1</Link>
+            <Link className="nav-link" to="/clientes">Cliente 2</Link>
+            <Link className="nav-link" to="/clientes">Cliente 3</Link>
+            <Link className="nav-link" to="/clientes">Cliente 4</Link>
+            <Link className="nav-link" to="/clientes">Cliente 5</Link>
           </div>
         </aside>
       </main>
