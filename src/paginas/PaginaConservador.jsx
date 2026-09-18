@@ -1,5 +1,6 @@
 import React from 'react';
 
+import './PaginaConservador.css';
 function PaginaConservador() {
   return (
         
@@ -32,11 +33,17 @@ function PaginaConservador() {
             </div>
           </div>
           
-          <p>Accedé a los módulos técnicos de PRISCI.</p>
+          <p>Accedé a los registros de tus clientes.</p>
 
           <div className="panel-botones">
-            <button type="button" className="btn-lateral btn-clientes">
-              Clientes
+            <button type="button" className="btn-lateral btn-cliente1">
+              Cliente1
+            </button>
+            <button type="button" className="btn-lateral btn-cliente2">
+              Cliente2
+            </button>
+            <button type="button" className="btn-lateral btn-cliente3" to='./'>
+              Cliente3
             </button>
             
           </div>
