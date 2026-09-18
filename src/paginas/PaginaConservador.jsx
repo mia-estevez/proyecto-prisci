@@ -21,6 +21,27 @@ function PaginaConservador() {
         </section>
 
     </div>
+        <aside className="tarjeta panel-lateral">
+          <div className="panel-header">
+            <div className="panel-buscador">
+              <button type="button" onClick={() => alert('Notificaciones')} className="btn-notificacion">
+                🔔
+              </button>
+              <input type="text" placeholder="Buscar..." className="input-buscar" />
+              <button type="button" className="btn-buscar">Q</button>
+            </div>
+          </div>
+          
+          <p>Accedé a los módulos técnicos de PRISCI.</p>
+
+          <div className="panel-botones">
+            <button type="button" className="btn-lateral btn-clientes">
+              Clientes
+            </button>
+            
+          </div>
+        </aside>
+
       );
 }
 
