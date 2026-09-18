@@ -1,11 +1,10 @@
 import React from 'react';
+import "./conservadores.css";
 
-function conservadores() {
+function Conservadores() {
   return (
-        
     <div className="contenedor-principal">
-        
-        {/* Sección Izquierda: Mapa Municipal */}
+        <main className="layout-principal">
         <section className="tarjeta seccion-mapa">
           <h2>Mapa Municipal de Neuquén</h2>
           <p>Visualización interactiva de la ciudad para gestión de inspecciones urbanas.</p>
@@ -13,14 +12,13 @@ function conservadores() {
           <div className="mapa-contenedor">
             <span className="mapa-texto">MAPA MUNICIPAL</span>
             <img 
-              src="https://via.placeholder.com/800x400/1e1e2e/e3e5e?text=Visualizaci%C3%B3n+del+Mapa" 
-              alt="Placeholder Mapa" 
+              src="" 
+              alt="Mapa" 
               className="mapa-img"
             />
           </div>
         </section>
 
-    </div>
         <aside className="tarjeta panel-lateral">
           <div className="panel-header">
             <div className="panel-buscador">
@@ -41,14 +39,14 @@ function conservadores() {
             <button type="button" className="btn-lateral btn-cliente2">
               Cliente2
             </button>
-            <button type="button" className="btn-lateral btn-cliente3" to='./'>
+            <button type="button" className="btn-lateral btn-cliente3">
               Cliente3
             </button>
-            
           </div>
         </aside>
-
-      );
+      </main>
+    </div>
+  );
 }
 
-export default conservadores;
+export default Conservadores;
