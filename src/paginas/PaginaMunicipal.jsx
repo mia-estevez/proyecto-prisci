@@ -1,6 +1,7 @@
 import React from 'react';
 
 import './PaginaMunicipal.css';
+import { Link } from 'react-router-dom';
 
 function PaginaMunicipal() {
   return (
