@@ -9,6 +9,7 @@ import Navbar from "./componentes/navbar";
 import Footer from "./componentes/footer";
 import Login from "./paginas/login";
 import Notificaciones from "./paginas/notificaciones";
+import Conservadores from "./paginas/conservadores";
 
 function App() {
   return (
@@ -21,8 +22,8 @@ function App() {
           <Routes>
             <Route path="/" element={<PaginaMunicipal />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/notificaciones" element={<Notificaciones />} /> 
             <Route path="/notificaciones" element={<Notificaciones />} />
+            <Route path="/conservadores" element={<Conservadores />} />
           </Routes>
         </main>
 
