@@ -1,11 +1,10 @@
 import React from 'react';
-
+import "./conservadores.css";
 function conservadores() {
   return (
         
     <div className="contenedor-principal">
         
-        {/* Sección Izquierda: Mapa Municipal */}
         <section className="tarjeta seccion-mapa">
           <h2>Mapa Municipal de Neuquén</h2>
           <p>Visualización interactiva de la ciudad para gestión de inspecciones urbanas.</p>
