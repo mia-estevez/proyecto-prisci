@@ -23,7 +23,7 @@ function Conservadores() {
         <aside className="tarjeta panel-lateral">
           <div className="panel-header">
             <div className="panel-buscador">
-              <Link to="/notificaciones" style={{ textDecoration: 'none' }}>
+              <Link to="/notificacionesConservadores" style={{ textDecoration: 'none' }}>
                 <button className="btn-campanita">
                   🔔
                 </button>

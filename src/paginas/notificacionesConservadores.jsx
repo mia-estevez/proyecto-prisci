@@ -1,5 +1,5 @@
 import React from 'react';
-import './notificaciones.css';
+import './notificacionesConservadores.css';
 
 
 export default function Notificaciones() {
