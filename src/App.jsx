@@ -11,6 +11,7 @@ import Login from "./paginas/login";
 import Notificaciones from "./paginas/notificaciones";
 import Conservadores from "./paginas/conservadores";
 import Clientes from "./paginas/clientes";
+import Inspecciones from "./paginas/inspecciones";
 
 function App() {
   return (
@@ -24,7 +25,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/notificaciones" element={<Notificaciones />} />
             <Route path="/conservadores" element={<Conservadores />} />
-            <Route path="/clientes" element={<Clientes />} />          
+            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/inspecciones" element={<Inspecciones />} />          
           </Routes>
         </main>
 
