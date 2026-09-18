@@ -3,34 +3,38 @@ import "./navbar.css";
 
 function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-lg">
       <div className="container">
 
-        <div className="logo-muni">Neuquén Capital</div>
+        {/* LOGO EN TEXTO */}
+        <Link className="logo-muni" to="/">
+          Neuquén Capital
+        </Link>
 
+        {/* ENLACES DE NAVEGACIÓN */}
         <div className="navbar-nav">
           <Link className="nav-link" to="/">
-            Inicio
+            INICIO
           </Link>
 
           <Link className="nav-link" to="/inmuebles">
-            Inmuebles
+            INMUEBLES
           </Link>
 
           <Link className="nav-link" to="/conservadores">
-            Conservadores
+            CONSERVADORES
           </Link>
 
           <Link className="nav-link" to="/propietarios">
-            Propietarios
+            PROPIETARIOS
           </Link>
 
           <Link className="nav-link" to="/bomberos">
-            Bomberos
+            BOMBEROS
           </Link>
 
-          <Link className="nav-link" to="/login">
-            Cerrar Sesión
+          <Link className="btn-logout" to="/login">
+            CERRAR SESIÓN
           </Link>
         </div>
 
