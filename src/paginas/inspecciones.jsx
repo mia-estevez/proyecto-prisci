@@ -7,17 +7,15 @@ function Inspeccion() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simula el envío exitoso del formulario
     alert("Inspección cargada exitosamente.");
     navigate("/clientes");
   };
 
   return (
-    <div className="contenedor-principal">
-      <main className="layout-principal">
+    <div className="caja-principal">
+      <main className="capa-principal">
         <div className="tarjeta formulario-card">
           
-          {/* Encabezado */}
           <div className="formulario-header">
             <span className="badge-categoria">Nueva Inspección</span>
             <h2>Registro de Control Anti-Incendios</h2>
@@ -26,7 +24,6 @@ function Inspeccion() {
 
           <hr className="divisor" />
 
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="formulario-inspeccion">
             
             <div className="campo-grupo">
@@ -75,7 +72,6 @@ function Inspeccion() {
               ></textarea>
             </div>
 
-            {/* Acciones */}
             <div className="formulario-footer">
               <button type="submit" className="btn-accion-primario">
                 Guardar Inspección
