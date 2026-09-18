@@ -6,18 +6,19 @@ import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import PaginaMunicipal from './paginas/PaginaMunicipal'
 import Navbar from "./componentes/navbar";
+import Footer from "./componentes/footer";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-
         <Navbar />
 
         <Routes>
           <Route path="/" element={<PaginaMunicipal />} />
         </Routes>
 
+        <Footer />
       </BrowserRouter>
     </>
   );

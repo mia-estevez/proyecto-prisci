@@ -1,0 +1,12 @@
+footer {
+  background-color: var(--bg-tarjeta);
+  color: var(--texto-secundario);
+  padding: 25px;
+  text-align: center;
+  border-top: 1px solid var(--borde-tarjeta);
+}
+
+footer p {
+  margin: 0;
+  color: var(--texto-secundario);
+}
