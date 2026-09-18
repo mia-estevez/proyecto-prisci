@@ -1,24 +1,62 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import "./clientes.css";
 
 function Clientes() {
   return (
-    
-    <div className="contenedor-principal">
-        <main className="layout-principal">
-            <h2>Nombre de cliente</h2>
-                <div className="contenido-cliente">
-                    <p>Sistemas:</p>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi cumque est impedit praesentium quia ad aliquid fugiat hic quisquam veniam quae iusto aperiam reiciendis dicta, amet porro autem, ipsum facere?</p>
-                    
-                    <p>inspecciones:</p>
-                    <ul>
-                        <li>inspección 1</li>
-                        <li>inspección 2</li>
-                        <li>inspección 3</li>
-                    </ul>
-                    
-                    {/*<Link className="nav-link" to="/inspeccion">Cargar inspección</Link>*/}
+    <div className="caja-principal">
+      <main className="capa-principal">
+        <div className="tarjeta cliente-card">
+          
+          <div className="cliente-header">
+            <span className="badge-categoria">Empresa de Seguridad Contra Incendios</span>
+            <h2>Servicios de Protección y Prevención</h2>
+            <p className="subtitulo-inmueble">Inmueble: Consorcio Edificio Av. Argentina 450</p>
+          </div>
+
+          <hr className="divisor" />
+
+          <div className="cliente-seccion">
+            <h3>Sistemas e Instalaciones Registradas</h3>
+            <p className="texto-descripcion">
+              Registro técnico de la red de extinción, detectores de humo, nido de mangueras, bombas de agua y señalización de emergencia en cumplimiento con las ordenanzas municipales.
+            </p>
+          </div>
+
+          <div className="cliente-seccion">
+            <h3>Historial de Inspecciones</h3>
+            <div className="inspecciones-lista">
+              
+              <div className="inspeccion-item">
+                <div className="inspeccion-info">
+                  <strong>Inspección General del Sistema Extintor</strong>
+                  <p>Estado: Aprobado — Verificación de presión y carga de matafuegos</p>
                 </div>
+              </div>
+
+              <div className="inspeccion-item">
+                <div className="inspeccion-info">
+                  <strong>Prueba de Bombas y Red Hidrante</strong>
+                  <p>Estado: Pendiente — Control de mangueras y presión de agua</p>
+                </div>
+              </div>
+
+              <div className="inspeccion-item">
+                <div className="inspeccion-info">
+                  <strong>Sistema de Alarma y Detección de Humo</strong>
+                  <p>Estado: Aprobado — Inspección anual de sensores y sirenas</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="cliente-footer">
+            <Link to="/conservadores" className="btn-accion-primario">Cargar nueva inspección</Link>
+            <Link to="/conservadores" className="btn-volver">Volver a Conservadores</Link>
+          </div>
+
+        </div>
       </main>
     </div>
   );
