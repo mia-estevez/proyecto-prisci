@@ -1,0 +1,67 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+}
+
+.login-box {
+  background-color: var(--texto-secundario);
+  width: 400px;
+  padding: 35px;
+  border-radius: 20px;
+  border: 1px solid var(--borde-tarjeta);
+  box-sizing: border-box;
+}
+
+.login-box h1 {
+  color: var(--texto-principal);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-box form > div {
+  margin-bottom: 20px;
+}
+
+.login-box label {
+  display: block;
+  color: var(--texto-principal);
+  margin-bottom: 8px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 10px;
+  background-color: var(--borde-tarjeta);
+  color: var(--texto-principal);
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--bg-tarjeta);
+  color: var(--texto-principal);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.login-box button:hover {
+  background-color: var(--acento-hover);
+}
+
+.forgot-password {
+  color: #6d5bb5;
+  text-align: center;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+.forgot-password:hover {
+  color: #8a75d1;
+}
