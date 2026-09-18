@@ -4,9 +4,10 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import PaginaMunicipal from './paginas/PaginaMunicipal'
+import PaginaMunicipal from './paginas/PaginaMunicipal';
 import Navbar from "./componentes/navbar";
 import Footer from "./componentes/footer";
+import Login from "./paginas/login";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<PaginaMunicipal />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
 
         <Footer />
