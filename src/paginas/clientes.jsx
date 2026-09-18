@@ -52,7 +52,7 @@ function Clientes() {
           </div>
 
           <div className="cliente-footer">
-            <Link to="/conservadores" className="btn-accion-primario">Cargar nueva inspección</Link>
+            <Link to="/inspecciones" className="btn-accion-primario">Cargar nueva inspección</Link>
             <Link to="/conservadores" className="btn-volver">Volver a Conservadores</Link>
           </div>
 
