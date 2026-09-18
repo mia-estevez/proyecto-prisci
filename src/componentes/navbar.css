@@ -1,0 +1,31 @@
+.navbar {
+  background-color: #ffffff !important;
+  padding: 15px 25px;
+  border-bottom: 1px solid var(--borde-tarjeta);
+  border-radius: 0 0 20px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.navbar-brand {
+  color: var(--texto-principal) !important;
+  font-weight: bold;
+}
+
+.nav-link {
+  color: var(--texto-secundario) !important;
+  margin-left: 15px;
+}
+
+.nav-link:hover {
+  color: var(--acento-azul) !important;
+}
+
+.navbar .container {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+}
