@@ -1,31 +1,85 @@
 .navbar {
-  background-color: #ffffff !important;
-  padding: 15px 25px;
-  border-bottom: 1px solid var(--borde-tarjeta);
-  border-radius: 0 0 20px 20px;
   width: 100%;
+  height: 80px;
+  background-color: var(--bg-tarjeta);
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
   box-sizing: border-box;
-}
-.navbar-brand {
-  color: var(--texto-principal) !important;
-  font-weight: bold;
+  border-bottom: 1px solid var(--borde-tarjeta);
 }
 
-.nav-link {
-  color: var(--texto-secundario) !important;
-  margin-left: 15px;
+.navbar-logo h1 {
+  margin: 0;
+  color: var(--texto-principal);
 }
 
-.nav-link:hover {
-  color: var(--acento-azul) !important;
+.navbar-title {
+  margin-left: 25px;
 }
 
-.navbar .container {
+.navbar-title p {
+  margin: 0;
+  color: var(--texto-secundario);
+}
+
+.navbar-actions {
+  margin-left: auto;
   display: flex;
   align-items: center;
+  gap: 20px;
 }
 
-.navbar-nav {
+/*PARTE PRISCI*/
+.navbar-logo h1 {
+  font-size: 38px;
+  letter-spacing: 1px;
+}
+
+.logo-blanco {
+  color: var(--texto-principal);
+}
+
+.logo-azul {
+  color: var(--acento-azul);
+}
+
+/*PARTE DE USUARIOS*/
+.navbar-role {
   display: flex;
   align-items: center;
+  gap: 8px;
+  color: var(--texto-principal);
+  text-decoration: none;
+}
+
+.navbar-role:hover {
+  color: var(--acento-azul);
+}
+
+.navbar-arrow {
+  font-size: 9px;
+  margin-left: 5px;
+}
+
+/*PARTE DE LA CAMPANITA*/
+.navbar-icon {
+  color: var(--texto-principal);
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.navbar-icon:hover {
+  color: var(--acento-azul);
+}
+
+/*PARTE DEL PERFIL*/
+.navbar-profile {
+  color: var(--texto-principal);
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.navbar-profile:hover {
+  color: var(--acento-azul);
 }

@@ -1,40 +1,40 @@
 import { Link } from "react-router-dom";
-import "./navbar.css";
+import "./Navbar.css";
 
 function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container">
+    <nav className="navbar">
 
-        <div className="logo-muni">Neuquén Capital</div>
+      <div className="navbar-logo">
+        <h1>
+          <span className="logo-blanco">PRIS</span>
+          <span className="logo-azul">CI</span>
+        </h1>
+      </div>
 
-        <div className="navbar-nav">
-          <Link className="nav-link" to="/">
-            Inicio
-          </Link>
+      <div className="navbar-title">
+        <p>Plataforma de Registro de Instalaciones</p>
+        <p>de Seguridad Contra Incendios</p>
+      </div>
 
-          <Link className="nav-link" to="/inmuebles">
-            Inmuebles
-          </Link>
+      <div className="navbar-actions">
 
-          <Link className="nav-link" to="/conservadores">
-            Conservadores
-          </Link>
+        <Link to="/notificaciones" className="navbar-icon">
+          🔔
+        </Link>
 
-          <Link className="nav-link" to="/propietarios">
-            Propietarios
-          </Link>
+        <Link to="/bomberos" className="navbar-role">
+          👷
+          <span>Usuario</span>
+          <span className="navbar-arrow">▼</span>
+        </Link>
 
-          <Link className="nav-link" to="/bomberos">
-            Bomberos
-          </Link>
-
-          <Link className="nav-link" to="/login">
-            Cerrar Sesión
-          </Link>
-        </div>
+        <Link to="/perfil" className="navbar-profile">
+          👤
+        </Link>
 
       </div>
+
     </nav>
   );
 }
