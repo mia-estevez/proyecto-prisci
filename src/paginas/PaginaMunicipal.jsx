@@ -1,21 +1,12 @@
 import React from 'react';
 
 import './PaginaMunicipal.css';
+import { Link } from 'react-router-dom';
 
 function PaginaMunicipal() {
   return (
     <div className="contenedor-principal">
       
-      {/* 1. Header de Navegación */}
-      <nav className="header-muni">
-        <div className="logo-muni">Neuquén Capital</div>
-        <div className="nav-links">
-          <span>La ciudad</span>
-          <span>Trámites</span>
-          <span>La Muni</span>
-          <span className="link-activo">PRISCI Tools</span>
-        </div>
-      </nav>
 
       {/* 2. Contenedor de Layout Principal */}
       <main className="layout-principal">
@@ -39,9 +30,11 @@ function PaginaMunicipal() {
         <aside className="tarjeta panel-lateral">
           <div className="panel-header">
             <div className="panel-buscador">
-              <button type="button" onClick={() => alert('Notificaciones')} className="btn-notificacion">
-                🔔
-              </button>
+<Link to="/notificaciones" style={{ textDecoration: 'none' }}>
+  <button className="btn-campanita">
+    🔔
+  </button>
+</Link>
               <input type="text" placeholder="Buscar..." className="input-buscar" />
               <button type="button" className="btn-buscar">Q</button>
             </div>
@@ -69,14 +62,7 @@ function PaginaMunicipal() {
         </aside>
       </main>
 
-      {/* 3. Pie de Página */}
-      <footer className="footer-muni">
-        <p>Municipalidad de PRISCI | 0800-MUNI-PRISCI | Neuquén | 2026</p>
-        <div>
-          <p>© 2026 - Todos los derechos reservados.</p>
-        </div>
-      </footer>
-
+     
     </div>
   );
 }

@@ -1,0 +1,162 @@
+.caja-principal {
+  background-color: var(--bg-oscuro, #13131e);
+  color: var(--texto-principal, #ffffff);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.capa-principal {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tarjeta Principal centrada */
+.tarjeta {
+  background-color: var(--bg-tarjeta, #1e1e2e);
+  border: 1px solid var(--borde-tarjeta, #2d2d44);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  text-align: center;
+}
+
+/* Cabecera centrada */
+.cliente-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge-categoria {
+  background-color: rgba(220, 53, 69, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cliente-header h2 {
+  margin: 0.2rem 0;
+  font-size: 1.8rem;
+}
+
+.subtitulo-inmueble {
+  color: #a6adc8;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.divisor {
+  border: 0;
+  border-top: 1px solid var(--borde-tarjeta, #2d2d44);
+  margin: 1.5rem 0;
+}
+
+/* Secciones internas */
+.cliente-seccion {
+  margin-bottom: 2rem;
+}
+
+.cliente-seccion h3 {
+  font-size: 1.2rem;
+  color: #6ea8fe;
+  margin-bottom: 0.8rem;
+}
+
+.texto-descripcion {
+  color: #cdd6f4;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Lista de Inspecciones alineada */
+.inspecciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.inspeccion-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--borde-tarjeta, #2d2d44);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.inspeccion-icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inspeccion-info strong {
+  display: block;
+  font-size: 1rem;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+
+.inspeccion-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #a6adc8;
+}
+
+/* links en el footer */
+.cliente-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--borde-tarjeta, #2d2d44);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-accion-primario {
+  background-color: #0d6efd;
+  color: white;
+  text-decoration: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-accion-primario:hover {
+  background-color: #0b5ed7;
+  color: white;
+}
+
+.btn-volver {
+  color: #a6adc8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.btn-volver:hover {
+  color: white;
+}
