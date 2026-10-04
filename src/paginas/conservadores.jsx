@@ -4,6 +4,42 @@ import "./conservadores.css";
 
 function Conservadores() {
   return (
+    <div className="layout-dashboard">
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-logo">🔥</div>
+          <div className="brand-text">
+            <h2>PRISCI</h2>
+            <span>Conservador / Profesional</span>
+          </div>
+        </div>
+
+        <nav className="sidebar-menu">
+          <Link to="/conservadores" className="menu-item active">
+            <span className="icon">🏠</span> Inicio
+          </Link>
+          <Link to="/clientes" className="menu-item">
+            <span className="icon">👥</span> Mis clientes
+          </Link>
+          <Link to="/historial" className="menu-item">
+            <span className="icon">🕒</span> Historial
+          </Link>
+          <Link to="/ayuda" className="menu-item">
+            <span className="icon">❓</span> Ayuda
+          </Link>
+        </nav>
+
+        <div className="sidebar-footer">
+          <Link to="/login" className="btn-logout-sidebar">
+            🚪 Cerrar sesión
+          </Link>
+        </div>
+      </aside>
+
+    </div>
+
+
+
     <div className="contenedor-principal">
         <main className="layout-principal">
         <section className="tarjeta seccion-mapa">
