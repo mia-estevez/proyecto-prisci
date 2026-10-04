@@ -49,26 +49,77 @@ function Conservadores() {
             </div>
           </div>
         </header>
-      </main> 
+      </main>
+
+        <section className="welcome-section">
+          <h1>¡Hola, Juan!</h1>
+          <p>Gestioná y consultá la información de los inmuebles asignados.</p>
+
+          <div className="kpi-grid">
+            <div className="kpi-card">
+              <div className="kpi-icon blue">🏢</div>
+              <div className="kpi-data">
+                <h3>23</h3>
+                <span>Inmuebles Asignados</span>
+              </div>
+            </div>
+
+            <div className="kpi-card">
+              <div className="kpi-icon cyan">👥</div>
+              <div className="kpi-data">
+                <h3>12</h3>
+                <span>Clientes Activos</span>
+              </div>
+            </div>
+
+            <div className="kpi-card">
+              <div className="kpi-icon green">📋</div>
+              <div className="kpi-data">
+                <h3>5</h3>
+                <span>Servicios Este mes</span>
+              </div>
+            </div>
+
+            <div className="kpi-card">
+              <div className="kpi-icon clock">🕒</div>
+              <div className="kpi-data">
+                <h3>2</h3>
+                <span>Vencimientos Próximos 30 días</span>
+              </div>
+            </div>
+          </div>
+        </section> 
+
+        <div className="main-grid">
+          <section className="card-panel map-section">
+            <div className="panel-header">
+              <div>
+                <h3>🗺️ Mapa de mis inmuebles</h3>
+                <p>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
+              </div>
+            </div>
+
+            <div className="map-search-bar">
+              <input type="text" placeholder="🔍 Buscar por dirección, cliente o nombre de inmueble..." />
+              <button className="btn-filter">🎛️ Filtros</button>
+            </div>
+
+            <div className="map-display">
+              <div className="map-placeholder">
+                <span className="map-city-tag">Neuquén</span>
+                <div className="pin pin-red" style={{ top: '30%', left: '40%' }}>📍</div>
+                <div className="pin pin-red" style={{ top: '50%', left: '60%' }}>📍</div>
+                <div className="pin pin-blue" style={{ top: '45%', left: '48%' }}>📍</div>
+              </div>
+
+              <div className="map-legend">
+                <div><span className="dot red"></span> Inmueble registrado</div>
+                <div><span className="dot blue"></span> Inmueble seleccionado</div>
+              </div>
+            </div>
+          </section>
     </div>
 
-
-
-    <div className="contenedor-principal">
-        <main className="layout-principal">
-        <section className="tarjeta seccion-mapa">
-          <h2>Mapa Municipal de Neuquén</h2>
-          <p>Visualización interactiva de la ciudad para gestión de inspecciones urbanas.</p>
-          
-          <div className="mapa-contenedor">
-            <span className="mapa-texto">MAPA MUNICIPAL</span>
-            <img 
-              src="" 
-              alt="Mapa" 
-              className="mapa-img"
-            />
-          </div>
-        </section>
 
         <aside className="tarjeta panel-lateral">
           <div className="panel-header">
