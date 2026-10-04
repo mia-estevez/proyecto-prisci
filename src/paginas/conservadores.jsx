@@ -5,56 +5,30 @@ import './conservadores.css';
 function Conservadores() {
   return (
     <div className="layout-dashboard">
-      
-      {/* SIDEBAR LATERAL IZQUIERDO */}
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <div className="brand-logo">🔥</div>
-          <div className="brand-text">
-            <h2>PRISCI</h2>
-            <span>Conservador / Profesional</span>
-          </div>
-        </div>
-
+      <aside>
         <nav className="sidebar-menu">
           <Link to="/conservadores" className="menu-item active">
-            <span className="icon">🏠</span> Inicio
+            <span className="icon"></span> Inicio
           </Link>
           <Link to="/clientes" className="menu-item">
-            <span className="icon">👥</span> Mis clientes
+            <span className="icon"></span> Mis clientes
           </Link>
           <Link to="/historial" className="menu-item">
-            <span className="icon">🕒</span> Historial
+            <span className="icon"></span> Historial
           </Link>
           <Link to="/ayuda" className="menu-item">
-            <span className="icon">❓</span> Ayuda
+            <span className="icon"></span> Ayuda
           </Link>
         </nav>
 
         <div className="sidebar-footer">
           <Link to="/login" className="btn-logout-sidebar">
-            🚪 Cerrar sesión
+             Cerrar sesión
           </Link>
         </div>
       </aside>
-
-      {/* CONTENIDO PRINCIPAL */}
       <main className="dashboard-content">
-        
-        {/* TOP BAR / ENCABEZADO */}
-        <header className="topbar">
-          <div></div>
-          <div className="user-profile">
-            <Link to="/notificacionesConservadores" className="icon-btn">🔔</Link>
-            <div className="avatar">👤</div>
-            <div className="user-info">
-              <strong>Juan Pérez</strong>
-              <span>Profesional</span>
-            </div>
-          </div>
-        </header>
 
-        {/* HERO Y TARJETAS DE MÉTRICAS */}
         <section className="welcome-section">
           <h1>¡Hola, Juan!</h1>
           <p>Gestioná y consultá la información de los inmuebles asignados.</p>
