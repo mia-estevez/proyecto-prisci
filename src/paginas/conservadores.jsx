@@ -1,10 +1,12 @@
 import React from 'react';
-import { Link } from "react-router-dom";
-import "./conservadores.css";
+import { Link } from 'react-router-dom';
+import './conservadores.css';
 
 function Conservadores() {
   return (
     <div className="layout-dashboard">
+      
+      {/* SIDEBAR LATERAL IZQUIERDO */}
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="brand-logo">🔥</div>
@@ -36,8 +38,10 @@ function Conservadores() {
         </div>
       </aside>
 
+      {/* CONTENIDO PRINCIPAL */}
       <main className="dashboard-content">
         
+        {/* TOP BAR / ENCABEZADO */}
         <header className="topbar">
           <div></div>
           <div className="user-profile">
@@ -49,8 +53,8 @@ function Conservadores() {
             </div>
           </div>
         </header>
-      </main>
 
+        {/* HERO Y TARJETAS DE MÉTRICAS */}
         <section className="welcome-section">
           <h1>¡Hola, Juan!</h1>
           <p>Gestioná y consultá la información de los inmuebles asignados.</p>
@@ -88,9 +92,12 @@ function Conservadores() {
               </div>
             </div>
           </div>
-        </section> 
+        </section>
 
+        {/* CONTENEDOR CENTRAL: MAPA + LISTA DE INMUEBLES */}
         <div className="main-grid">
+          
+          {/* SECCIÓN MAPA */}
           <section className="card-panel map-section">
             <div className="panel-header">
               <div>
@@ -119,6 +126,7 @@ function Conservadores() {
             </div>
           </section>
 
+          {/* LISTA LATERAL DE INMUEBLES */}
           <aside className="card-panel list-section">
             <div className="panel-header flex-between">
               <h3>🏢 Mis inmuebles</h3>
@@ -159,7 +167,9 @@ function Conservadores() {
 
             <button className="btn-link-all">Ver todos los inmuebles</button>
           </aside>
-        
+
+        </div>
+
       </main>
     </div>
   );
