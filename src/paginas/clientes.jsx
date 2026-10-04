@@ -6,15 +6,7 @@ function Clientes() {
   return (
     <div className="layout-dashboard">
       
-      {/* SIDEBAR LATERAL IZQUIERDO */}
       <aside className="sidebar">
-        <div className="sidebar-brand">
-          <div className="brand-logo">🔥</div>
-          <div className="brand-text">
-            <h2>PRISCI</h2>
-            <span>Conservador / Profesional</span>
-          </div>
-        </div>
 
         <nav className="sidebar-menu">
           <Link to="/conservadores" className="menu-item">
@@ -33,15 +25,13 @@ function Clientes() {
 
         <div className="sidebar-footer">
           <Link to="/login" className="btn-logout-sidebar">
-            🚪 Cerrar sesión
+             Cerrar sesión
           </Link>
         </div>
       </aside>
-
-      {/* CONTENIDO PRINCIPAL */}
+      
       <main className="dashboard-content">
         
-        {/* BREADCRUMB / BARRAS DE NAVEGACIÓN */}
         <div className="breadcrumb">
           <span>Mapa de inmuebles</span> › <strong>Edificio Torres del Limay</strong>
         </div>
@@ -53,10 +43,8 @@ function Clientes() {
           </div>
         </header>
 
-        {/* CONTENEDOR 3 COLUMNAS: FOTO, INFO/DOCUMENTOS, SERVICIOS/HISTORIAL */}
         <div className="inmueble-detail-grid">
           
-          {/* COLUMNA 1: FOTO Y DOCUMENTACIÓN */}
           <div className="col-left">
             <div className="card-panel building-photo-card">
               <div className="photo-placeholder">
@@ -83,7 +71,6 @@ function Clientes() {
             </div>
           </div>
 
-          {/* COLUMNA 2: INFORMACIÓN DEL INMUEBLE */}
           <div className="col-center">
             <div className="card-panel info-card">
               <h3>Información del inmueble</h3>
@@ -120,10 +107,8 @@ function Clientes() {
             </div>
           </div>
 
-          {/* COLUMNA 3: SERVICIOS ASOCIADOS E HISTORIAL */}
           <div className="col-right">
             
-            {/* SERVICIOS ASOCIADOS */}
             <div className="card-panel services-card">
               <h3>Servicios asociados</h3>
               <div className="services-list">
@@ -150,7 +135,6 @@ function Clientes() {
               </div>
             </div>
 
-            {/* HISTORIAL DE INSPECCIONES Y BOTÓN DE CARGA */}
             <div className="card-panel history-card">
               <div className="flex-between">
                 <h3>Historial de inspecciones</h3>
