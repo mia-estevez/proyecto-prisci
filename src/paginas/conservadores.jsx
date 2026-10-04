@@ -118,32 +118,48 @@ function Conservadores() {
               </div>
             </div>
           </section>
-    </div>
 
-
-        <aside className="tarjeta panel-lateral">
-          <div className="panel-header">
-            <div className="panel-buscador">
-              <Link to="/notificacionesConservadores" style={{ textDecoration: 'none' }}>
-                <button className="btn-campanita">
-                  🔔
-                </button>
-              </Link>
-              <input type="text" placeholder="Buscar..." className="input-buscar" />
-              <button type="button" className="btn-buscar">Q</button>
+          <aside className="card-panel list-section">
+            <div className="panel-header flex-between">
+              <h3>🏢 Mis inmuebles</h3>
+              <span className="badge-count">23 Inmuebles</span>
             </div>
-          </div>
-          
-          <p>Accedé a los registros de tus clientes.</p>
 
-          <div className="panel-botones">
-            <Link className="nav-link" to="/clientes">Cliente 1</Link>
-            <Link className="nav-link" to="/clientes">Cliente 2</Link>
-            <Link className="nav-link" to="/clientes">Cliente 3</Link>
-            <Link className="nav-link" to="/clientes">Cliente 4</Link>
-            <Link className="nav-link" to="/clientes">Cliente 5</Link>
-          </div>
-        </aside>
+            <div className="inmuebles-list">
+              <Link to="/clientes" className="inmueble-item">
+                <div className="inmueble-thumb">🏢</div>
+                <div className="inmueble-details">
+                  <strong>Edificio Torres del Limay</strong>
+                  <p>Av. Argentina 1234, Neuquén</p>
+                  <span className="sub-tag">Edificio residencial</span>
+                </div>
+                <span className="arrow">›</span>
+              </Link>
+
+              <Link to="/clientes" className="inmueble-item">
+                <div className="inmueble-thumb">🏢</div>
+                <div className="inmueble-details">
+                  <strong>Consorcio Los Teros</strong>
+                  <p>Gral. San Martín 207, Neuquén</p>
+                  <span className="sub-tag">Edificio residencial</span>
+                </div>
+                <span className="arrow">›</span>
+              </Link>
+
+              <Link to="/clientes" className="inmueble-item">
+                <div className="inmueble-thumb">🏨</div>
+                <div className="inmueble-details">
+                  <strong>Hotel del Comahue</strong>
+                  <p>Av. Argentina 381, Neuquén</p>
+                  <span className="sub-tag">Hotel</span>
+                </div>
+                <span className="arrow">›</span>
+              </Link>
+            </div>
+
+            <button className="btn-link-all">Ver todos los inmuebles</button>
+          </aside>
+        
       </main>
     </div>
   );
