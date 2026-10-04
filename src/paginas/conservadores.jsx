@@ -36,6 +36,20 @@ function Conservadores() {
         </div>
       </aside>
 
+      <main className="dashboard-content">
+        
+        <header className="topbar">
+          <div></div>
+          <div className="user-profile">
+            <Link to="/notificacionesConservadores" className="icon-btn">🔔</Link>
+            <div className="avatar">👤</div>
+            <div className="user-info">
+              <strong>Juan Pérez</strong>
+              <span>Profesional</span>
+            </div>
+          </div>
+        </header>
+      </main> 
     </div>
 
 
