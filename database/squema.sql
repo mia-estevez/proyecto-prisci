@@ -1,10 +1,8 @@
--- Tabla de Roles
 CREATE TABLE Rol (
     IdRol INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Tabla de Usuarios (Con Email y DNI Únicos)
 CREATE TABLE Usuarios (
     IdUsu INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL,
@@ -17,7 +15,6 @@ CREATE TABLE Usuarios (
     FOREIGN KEY (IdRol) REFERENCES Rol(IdRol)
 );
 
--- Entidades derivadas de Rol
 CREATE TABLE Municipal (
     IdMunicipal INT AUTO_INCREMENT PRIMARY KEY,
     IdUsu INT NOT NULL UNIQUE,
@@ -38,7 +35,6 @@ CREATE TABLE Conservador (
     FOREIGN KEY (IdUsu) REFERENCES Usuarios(IdUsu)
 );
 
--- Inmuebles (Con Nomenclatura Catastral Única)
 CREATE TABLE Inmueble (
     IdInmueble INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL,
@@ -53,7 +49,6 @@ CREATE TABLE Inmueble (
     FOREIGN KEY (IdPropietario) REFERENCES Propietario(IdPropietario)
 );
 
--- Inspección
 CREATE TABLE Inspeccion (
     IdInspeccion INT AUTO_INCREMENT PRIMARY KEY,
     Fecha DATE NOT NULL,
@@ -65,7 +60,7 @@ CREATE TABLE Inspeccion (
     FOREIGN KEY (IdConservador) REFERENCES Conservador(IdConservador)
 );
 
--- Archivos adjuntos (Planos, fotos, PDFs)
+-- planos, fotos, PDF
 CREATE TABLE Archivo (
     IdArchivo INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL,
