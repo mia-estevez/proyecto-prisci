@@ -20,7 +20,7 @@ function App() {
     <BrowserRouter>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
-        <Menu />
+        <Menu rol="municipal" />
         {/* El contenedor main asegura que el texto quede centrado y visible entre el nav y el footer */}
         <main style={{ flex: '1', padding: '40px 20px', minHeight: '400px' }}>
           <Routes>
