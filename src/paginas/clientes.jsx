@@ -37,7 +37,21 @@ function Clientes() {
   useEffect(() => {
     const inmuebleId = id || 1;
     const idNum = Number(inmuebleId);
+    
+    // Diccionario oficial base
+    const DIRECCIONES_OFICIALES = {
+      1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250', estado: 'Activo' },
+      2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200', estado: 'Inactivo' }
+    };
     const oficial = DIRECCIONES_OFICIALES[idNum] || DIRECCIONES_OFICIALES[1];
+
+    // Sincronizar estado global del inmueble en localStorage
+    const estadosGuardados = JSON.parse(localStorage.getItem('estados_inmuebles') || '{}');
+    if (!estadosGuardados[idNum]) {
+      estadosGuardados[idNum] = oficial.estado;
+      localStorage.setItem('estados_inmuebles', JSON.stringify(estadosGuardados));
+    }
+    const estadoActual = estadosGuardados[idNum];
 
     const inspeccionesGuardadas = JSON.parse(localStorage.getItem(`inspecciones_inmueble_${idNum}`) || '[]');
     const borradoresGuardados = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
@@ -52,6 +66,7 @@ function Clientes() {
           Domicilio: oficial.domicilio,
           Actividad: oficial.tipo,
           Superficie: oficial.superficie,
+          Estado: estadoActual,
           inspecciones: inspeccionesGuardadas.length > 0 ? inspeccionesGuardadas : (data.inspecciones || [])
         });
         setCargando(false);
@@ -63,6 +78,7 @@ function Clientes() {
           Domicilio: oficial.domicilio,
           Actividad: oficial.tipo,
           Superficie: oficial.superficie,
+          Estado: estadoActual,
           nombrePropietario: 'Juan',
           apellidoPropietario: 'Pérez',
           inspecciones: inspeccionesGuardadas
@@ -70,7 +86,6 @@ function Clientes() {
         setCargando(false);
       });
   }, [id]);
-
   const handleBorrarBorrador = (indexAEliminar, e) => {
     e.stopPropagation();
     if (window.confirm('¿Estás seguro de que deseas eliminar este borrador?')) {
@@ -201,7 +216,24 @@ ${insp.observaciones || 'Sin observaciones.'}
             <div className="info-group"><label>Titular / Consorcio</label><p>Juan Pérez</p></div>
             <div className="info-group"><label>Superficie</label><p>{inmueble?.Superficie} m²</p></div>
             <div className="info-group"><label>Año de construcción</label><p>2018</p></div>
-            <div className="info-group"><label>Estado</label><div><span className="badge-activo">Activo</span></div></div>
+            <div className="info-group">
+              <label>Estado</label>
+              <div>
+                <span 
+                  style={{ 
+                    padding: '2px 10px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    backgroundColor: inmueble?.Estado === 'Activo' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(148, 163, 184, 0.15)',
+                    color: inmueble?.Estado === 'Activo' ? '#4ade80' : '#94a3b8',
+                    border: `1px solid ${inmueble?.Estado === 'Activo' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(148, 163, 184, 0.3)'}`
+                  }}
+                >
+                  {inmueble?.Estado || 'Activo'}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="card-panel docs-card-area" style={{ margin: 0, width: '100%', flex: 1 }}>
