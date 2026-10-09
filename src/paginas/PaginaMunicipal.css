@@ -29,3 +29,69 @@
   color: #8d99ae;
   font-size: 13px;
 }
+
+/*tarjetas metricas superiores*/
+.prisci-municipal-content-only .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.prisci-municipal-content-only .metric-card {
+  background-color: #111c38;
+  border: 1px solid #1c2541;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.prisci-municipal-content-only .metric-icon-box {
+  width: 40px;
+  height: 40px;
+  background-color: #1d3557;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.prisci-municipal-content-only .metric-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.prisci-municipal-content-only .metric-number {
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.prisci-municipal-content-only .metric-label {
+  font-size: 12px;
+  color: #8d99ae;
+}
+
+.prisci-municipal-content-only .metric-trend {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: #2a9d8f;
+}
+
+.prisci-municipal-content-only .metric-trend small {
+  font-size: 9px;
+  color: #8d99ae;
+  font-weight: normal;
+}
+
