@@ -1,0 +1,53 @@
+.menu {
+  width: 260px;
+  height: calc(100vh - 80px);
+  background-color: var(--bg-oscuro);
+  padding: 25px 15px;
+  padding-bottom: 8px;
+  box-sizing: border-box;
+  border-right: 1px solid var(--borde-tarjeta);
+  display: flex;
+  flex-direction: column;
+}
+
+/*CSS A LOS ENLACES*/
+.menu a {
+  display: block;
+  padding: 12px 15px;
+  margin-bottom: 4px;
+  color: var(--texto-secundario);
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.menu a:hover {
+  background-color: var(--bg-tarjeta);
+  color: var(--texto-principal);
+}
+
+/*ICONOS*/
+.menu i {
+  margin-right: 12px;
+}
+
+/*CSS AL CERRAR SESION*/
+.menu-logout {
+  display: block;
+  margin-top: auto;
+  padding: 12px 15px;
+  color: var(--texto-secundario);
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.menu-logout:hover {
+  background-color: var(--bg-tarjeta);
+  color: var(--texto-principal);
+}
+
+/*PÁGINA ACTIVA*/
+.menu-link.active {
+  background-color: var(--acento-azul);
+  color: var(--texto-principal);
+}
+
