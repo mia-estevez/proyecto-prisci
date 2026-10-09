@@ -19,37 +19,96 @@ function HistorialInmueble() {
     2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial' }
   };
 
+  
   useEffect(() => {
     const inmuebleId = id || 1;
     const idNum = Number(inmuebleId);
-    const oficial = DIRECCIONES_OFICIALES[idNum] || DIRECCIONES_OFICIALES[1];
 
-    // Recuperamos las inspecciones guardadas en localStorage para este inmueble
-    const inspeccionesGuardadas = JSON.parse(localStorage.getItem(`inspecciones_inmueble_${idNum}`) || '[]');
+    let cancelado = false;
 
-    fetch(`http://localhost:3001/api/inmuebles/${inmuebleId}`)
-      .then(res => res.json())
-      .then(data => {
-        setInmueble({
-          ...data,
-          Nombre: oficial.nombre,
-          Domicilio: oficial.domicilio,
-          Actividad: oficial.tipo
+    async function cargarHistorial() {
+      setCargando(true);
+
+      try {
+        const [resInmueble, resInspecciones] = await Promise.all([
+          fetch(`http://localhost:3001/api/inmuebles/${inmuebleId}`),
+          fetch(`http://localhost:3001/api/inmuebles/${inmuebleId}/inspecciones`),
+        ]);
+
+        if (!resInmueble.ok) {
+          throw new Error("No se pudo cargar el inmueble.");
+        }
+
+        if (!resInspecciones.ok) {
+          throw new Error("No se pudo cargar el historial de inspecciones.");
+        }
+
+        const dataInmueble = await resInmueble.json();
+        const dataInspecciones = await resInspecciones.json();
+
+        if (cancelado) return;
+
+        setInmueble(dataInmueble);
+
+        const historial = dataInspecciones.map((insp) => {
+          let detalles = {};
+
+          try {
+            detalles =
+              typeof insp.Observaciones === "string"
+                ? JSON.parse(insp.Observaciones)
+                : insp.Observaciones || {};
+          } catch {
+            detalles = {
+              observacionesGenerales: insp.Observaciones || "",
+            };
+          }
+
+          return {
+            ...insp,
+            fecha: insp.Fecha
+              ? String(insp.Fecha).slice(0, 10)
+              : insp.fechaFormat || "",
+            resultado: insp.Resultado || insp.resultado || "Sin resultado",
+            parteNro: detalles.parteNro || "S/N",
+            empresaCliente: detalles.empresaCliente || "",
+            establecimiento: detalles.establecimiento || "",
+            domicilio: detalles.domicilio || "",
+            localidad: detalles.localidad || "",
+            relevamiento: detalles.relevamiento || {},
+            observaciones:
+              detalles.observacionesGenerales ||
+              (typeof insp.Observaciones === "string" &&
+              !insp.Observaciones.trim().startsWith("{")
+                ? insp.Observaciones
+                : ""),
+            archivosAdjuntos: detalles.archivosAdjuntos || [],
+            tieneFirmaCliente: Boolean(detalles.tieneFirmaCliente),
+            tieneFirmaProf: Boolean(detalles.tieneFirmaProf),
+          };
         });
-        setInspecciones(inspeccionesGuardadas.length > 0 ? inspeccionesGuardadas : (data.inspecciones || []));
-        setCargando(false);
-      })
-      .catch(err => {
-        setInmueble({
-          IdInmueble: idNum,
-          Nombre: oficial.nombre,
-          Domicilio: oficial.domicilio,
-          Actividad: oficial.tipo
-        });
-        setInspecciones(inspeccionesGuardadas);
-        setCargando(false);
-      });
+
+        setInspecciones(historial);
+      } catch (error) {
+        if (!cancelado) {
+          console.error("Error al cargar el historial:", error);
+          setInmueble(null);
+          setInspecciones([]);
+        }
+      } finally {
+        if (!cancelado) {
+          setCargando(false);
+        }
+      }
+    }
+
+    cargarHistorial();
+
+    return () => {
+      cancelado = true;
+    };
   }, [id]);
+
 
   const handleDescargarInspeccionPDF = (insp) => {
     const detalleRelevamiento = insp.relevamiento 

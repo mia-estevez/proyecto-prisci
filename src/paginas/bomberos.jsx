@@ -1,6 +1,9 @@
+
 import { useState } from "react";
 import "./bomberos.css";
+import FichaInm from "../componentes/fichaInm.jsx";
 
+// Inmuebles de prueba
 const inmueblesPrueba = [
   {
     id: 1,
@@ -9,7 +12,8 @@ const inmueblesPrueba = [
     tipo: "Edificio residencial",
     estado: "Aprobado",
     actualizacion: "05/10/2026",
-    imagen: "https://placehold.co/600x350/e8edf2/334155?text=Edificio+Los+Aromos",
+    imagen:
+      "https://placehold.co/600x350/e8edf2/334155?text=Edificio+Los+Aromos",
   },
   {
     id: 2,
@@ -18,7 +22,8 @@ const inmueblesPrueba = [
     tipo: "Local comercial",
     estado: "Pendiente",
     actualizacion: "02/10/2026",
-    imagen: "https://placehold.co/600x350/e8edf2/334155?text=Centro+Comercial",
+    imagen:
+      "https://placehold.co/600x350/e8edf2/334155?text=Centro+Comercial",
   },
   {
     id: 3,
@@ -27,15 +32,22 @@ const inmueblesPrueba = [
     tipo: "Establecimiento educativo",
     estado: "Aprobado",
     actualizacion: "28/09/2026",
-    imagen: "https://placehold.co/600x350/e8edf2/334155?text=Escuela+25",
+    imagen:
+      "https://placehold.co/600x350/e8edf2/334155?text=Escuela+25",
   },
 ];
 
 function Bomberos() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("Todos");
+
+  // Inmueble cuyo detalle se muestra en el panel
   const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
 
+  // Controla la apertura de la ficha completa
+  const [fichaAbierta, setFichaAbierta] = useState(false);
+
+  // Filtrar inmuebles por nombre, dirección y estado
   const inmueblesFiltrados = inmueblesPrueba.filter((inmueble) => {
     const coincideBusqueda =
       inmueble.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -47,35 +59,25 @@ function Bomberos() {
     return coincideBusqueda && coincideEstado;
   });
 
-  function descargarFicha(inmueble) {
-    const contenido = `
-FICHA DEL INMUEBLE - PRISCI
+  // Seleccionar un inmueble solo muestra sus detalles
+  function seleccionarInmueble(inmueble) {
+    setInmuebleSeleccionado(inmueble);
+    setFichaAbierta(false);
+  }
 
-Nombre: ${inmueble.nombre}
-Dirección: ${inmueble.direccion}
-Tipo: ${inmueble.tipo}
-Estado: ${inmueble.estado}
-Última actualización: ${inmueble.actualizacion}
+  // Abrir la ficha completa al presionar el botón
+  function abrirFicha() {
+    setFichaAbierta(true);
+  }
 
-Documento de prueba para el sistema PRISCI.
-    `;
-
-    const archivo = new Blob([contenido], {
-      type: "text/plain;charset=utf-8",
-    });
-
-    const url = URL.createObjectURL(archivo);
-    const enlace = document.createElement("a");
-
-    enlace.href = url;
-    enlace.download = `ficha-${inmueble.id}.txt`;
-    enlace.click();
-
-    URL.revokeObjectURL(url);
+  // Cerrar la ficha y volver al detalle
+  function cerrarFicha() {
+    setFichaAbierta(false);
   }
 
   return (
     <section className="bomberos-pagina">
+      {/* ENCABEZADO */}
       <header className="bomberos-encabezado">
         <div>
           <h1>Mapa de inmuebles registrados</h1>
@@ -85,6 +87,7 @@ Documento de prueba para el sistema PRISCI.
         </div>
       </header>
 
+      {/* BUSCADOR Y FILTRO */}
       <div className="bomberos-herramientas">
         <input
           type="search"
@@ -103,20 +106,22 @@ Documento de prueba para el sistema PRISCI.
         </select>
       </div>
 
+      {/* MAPA Y PANEL LATERAL */}
       <div className="bomberos-contenido">
+        {/* MAPA */}
         <div className="bomberos-mapa">
           <div className="bomberos-mapa-mensaje">
             <i className="bi bi-map"></i>
             <h2>Mapa de inmuebles</h2>
-            <p>
-              Mapa de Pili
-            </p>
+            <p>Mapa de Pili</p>
           </div>
         </div>
 
+        {/* PANEL DE DETALLES Y LISTADO */}
         <aside className="bomberos-panel">
           {inmuebleSeleccionado ? (
             <div className="bomberos-detalle">
+              {/* Volver al listado */}
               <button
                 className="bomberos-volver"
                 onClick={() => setInmuebleSeleccionado(null)}
@@ -124,6 +129,7 @@ Documento de prueba para el sistema PRISCI.
                 <i className="bi bi-arrow-left"></i> Volver al listado
               </button>
 
+              {/* Imagen del inmueble */}
               <img
                 className="bomberos-foto"
                 src={inmuebleSeleccionado.imagen}
@@ -137,11 +143,13 @@ Documento de prueba para el sistema PRISCI.
                 {inmuebleSeleccionado.direccion}
               </p>
 
+              {/* Tipo de inmueble */}
               <div className="bomberos-dato">
                 <span>Tipo de inmueble</span>
                 <strong>{inmuebleSeleccionado.tipo}</strong>
               </div>
 
+              {/* Estado */}
               <div className="bomberos-dato">
                 <span>Estado</span>
                 <strong
@@ -155,21 +163,24 @@ Documento de prueba para el sistema PRISCI.
                 </strong>
               </div>
 
+              {/* Última actualización */}
               <div className="bomberos-dato">
                 <span>Última actualización</span>
                 <strong>{inmuebleSeleccionado.actualizacion}</strong>
               </div>
 
+              {/* ABRIR FICHA COMPLETA */}
               <button
                 className="bomberos-descargar"
-                onClick={() => descargarFicha(inmuebleSeleccionado)}
+                onClick={abrirFicha}
               >
-                <i className="bi bi-download"></i> Descargar ficha
+                <i className="bi bi-download"></i> Ficha
               </button>
             </div>
           ) : (
             <>
               <h2>Inmuebles registrados</h2>
+
               <p className="bomberos-cantidad">
                 {inmueblesFiltrados.length} inmuebles encontrados
               </p>
@@ -179,7 +190,7 @@ Documento de prueba para el sistema PRISCI.
                   <button
                     key={inmueble.id}
                     className="bomberos-inmueble"
-                    onClick={() => setInmuebleSeleccionado(inmueble)}
+                    onClick={() => seleccionarInmueble(inmueble)}
                   >
                     <span className="bomberos-inmueble-icono">
                       <i className="bi bi-building"></i>
@@ -205,6 +216,15 @@ Documento de prueba para el sistema PRISCI.
           )}
         </aside>
       </div>
+
+      {/* MODAL DE LA FICHA COMPLETA */}
+      {fichaAbierta && inmuebleSeleccionado && (
+        <FichaInm
+          inmueble={inmuebleSeleccionado}
+          rol="bomberos"
+          onCerrar={cerrarFicha}
+        />
+      )}
     </section>
   );
 }

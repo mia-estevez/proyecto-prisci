@@ -149,71 +149,133 @@ function Inspecciones() {
   };
 
   // --- FUNCIÓN PARA GUARDAR (BORRADOR O INSPECCIÓN FINAL) ---
-  const guardarInspeccion = (esBorrador) => {
-    const idNum = parseInt(inmuebleIdParam);
-    const tieneObs = Object.values(relevamiento).some(item => item.estado === 'Con observaciones');
-    const resultadoFinal = esBorrador ? 'Borrador (Pendiente)' : (tieneObs ? 'Con observaciones' : 'Aprobado');
+  const guardarInspeccion = async (esBorrador) => {
+    const idNum = parseInt(inmuebleIdParam, 10);
+
+    const tieneObs = Object.values(relevamiento).some(
+      (item) => item.estado === "Con observaciones"
+    );
+
+    const resultadoFinal = esBorrador
+      ? "Borrador (Pendiente)"
+      : tieneObs
+        ? "Con observaciones"
+        : "Aprobado";
 
     const objetoInspeccion = {
       idInmueble: idNum,
-      fecha: fecha,
-      parteNro: parteNro,
-      empresaCliente: empresaCliente,
-      localidad: localidad,
+      fecha,
+      parteNro,
+      empresaCliente,
+      localidad,
       resultado: resultadoFinal,
-      relevamiento: relevamiento,
-      observaciones: observacionesGenerales || `Parte N°: ${parteNro}. Relevamiento completado.`,
+      relevamiento,
+      observaciones:
+        observacionesGenerales ||
+        `Parte N°: ${parteNro}. Relevamiento completado.`,
       archivosAdjuntos: archivos,
       tieneFirmaCliente: !!firmaClienteData,
-      tieneFirmaProf: !!firmaProfData
+      tieneFirmaProf: !!firmaProfData,
     };
 
+    // Los borradores siguen guardándose como hasta ahora.
     if (esBorrador) {
-      // Guardar en la lista específica de borradores
-      const borradoresPrevios = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
-      
+      const borradoresPrevios = JSON.parse(
+        localStorage.getItem(`borradores_inmueble_${idNum}`) || "[]"
+      );
+
       if (borradorIndex !== null && borradorIndex !== undefined) {
-        borradoresPrevios[parseInt(borradorIndex)] = objetoInspeccion;
+        borradoresPrevios[parseInt(borradorIndex, 10)] = objetoInspeccion;
       } else {
         borradoresPrevios.unshift(objetoInspeccion);
       }
 
-      localStorage.setItem(`borradores_inmueble_${idNum}`, JSON.stringify(borradoresPrevios));
+      localStorage.setItem(
+        `borradores_inmueble_${idNum}`,
+        JSON.stringify(borradoresPrevios)
+      );
 
-      // DISPARAR NOTIFICACIÓN AUTOMÁTICA DE BORRADOR
       dispararNotificacionConservador(
-        'Borrador de Inspección Guardado',
+        "Borrador de Inspección Guardado",
         `Se guardó un borrador técnico (Parte N°: ${parteNro}) para el inmueble ${establecimiento}.`,
-        'info',
+        "info",
         idNum
       );
 
-      alert('¡Borrador guardado correctamente!');
-    } else {
-      // Guardar como inspección definitiva en el historial
-      const inspeccionesPrevias = JSON.parse(localStorage.getItem(`inspecciones_inmueble_${idNum}`) || '[]');
-      localStorage.setItem(`inspecciones_inmueble_${idNum}`, JSON.stringify([objetoInspeccion, ...inspeccionesPrevias]));
-
-      // Si venía de un borrador, lo removemos de borradores
-      if (borradorIndex !== null && borradorIndex !== undefined) {
-        const borradoresPrevios = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
-        borradoresPrevios.splice(parseInt(borradorIndex), 1);
-        localStorage.setItem(`borradores_inmueble_${idNum}`, JSON.stringify(borradoresPrevios));
-      }
-
-      // DISPARAR NOTIFICACIÓN AUTOMÁTICA DE INSPECCIÓN REGISTRADA
-      dispararNotificacionConservador(
-        'Nueva Inspección Registrada',
-        `Se completó exitosamente el acta de inspección (Parte N°: ${parteNro}) para ${establecimiento}.`,
-        'exito',
-        idNum
-      );
-
-      alert('¡Inspección guardada con éxito!');
+      alert("¡Borrador guardado correctamente!");
+      return;
     }
 
-    navigate(`/clientes/${idNum}`);
+    // Las inspecciones definitivas se guardan en MySQL.
+    try {
+      const respuesta = await fetch("http://localhost:3001/api/inspecciones", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idInmueble: idNum,
+          fecha,
+          resultado: resultadoFinal,
+          observaciones: JSON.stringify({
+            parteNro,
+            empresaCliente,
+            establecimiento,
+            domicilio,
+            localidad,
+            observacionesGenerales,
+            relevamiento,
+            archivosAdjuntos: archivos.map((archivo) => ({
+              nombre: archivo.nombre,
+              tipo: archivo.tipo,
+            })),
+            tieneFirmaCliente: !!firmaClienteData,
+            tieneFirmaProf: !!firmaProfData,
+          }),
+        }),
+      });
+
+      const resultado = await respuesta.json();
+
+      if (!respuesta.ok) {
+        throw new Error(
+          resultado.mensaje || resultado.error || "No se pudo guardar la inspección."
+        );
+      }
+
+      // Si venía de un borrador, lo quitamos una vez guardado en MySQL.
+      if (borradorIndex !== null && borradorIndex !== undefined) {
+        const borradoresPrevios = JSON.parse(
+          localStorage.getItem(`borradores_inmueble_${idNum}`) || "[]"
+        );
+
+        borradoresPrevios.splice(parseInt(borradorIndex, 10), 1);
+
+        localStorage.setItem(
+          `borradores_inmueble_${idNum}`,
+          JSON.stringify(borradoresPrevios)
+        );
+      }
+
+      dispararNotificacionConservador(
+        "Nueva Inspección Registrada",
+        `Se registró el acta de inspección (Parte N°: ${parteNro}) para ${establecimiento}.`,
+        "exito",
+        idNum
+      );
+
+      alert("¡Inspección guardada correctamente en la base de datos!");
+
+      navigate(`/clientes/${idNum}`);
+    } catch (error) {
+      console.error("Error al guardar la inspección:", error);
+
+      alert(
+        `No se pudo guardar la inspección en la base de datos.\n${error.message}`
+      );
+    }
   };
+
 
   if (cargando) return <div className="cargando-container">Cargando datos...</div>;
 
