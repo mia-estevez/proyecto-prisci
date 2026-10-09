@@ -501,6 +501,7 @@ export default function PaginaMunicipal() {
               window.dispatchEvent(new CustomEvent("prisci:agregar-inmueble"))
             }
           >
+      
             <Icono nombre="plus" size={22} />
             <span>Agregar inmueble</span>
           </button>
