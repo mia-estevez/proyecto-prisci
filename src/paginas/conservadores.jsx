@@ -186,7 +186,7 @@ function Conservadores() {
         <p>Gestioná y consultá la información de los inmuebles asignados.</p>
 
         <div className="kpi-grid">
-          <div className="kpi-card" onClick={() => navigate('/inmuebles')}>
+          <div className="kpi-card" onClick={() => navigate('/todos-inmuebles')}>
             <div className="kpi-icon-wrapper blue">
               <Home size={22} color="#3b82f6" />
             </div>
@@ -378,9 +378,12 @@ function Conservadores() {
             )}
           </div>
 
-          <button className="btn-link-all" onClick={() => navigate('/inmuebles')}>
+          <span 
+            onClick={() => navigate('/todos-inmuebles')} 
+            style={{ cursor: 'pointer', color: '#38bdf8', fontSize: '13px' }}
+          >
             Ver todos los inmuebles ›
-          </button>
+          </span>
         </aside>
 
       </div>
