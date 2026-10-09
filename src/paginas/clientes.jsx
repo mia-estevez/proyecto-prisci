@@ -24,57 +24,68 @@ function Clientes() {
   const [inmueble, setInmueble] = useState(null);
   const [cargando, setCargando] = useState(true);
 
+  // DICCIONARIO OFICIAL UNIFICADO CON LAS DIRECCIONES REALES DE NEUQUÉN
+  const DIRECCIONES_OFICIALES = {
+    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250' },
+    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200' }
+  };
+
   useEffect(() => {
     const inmuebleId = id || 1;
     fetch(`http://localhost:3001/api/inmuebles/${inmuebleId}`)
       .then(res => res.json())
       .then(data => {
-        setInmueble(data);
+        // Combinamos los datos del backend con la dirección oficial unificada para evitar desfasajes
+        const datosOficiales = DIRECCIONES_OFICIALES[Number(inmuebleId)] || {};
+        setInmueble({
+          ...data,
+          Nombre: datosOficiales.nombre || data.Nombre || data.nombre,
+          Domicilio: datosOficiales.domicilio || data.Domicilio || data.domicilio,
+          Actividad: datosOficiales.tipo || data.Actividad || data.actividad,
+          Superficie: datosOficiales.superficie || data.Superficie || data.superficie
+        });
         setCargando(false);
       })
       .catch(err => {
         console.error("Error al obtener expediente:", err);
+        // Respaldo inmediato si falla la API
+        const idNum = Number(inmuebleId);
+        const respaldo = DIRECCIONES_OFICIALES[idNum] || DIRECCIONES_OFICIALES[1];
+        setInmueble({
+          IdInmueble: idNum,
+          Nombre: respaldo.nombre,
+          Domicilio: respaldo.domicilio,
+          Actividad: respaldo.tipo,
+          Superficie: respaldo.superficie,
+          nombrePropietario: 'Juan',
+          apellidoPropietario: 'Pérez'
+        });
         setCargando(false);
       });
   }, [id]);
 
-  // FUNCIÓN PARA VISUALIZAR DOCUMENTOS / INSPECCIONES
+  // FUNCIONES PARA VISUALIZAR Y DESCARGAR DOCUMENTOS
   const handleVerDocumento = (tipo, urlOriginal) => {
     if (urlOriginal) {
       window.open(urlOriginal, '_blank');
       return;
     }
-
-    // Si es la última inspección y tenemos datos cargados, mostramos el modal de inspección
     if (tipo === 'inspeccion' && inmueble?.inspecciones && inmueble.inspecciones.length > 0) {
       setInspeccionSeleccionada(inmueble.inspecciones[0]);
       return;
     }
-
-    // Si no hay archivo cargado en backend, simulamos la vista previa/alerta
-    alert(`Visualizando ${tipo}... (Asegúrate de colocar la URL o archivo real en tu backend/public folder).`);
+    alert(`Visualizando ${tipo} para ${inmueble?.Nombre || 'Inmueble'}.`);
   };
 
-  // FUNCIÓN PARA DESCARGAR DOCUMENTOS
   const handleDescargarDocumento = (nombreArchivo, url) => {
-    if (url) {
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = nombreArchivo;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      // Simulación de descarga creando un documento de texto PDF demostrativo
-      const contenido = `Documento: ${nombreArchivo}\nInmueble: ${inmueble?.Nombre || 'Galería Comercial Centro'}\nFecha: ${new Date().toLocaleDateString()}`;
-      const blob = new Blob([contenido], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `${nombreArchivo.toLowerCase().replace(/\s+/g, '_')}.txt`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    const contenido = `Documento: ${nombreArchivo}\nInmueble: ${inmueble?.Nombre}\nDirección: ${inmueble?.Domicilio}\nFecha: ${new Date().toLocaleDateString()}`;
+    const blob = new Blob([contenido], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${nombreArchivo.toLowerCase().replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (cargando) {
@@ -85,10 +96,9 @@ function Clientes() {
     );
   }
 
-  // Obtener la última inspección realizada si existe
   const ultimaInspeccion = inmueble?.inspecciones && inmueble.inspecciones.length > 0 
     ? inmueble.inspecciones[0] 
-    : { fechaFormat: '15/03/2024', Observaciones: 'Sin observaciones', Resultado: 'Aprobado' };
+    : { fechaFormat: '09/10/2026', Observaciones: 'Sin observaciones', Resultado: 'Aprobado' };
 
   return (
     <div className="clientes-page-container">
@@ -99,7 +109,7 @@ function Clientes() {
           <ArrowLeft size={16} /> Mapa de inmuebles
         </button>
         <span className="separator">›</span>
-        <strong className="current-page">{inmueble?.Nombre || 'Edificio Torres del Limay'}</strong>
+        <strong className="current-page">{inmueble?.Nombre || 'Inmueble'}</strong>
       </div>
 
       {/* ENCABEZADO */}
@@ -125,7 +135,7 @@ function Clientes() {
           />
         </div>
 
-        {/* INFORMACIÓN DEL INMUEBLE */}
+        {/* INFORMACIÓN DEL INMUEBLE (DIRECCIÓN ACTUALIZADA) */}
         <div className="card-panel info-card-area">
           <h3>Información del inmueble</h3>
 
@@ -144,7 +154,7 @@ function Clientes() {
             <p>
               {inmueble?.nombrePropietario 
                 ? `${inmueble.nombrePropietario} ${inmueble.apellidoPropietario || ''}`
-                : 'Consorcio Torres del Limay'}
+                : 'Juan Pérez'}
             </p>
           </div>
 
@@ -166,77 +176,41 @@ function Clientes() {
           </div>
         </div>
 
-        {/* DOCUMENTACIÓN CON ACCIONES FUNCIONALES */}
+        {/* DOCUMENTACIÓN */}
         <div className="card-panel docs-card-area">
           <h3>Documentación</h3>
           
           <div className="docs-list">
-            {/* PLANO HABILITADO */}
             <div className="doc-row">
               <div className="doc-info">
                 <FileText size={18} className="doc-icon" />
                 <span>Plano habilitado (PDF)</span>
               </div>
               <div className="doc-actions-text">
-                <button 
-                  className="btn-action-view" 
-                  onClick={() => handleVerDocumento('Plano habilitado', inmueble?.urlPlano)}
-                >
-                  Ver
-                </button>
-                <button 
-                  className="icon-btn-download" 
-                  title="Descargar Plano habilitado"
-                  onClick={() => handleDescargarDocumento('Plano_Habilitado', inmueble?.urlPlano)}
-                >
-                  <Download size={16} />
-                </button>
+                <button className="btn-action-view" onClick={() => handleVerDocumento('Plano habilitado', inmueble?.urlPlano)}>Ver</button>
+                <button className="icon-btn-download" title="Descargar Plano" onClick={() => handleDescargarDocumento('Plano_Habilitado', inmueble?.urlPlano)}><Download size={16} /></button>
               </div>
             </div>
 
-            {/* CERTIFICADO DE INSTALACIONES */}
             <div className="doc-row">
               <div className="doc-info">
                 <FileText size={18} className="doc-icon" />
                 <span>Certificado de instalaciones</span>
               </div>
               <div className="doc-actions-text">
-                <button 
-                  className="btn-action-view" 
-                  onClick={() => handleVerDocumento('Certificado de instalaciones', inmueble?.urlCertificado)}
-                >
-                  Ver
-                </button>
-                <button 
-                  className="icon-btn-download" 
-                  title="Descargar Certificado de instalaciones"
-                  onClick={() => handleDescargarDocumento('Certificado_de_Instalaciones', inmueble?.urlCertificado)}
-                >
-                  <Download size={16} />
-                </button>
+                <button className="btn-action-view" onClick={() => handleVerDocumento('Certificado de instalaciones', inmueble?.urlCertificado)}>Ver</button>
+                <button className="icon-btn-download" title="Descargar Certificado" onClick={() => handleDescargarDocumento('Certificado_de_Instalaciones', inmueble?.urlCertificado)}><Download size={16} /></button>
               </div>
             </div>
 
-            {/* ÚLTIMA INSPECCIÓN */}
             <div className="doc-row">
               <div className="doc-info">
                 <FileText size={18} className="doc-icon" />
-                <span>Última inspección ({ultimaInspeccion.fechaFormat || ultimaInspeccion.Fecha || '15/03/2024'})</span>
+                <span>Última inspección ({ultimaInspeccion.fechaFormat || ultimaInspeccion.Fecha || '09/10/2026'})</span>
               </div>
               <div className="doc-actions-text">
-                <button 
-                  className="btn-action-view" 
-                  onClick={() => setInspeccionSeleccionada(ultimaInspeccion)}
-                >
-                  Ver
-                </button>
-                <button 
-                  className="icon-btn-download" 
-                  title="Descargar Informe de Inspección"
-                  onClick={() => handleDescargarDocumento(`Inspeccion_${ultimaInspeccion.fechaFormat || '15_03_2024'}`, ultimaInspeccion.urlInforme)}
-                >
-                  <Download size={16} />
-                </button>
+                <button className="btn-action-view" onClick={() => setInspeccionSeleccionada(ultimaInspeccion)}>Ver</button>
+                <button className="icon-btn-download" title="Descargar Inspección" onClick={() => handleDescargarDocumento(`Inspeccion_${ultimaInspeccion.fechaFormat || '09_10_2026'}`, ultimaInspeccion.urlInforme)}><Download size={16} /></button>
               </div>
             </div>
           </div>
@@ -302,26 +276,26 @@ function Clientes() {
                   <div className="history-item">
                     <CheckCircle size={18} className="green-icon" />
                     <div className="history-data">
-                      <strong>15/03/2024</strong>
-                      <p>Sin observaciones</p>
+                      <strong>09/10/2026</strong>
+                      <p>Revisión mensual de extintores y mangueras OK</p>
                     </div>
-                    <button className="btn-link-view" onClick={() => setInspeccionSeleccionada({ fechaFormat: '15/03/2024', Resultado: 'Aprobado', Observaciones: 'Sin observaciones' })}>Ver</button>
-                  </div>
-                  <div className="history-item">
-                    <AlertCircle size={18} className="red-icon" />
-                    <div className="history-data">
-                      <strong>21/03/2023</strong>
-                      <p>Observaciones</p>
-                    </div>
-                    <button className="btn-link-view" onClick={() => setInspeccionSeleccionada({ fechaFormat: '21/03/2023', Resultado: 'Con observaciones', Observaciones: 'Observaciones' })}>Ver</button>
+                    <button className="btn-link-view" onClick={() => setInspeccionSeleccionada({ fechaFormat: '09/10/2026', Resultado: 'Aprobado', Observaciones: 'Revisión mensual de extintores y mangueras OK' })}>Ver</button>
                   </div>
                   <div className="history-item">
                     <CheckCircle size={18} className="green-icon" />
                     <div className="history-data">
-                      <strong>10/02/2022</strong>
-                      <p>Sin observaciones</p>
+                      <strong>09/10/2026</strong>
+                      <p>Parte N°: PR-2026-4239. Relevamiento completado.</p>
                     </div>
-                    <button className="btn-link-view" onClick={() => setInspeccionSeleccionada({ fechaFormat: '10/02/2022', Resultado: 'Aprobado', Observaciones: 'Sin observaciones' })}>Ver</button>
+                    <button className="btn-link-view" onClick={() => setInspeccionSeleccionada({ fechaFormat: '09/10/2026', Resultado: 'Aprobado', Observaciones: 'Parte N°: PR-2026-4239. Relevamiento completado.' })}>Ver</button>
+                  </div>
+                  <div className="history-item">
+                    <AlertCircle size={18} className="red-icon" />
+                    <div className="history-data">
+                      <strong>08/10/2026</strong>
+                      <p>Rakata rakata</p>
+                    </div>
+                    <button className="btn-link-view" onClick={() => setInspeccionSeleccionada({ fechaFormat: '08/10/2026', Resultado: 'Con observaciones', Observaciones: 'Rakata rakata' })}>Ver</button>
                   </div>
                 </>
               )}
@@ -336,18 +310,22 @@ function Clientes() {
 
       </div>
 
-      {/* MODAL PARA VER DETALLES DE CUALQUIER INSPECCIÓN */}
+      {/* MODAL DETALLE */}
       {inspeccionSeleccionada && (
         <div className="modal-overlay" onClick={() => setInspeccionSeleccionada(null)}>
           <div className="modal-card-content" onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
               <div className="modal-header-title">
                 <ShieldCheck size={20} color="#38bdf8" />
-                <h3>Inspección del {inspeccionSeleccionada.fechaFormat || inspeccionSeleccionada.Fecha || '15/03/2024'}</h3>
+                <h3>Inspección del {inspeccionSeleccionada.fechaFormat || inspeccionSeleccionada.Fecha}</h3>
               </div>
               <button className="btn-close-modal" onClick={() => setInspeccionSeleccionada(null)}><X size={18} /></button>
             </header>
             <div className="modal-body">
+              <div className="modal-info-row">
+                <span>Inmueble:</span>
+                <strong>{inmueble?.Nombre} ({inmueble?.Domicilio})</strong>
+              </div>
               <div className="modal-info-row">
                 <span>Resultado:</span>
                 <span className={`status-badge ${inspeccionSeleccionada.Resultado === 'Aprobado' ? 'badge-ok' : 'badge-alert'}`}>
@@ -356,7 +334,7 @@ function Clientes() {
               </div>
               <div className="modal-info-block">
                 <strong>Observaciones:</strong>
-                <p>{inspeccionSeleccionada.Observaciones || 'Sin observaciones registradas.'}</p>
+                <p>{inspeccionSeleccionada.Observaciones || 'Sin comentarios adicionales.'}</p>
               </div>
             </div>
             <footer className="modal-footer">

@@ -24,7 +24,13 @@ function Inspecciones() {
   const [localidad, setLocalidad] = useState('Neuquén');
   const [observacionesGenerales, setObservacionesGenerales] = useState('');
 
-  // Relevamiento
+  // DICCIONARIO OFICIAL UNIFICADO
+  const DIRECCIONES_OFICIALES = {
+    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial' },
+    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial' }
+  };
+
+  // Relevamiento (incluyendo Prevención)
   const [relevamiento, setRelevamiento] = useState({
     viasEscape: { estado: 'Correcto', obs: '' },
     lucesEmergencia: { estado: 'Correcto', obs: '' },
@@ -50,16 +56,29 @@ function Inspecciones() {
 
   useEffect(() => {
     if (inmuebleIdParam) {
+      const idNum = Number(inmuebleIdParam);
+      const oficial = DIRECCIONES_OFICIALES[idNum] || DIRECCIONES_OFICIALES[1];
+
       fetch(`http://localhost:3001/api/inmuebles/${inmuebleIdParam}`)
         .then(res => res.json())
         .then(data => {
           setInmueble(data);
-          setEstablecimiento(data.Nombre || '');
-          setDomicilio(data.Domicilio || '');
-          setEmpresaCliente(data.nombrePropietario ? `${data.nombrePropietario} ${data.apellidoPropietario || ''}`.trim() : 'Cliente Consorcio');
+          setEstablecimiento(oficial.nombre || data.Nombre || '');
+          setDomicilio(oficial.domicilio || data.Domicilio || '');
+          setEmpresaCliente(data.nombrePropietario ? `${data.nombrePropietario} ${data.apellidoPropietario || ''}`.trim() : 'Juan Pérez');
           setCargando(false);
         })
-        .catch(err => setCargando(false));
+        .catch(err => {
+          setInmueble({
+            Nombre: oficial.nombre,
+            Domicilio: oficial.domicilio,
+            Actividad: oficial.tipo
+          });
+          setEstablecimiento(oficial.nombre);
+          setDomicilio(oficial.domicilio);
+          setEmpresaCliente('Juan Pérez');
+          setCargando(false);
+        });
     }
   }, [inmuebleIdParam]);
 
@@ -149,7 +168,7 @@ function Inspecciones() {
     <div className="cargar-inspeccion-container">
       <nav className="breadcrumb">
         <span onClick={() => navigate('/conservadores')}>Mapa de inmuebles</span> &gt; 
-        <span onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}> {inmueble?.Nombre}</span> &gt; 
+        <span onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}> {establecimiento}</span> &gt; 
         <span className="active"> Cargar inspección</span>
       </nav>
 
@@ -161,9 +180,9 @@ function Inspecciones() {
       <div className="inmueble-card-header">
         <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80" alt="Inmueble" className="inmueble-thumb"/>
         <div className="inmueble-card-info">
-          <h2>{inmueble?.Nombre}</h2>
-          <p className="inmueble-direccion">{inmueble?.Domicilio}, Neuquén</p>
-          <span className="inmueble-tag">{inmueble?.Actividad}</span>
+          <h2>{establecimiento}</h2>
+          <p className="inmueble-direccion">{domicilio}</p>
+          <span className="inmueble-tag">{inmueble?.Actividad || 'Comercial'}</span>
         </div>
       </div>
 
@@ -189,7 +208,7 @@ function Inspecciones() {
 
         {/* RELEVAMIENTO */}
         <section className="form-card-section">
-          <div className="section-header"><FileText size={18} /><h3>Relevamiento general</h3></div>
+          <div className="section-header"><FileText size={18} /><h3>Relevamiento general del establecimiento</h3></div>
           
           <div className="relevamiento-block">
             <h4 className="block-category-title">EVACUACIÓN</h4>
@@ -204,11 +223,20 @@ function Inspecciones() {
             {renderRow("Matafuegos *", "matafuegos")}
           </div>
 
+          {/* SECCIÓN PREVENCIÓN */}
+          <div className="relevamiento-block">
+            <h4 className="block-category-title">PREVENCIÓN</h4>
+            {renderRow("Instalación eléctrica *", "instalacionElectrica")}
+            {renderRow("Instalación de gas *", "instalacionGas")}
+            {renderRow("Productos químicos *", "productosQuimicos")}
+            {renderRow("Orden y limpieza *", "ordenLimpia")}
+          </div>
+
           {/* OBSERVACIONES GENERALES */}
           <div className="relevamiento-block">
             <h4 className="block-category-title">OBSERVACIONES GENERALES</h4>
             <div className="textarea-container">
-              <textarea rows="4" maxLength="1000" placeholder="Escribí las observaciones generales..." value={observacionesGenerales} onChange={(e) => setObservacionesGenerales(e.target.value)}/>
+              <textarea rows="4" maxLength="1000" placeholder="Escribí las observaciones generales del establecimiento..." value={observacionesGenerales} onChange={(e) => setObservacionesGenerales(e.target.value)}/>
               <span className="char-count">{observacionesGenerales.length}/1000</span>
             </div>
           </div>
