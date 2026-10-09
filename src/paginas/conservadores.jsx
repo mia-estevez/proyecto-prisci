@@ -123,7 +123,7 @@ function Conservadores() {
       </aside>
 
       {/* SECCIÓN 2: CONTENIDO PRINCIPAL                      */}
-      {/* -------------------------------------------------- */}
+      
       <main className="dashboard-content">
         
         {/* Barra superior con avatar de usuario y centro de notificaciones */}
@@ -184,6 +184,58 @@ function Conservadores() {
             </div>
           </div>
         </section>
+
+        {/* SECCIÓN 3: MAPA Y LISTA LATERAL                     */}
+        
+        <div className="main-grid">
+          
+          {/* MAPA INTERACTIVO MUNICIPAL */}
+          <section className="card-panel map-section">
+            <div className="panel-header">
+              <h3>Mapa de mis inmuebles</h3>
+              <p>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
+            </div>
+
+            {/* Campo de búsqueda sobre el mapa */}
+            <div className="map-search-bar">
+              <Search size={18} className="search-icon" />
+              <input 
+                type="text" 
+                placeholder="Buscar por dirección, cliente o nombre de inmueble..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+              <button className="btn-filter"><Filter size={16} /> Filtros</button>
+            </div>
+
+            {/* Renderizado del mapa de Leaflet */}
+            <div className="map-display" style={{ height: '350px', width: '100%' }}>
+              <MapContainer center={CENTRO_NEUQUEN} zoom={13} style={{ height: '100%', width: '100%', borderRadius: '8px' }}>
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; OpenStreetMap contributors'
+                />
+                
+                {/* Mapeo dinámico de marcadores traídos de la base de datos */}
+                {inmueblesFiltrados.map((item) => (
+                  <Marker
+                    key={item.id}
+                    position={[item.latitud || -38.9516, item.longitud || -68.0591]}
+                    icon={inmuebleSeleccionado?.id === item.id ? iconoAzul : iconoRojo}
+                    eventHandlers={{
+                      click: () => setInmuebleSeleccionado(item),
+                    }}
+                  >
+                    <Popup>
+                      <strong>{item.nombre}</strong><br />
+                      {item.direccion}<br />
+                      <button onClick={() => navigate(`/clientes/${item.id}`)}>Ver expediente</button>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
+            </div>
+          </section>
   );
 }
 
