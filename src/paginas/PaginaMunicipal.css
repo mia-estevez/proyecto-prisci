@@ -1,227 +1,305 @@
-/* Variables y colores generales */
-:root {
-  --bg-oscuro: #181824;
-  --bg-tarjeta: #222232;
-  --bg-input: #12121c;
-  --acento-azul: #0088cc;
-  --acento-hover: #006699;
-  --texto-principal: #ffffff;
-  --texto-secundario: #a0a0b0;
-  --borde-tarjeta: #2d2d42;
+/* contenedor general aislado*/
+.prisci-municipal-content-only {
+  width: 100%;
+  padding: 10px 0;
+  color: #ffffff;
 }
 
-/* Reset básico */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.contenedor-principal {
-  background-color: var(--bg-oscuro);
-  color: var(--texto-principal);
-  font-family: system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 1. Header de Navegación */
-.header-muni {
+/*agregando estilos a cabecera y fecha*/
+.prisci-municipal-content-only .dashboard-header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 1rem 5%;
-  background-color: #ffffff;
-  color: #333333;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  align-items: flex-end;
+  margin-bottom: 20px;
 }
 
-.logo-muni {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #005588;
+.prisci-municipal-content-only .welcome-box h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #fff;
 }
 
-.nav-links {
-  display: flex;
-  gap: 1.5rem;
+.prisci-municipal-content-only .welcome-box p {
+  color: #8d99ae;
+  font-size: 13px;
 }
 
-.nav-links span {
-  cursor: pointer;
-  font-weight: 500;
-  transition: color 0.2s;
+.prisci-municipal-content-only .date-box {
+  color: #8d99ae;
+  font-size: 13px;
 }
 
-.nav-links span:hover {
-  color: var(--acento-azul);
-}
-
-.link-activo {
-  font-weight: 700 !important;
-  color: var(--acento-azul);
-}
-
-/* 2. Layout Principal (Grilla) */
-.layout-principal {
+/*tarjetas metricas superiores*/
+.prisci-municipal-content-only .metrics-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-  padding: 2rem 5%;
-  flex: 1;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-@media (max-width: 850px) {
-  .layout-principal {
-    grid-template-columns: 1fr;
-  }
-}
-
-.tarjeta {
-  background-color: var(--bg-tarjeta);
-  border: 1px solid var(--borde-tarjeta);
+.prisci-municipal-content-only .metric-card {
+  background-color: #111c38;
+  border: 1px solid #1c2541;
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Sección Mapa */
-.seccion-mapa h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.seccion-mapa p {
-  color: var(--texto-secundario);
-  margin-bottom: 1.5rem;
-}
-
-.mapa-contenedor {
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
   position: relative;
-  width: 100%;
-  height: 380px;
-  border: 2px dashed var(--borde-tarjeta);
+}
+
+.prisci-municipal-content-only .metric-icon-box {
+  width: 40px;
+  height: 40px;
+  background-color: #1d3557;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  background-color: #101018;
+  margin-right: 12px;
+  font-size: 18px;
 }
 
-.mapa-texto {
-  position: relative;
-  z-index: 2;
-  font-weight: bold;
-  letter-spacing: 1px;
-  background-color: rgba(0, 0, 0, 0.6);
-  padding: 8px 16px;
-  border-radius: 4px;
-}
-
-.mapa-img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.25;
-}
-
-/* Panel Lateral */
-.panel-header {
-  margin-bottom: 1rem;
-}
-
-.panel-buscador {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.btn-notificacion {
-  background: transparent;
-  border: 1px solid var(--borde-tarjeta);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.input-buscar {
-  flex: 1;
-  background-color: var(--bg-input);
-  border: 1px solid var(--borde-tarjeta);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  outline: none;
-}
-
-.input-buscar:focus {
-  border-color: var(--acento-azul);
-}
-
-.btn-buscar {
-  background-color: var(--acento-azul);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.panel-botones {
+.prisci-municipal-content-only .metric-data {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  margin-top: 1rem;
 }
 
-.btn-lateral {
-  width: 100%;
-  padding: 12px 16px;
-  background-color: var(--bg-input);
-  border: 1px solid var(--borde-tarjeta);
-  color: white;
-  border-radius: 8px;
-  text-align: left;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-lateral:hover {
-  background-color: var(--acento-azul);
-  border-color: var(--acento-azul);
-}
-
-.elementos-referencia {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--borde-tarjeta);
-  color: var(--texto-secundario);
-  font-size: 0.9rem;
-}
-
-.elementos-titulo {
+.prisci-municipal-content-only .metric-number {
+  font-size: 22px;
   font-weight: bold;
-  color: var(--texto-principal);
-  margin-bottom: 0.3rem;
+  color: #fff;
+  margin-bottom: 2px;
 }
 
-/* 3. Footer */
-.footer-muni {
-  background-color: #ffffff;
-  color: #555555;
+.prisci-municipal-content-only .metric-label {
+  font-size: 12px;
+  color: #8d99ae;
+}
+
+.prisci-municipal-content-only .metric-trend {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: #2a9d8f;
+}
+
+.prisci-municipal-content-only .metric-trend small {
+  font-size: 9px;
+  color: #8d99ae;
+  font-weight: normal;
+}
+
+
+/* estilos grid principal (mapa + lista de inmuelbles)*/
+
+.prisci-municipal-content-only .dashboard-grid-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+
+/* Subsección: Tarjeta del Mapa y Buscador                  */
+
+.prisci-municipal-content-only .map-section-card {
+  background-color: #111c38;
+  border: 1px solid #1c2541;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.prisci-municipal-content-only .map-section-title {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.prisci-municipal-content-only .map-icon-title {
+  font-size: 22px;
+}
+
+.prisci-municipal-content-only .map-section-title h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.prisci-municipal-content-only .map-section-title p {
+  font-size: 12px;
+  color: #8d99ae;
+}
+
+.prisci-municipal-content-only .search-filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.prisci-municipal-content-only .search-input-wrapper {
+  flex: 1;
+  background-color: #0b132b;
+  border: 1px solid #1c2541;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.prisci-municipal-content-only .search-ico {
+  margin-right: 8px;
+}
+
+.prisci-municipal-content-only .search-input-wrapper input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 10px 0;
+  outline: none;
+  font-size: 13px;
+}
+
+.prisci-municipal-content-only .filter-btn {
+  background-color: #0b132b;
+  border: 1px solid #1c2541;
+  color: #fff;
+  padding: 0 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Caja de marcador de posición del mapa (con la palabra MAPA) */
+.prisci-municipal-content-only .map-placeholder-box {
+  width: 100%;
+  height: 480px;
+  background-color: #070d1f;
+  border: 2px dashed #1c2541;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prisci-municipal-content-only .map-text-indicator {
+  font-size: 42px;
+  font-weight: bold;
+  letter-spacing: 6px;
+  color: #8d99ae;
+  opacity: 0.5;
+}
+
+
+/* Subsección: Panel Lateral de Últimos Inmuebles*/
+
+.prisci-municipal-content-only .properties-sidebar-card {
+  background-color: #111c38;
+  border: 1px solid #1c2541;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.prisci-municipal-content-only .sidebar-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.prisci-municipal-content-only .title-with-ico {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prisci-municipal-content-only .title-with-ico h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.prisci-municipal-content-only .see-all-link {
+  font-size: 12px;
+  color: #00b4d8;
+  text-decoration: none;
+}
+
+.prisci-municipal-content-only .properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.prisci-municipal-content-only .property-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #0b132b;
+  border: 1px solid #1c2541;
+}
+
+.prisci-municipal-content-only .property-thumb {
+  width: 48px;
+  height: 48px;
+  background-color: #1d3557;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.prisci-municipal-content-only .property-details {
+  flex: 1;
+}
+
+.prisci-municipal-content-only .property-details h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.prisci-municipal-content-only .property-details p {
+  font-size: 11px;
+  color: #8d99ae;
+  margin-bottom: 1px;
+}
+
+.prisci-municipal-content-only .property-details small {
+  font-size: 10px;
+  color: #6c757d;
+}
+
+.prisci-municipal-content-only .arrow-right {
+  color: #8d99ae;
+  font-size: 18px;
+  padding-right: 4px;
+}
+
+.prisci-municipal-content-only .add-property-main-btn {
+  background-color: #0096ff;
+  color: #fff;
   text-align: center;
-  padding: 1.5rem 5%;
-  margin-top: auto;
-  border-top: 1px solid #e0e0e0;
-  font-size: 0.9rem;
-}
-
-.footer-muni p {
-  margin-bottom: 0.3rem;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  margin-top: 16px;
+  display: block;
 }
