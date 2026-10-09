@@ -1,12 +1,59 @@
-footer {
+footer.footer {
   background-color: var(--bg-tarjeta);
   color: var(--texto-secundario);
-  padding: 25px;
-  text-align: center;
   border-top: 1px solid var(--borde-tarjeta);
+  padding: 20px 30px;
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-footer p {
+footer.footer .footer-copy {
   margin: 0;
+  text-align: left;
   color: var(--texto-secundario);
+  font-size: 14px;
+}
+
+footer.footer .footer-derecha {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  white-space: nowrap;
+  color: var(--texto-secundario);
+  font-size: 14px;
+}
+
+footer.footer .footer-bandera {
+  display: block;
+  width: 30px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+
+/* Celulares */
+@media (max-width: 650px) {
+  footer.footer {
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  footer.footer .footer-copy {
+    text-align: center;
+  }
+
+  footer.footer .footer-derecha {
+    justify-content: center;
+    white-space: normal;
+    flex-wrap: wrap;
+  }
 }
