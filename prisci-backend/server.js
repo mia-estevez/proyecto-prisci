@@ -49,6 +49,28 @@ app.get('/api/servicios/mes', async (req, res) => {
   }
 });
 
+// servicios por vencer
+app.get('/api/servicios/vencimientos', async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        i.IdInmueble,
+        i.Nombre AS inmuebleNombre,
+        i.Domicilio,
+        i.Actividad,
+        insp.Fecha,
+        DATEDIFF(insp.Fecha, CURRENT_DATE()) AS diasRestantes
+      FROM Inspeccion insp
+      JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
+      WHERE insp.Resultado = 'Pendiente' OR DATEDIFF(insp.Fecha, CURRENT_DATE()) BETWEEN 0 AND 30
+      ORDER BY insp.Fecha ASC
+    `);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // OBTENER TODOS LOS INMUEBLES (Para la vista Conservadores)
 app.get('/api/inmuebles', async (req, res) => {
   try {
