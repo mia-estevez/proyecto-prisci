@@ -7,6 +7,48 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// métricas del dashboard (que están arriba del mapa)
+app.get('/api/conservador/resumen', async (req, res) => {
+  try {
+    const [[{ totalInmuebles }]] = await db.query('SELECT COUNT(*) AS totalInmuebles FROM Inmueble');
+    const [[{ totalClientes }]] = await db.query('SELECT COUNT(DISTINCT IdPropietario) AS totalClientes FROM Inmueble');
+    const [[{ serviciosMes }]] = await db.query('SELECT COUNT(*) AS serviciosMes FROM Inspeccion WHERE MONTH(Fecha) = MONTH(CURRENT_DATE()) AND YEAR(Fecha) = YEAR(CURRENT_DATE())');
+    const [[{ vencimientos }]] = await db.query('SELECT COUNT(*) AS vencimientos FROM Inspeccion WHERE Resultado = "Observaciones" OR Resultado = "Pendiente"');
+
+    res.json({
+      inmuebles: totalInmuebles,
+      clientes: totalClientes,
+      servicios: serviciosMes,
+      vencimientos: vencimientos
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// servicios de este mes
+app.get('/api/servicios/mes', async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        i.IdInmueble,
+        i.Nombre AS inmuebleNombre,
+        i.Domicilio,
+        i.Actividad,
+        insp.Fecha,
+        insp.Resultado AS estado,
+        insp.Observaciones AS tipoServicio
+      FROM Inspeccion insp
+      JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
+      WHERE MONTH(insp.Fecha) = MONTH(CURRENT_DATE())
+      ORDER BY insp.Fecha ASC
+    `);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // OBTENER TODOS LOS INMUEBLES (Para la vista Conservadores)
 app.get('/api/inmuebles', async (req, res) => {
   try {
