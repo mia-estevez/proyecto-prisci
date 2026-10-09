@@ -63,7 +63,21 @@ function Conservadores() {
   
   // 4. Estado para saber qué inmueble cliqueó el usuario en el mapa
   const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
-  
+
+  // EFECTO PRINCIPAL: Se ejecuta una sola vez al cargar el componente en pantalla
+  useEffect(() => {
+    // Petición HTTP al backend para traer los conteos calculados
+    fetch('http://localhost:3001/api/conservador/resumen')
+      .then(res => res.json())
+      .then(data => setResumen(data))
+      .catch(err => console.error("Error al obtener resumen:", err));
+
+    // Petición HTTP al backend para obtener los inmuebles registrados
+    fetch('http://localhost:3001/api/inmuebles')
+      .then(res => res.json())
+      .then(data => setInmuebles(data))
+      .catch(err => console.error("Error al obtener inmuebles:", err));
+  }, []);
   return (
     <div className="layout-dashboard">
       <aside>
