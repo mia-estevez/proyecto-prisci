@@ -4,6 +4,9 @@ import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { Home, Users, ClipboardList, Clock, Bell, Search, Filter, ChevronRight, LogOut, Flame, ShieldCheck } from 'lucide-react';
 import './conservadores.css';
 
+const mapContainerStyle = { width: '100%', height: '100%' };
+const centerNeuquen = { lat: -38.9516, lng: -68.0591 }; // Coordenadas Neuquén Capital
+
 function Conservadores() {
   return (
     <div className="layout-dashboard">
