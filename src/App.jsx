@@ -12,6 +12,8 @@ import Conservadores from "./paginas/conservadores";
 import Clientes from "./paginas/clientes";
 import Inspecciones from "./paginas/inspecciones";
 import NotificacionesConservadores from "./paginas/notificacionesConservadores";
+import ServiciosMes from './paginas/serviciosMes';
+import Vencimientos from './paginas/vencimientos';
 
 function Contenido() {
   const location = useLocation();
@@ -130,6 +132,26 @@ function App() {
   return (
     <BrowserRouter>
       <Contenido />
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Navbar />
+        <Menu rol="municipal" />
+        {/* El contenedor main asegura que el texto quede centrado y visible entre el nav y el footer */}
+        <main style={{ flex: '1', padding: '40px 20px', minHeight: '400px' }}>
+          <Routes>
+            <Route path="/" element={<PaginaMunicipal />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/notificaciones" element={<Notificaciones />} />
+            <Route path="/conservadores" element={<Conservadores />} />
+            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/inspecciones" element={<Inspecciones />} />          
+            <Route path="/notificacionesConservadores" element={<NotificacionesConservadores />} />
+            <Route path="/servicios-mes" element={<ServiciosMes />} />
+            <Route path="/vencimientos" element={<Vencimientos />} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
     </BrowserRouter>
   );
 }
