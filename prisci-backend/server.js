@@ -1,215 +1,148 @@
-
-// Importación de módulos principales
-// server.js
-
 const express = require('express');
 const cors = require('cors');
+const bcrypt = require('bcrypt'); // Si usás bcrypt para las contraseñas
 const db = require('./db');
-const bcrypt = require('bcrypt');
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
-// OBTENER TODOS LOS INMUEBLES
-
-// Middlewares necesarios para recibir JSON y permitir peticiones desde React (CORS)
-app.use(cors());
-app.use(express.json());
-
-// ==========================================
-// RUTAS DE LA API REST (PRISCI MUNICIPAL)
-// ==========================================
-
-// 1. MÉTRICAS DEL DASHBOARD PARA EL CONSERVADOR
-app.get('/api/conservador/:idConservador/resumen', async (req, res) => {
-  const { idConservador } = req.params;
+// 1. MÉTRICAS DEL DASHBOARD DEL CONSERVADOR
+app.get('/api/conservador/:id/resumen', async (req, res) => {
+  const { id } = req.params;
   try {
-    // Cuenta inmuebles donde este conservador realizó inspecciones
     const [[{ totalInmuebles }]] = await db.query(
-      'SELECT COUNT(DISTINCT IdInmueble) AS totalInmuebles FROM Inspeccion WHERE IdConservador = ?', 
-      [idConservador]
+      'SELECT COUNT(DISTINCT IdInmueble) AS totalInmuebles FROM Inspeccion WHERE IdConservador = ?',
+      [id]
     );
 
-    // Cuenta clientes (propietarios) vinculados a sus inmuebles
     const [[{ totalClientes }]] = await db.query(
-      `SELECT COUNT(DISTINCT i.IdPropietario) AS totalClientes 
-       FROM Inspeccion insp 
-       JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble 
-       WHERE insp.IdConservador = ?`, 
-      [idConservador]
+      `SELECT COUNT(DISTINCT i.IdPropietario) AS totalClientes
+       FROM Inspeccion insp
+       JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
+       WHERE insp.IdConservador = ?`,
+      [id]
     );
 
-    // Cuenta servicios e inspecciones programadas para el mes actual
     const [[{ serviciosMes }]] = await db.query(
-      `SELECT COUNT(*) AS serviciosMes 
-       FROM Inspeccion 
-       WHERE IdConservador = ? AND MONTH(Fecha) = MONTH(CURRENT_DATE()) AND YEAR(Fecha) = YEAR(CURRENT_DATE())`, 
-      [idConservador]
+      `SELECT COUNT(*) AS serviciosMes
+       FROM Inspeccion
+       WHERE IdConservador = ? AND MONTH(Fecha) = MONTH(CURRENT_DATE()) AND YEAR(Fecha) = YEAR(CURRENT_DATE())`,
+      [id]
     );
 
-    // Cuenta servicios con observaciones o pendientes de vencimiento
     const [[{ vencimientos }]] = await db.query(
-      `SELECT COUNT(*) AS vencimientos 
-       FROM Inspeccion 
-       WHERE IdConservador = ? AND (Resultado = 'Observaciones' OR Resultado = 'Pendiente')`, 
-      [idConservador]
+      `SELECT COUNT(*) AS vencimientos
+       FROM Inspeccion
+       WHERE IdConservador = ? AND Fecha >= CURRENT_DATE() AND Fecha <= DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)`,
+      [id]
     );
-app.use(cors());
-app.use(express.json());
-
-// métricas del dashboard (que están arriba del mapa)
-app.get('/api/conservador/resumen', async (req, res) => {
-  try {
-    const [[{ totalInmuebles }]] = await db.query('SELECT COUNT(*) AS totalInmuebles FROM Inmueble');
-    const [[{ totalClientes }]] = await db.query('SELECT COUNT(DISTINCT IdPropietario) AS totalClientes FROM Inmueble');
-    const [[{ serviciosMes }]] = await db.query('SELECT COUNT(*) AS serviciosMes FROM Inspeccion WHERE MONTH(Fecha) = MONTH(CURRENT_DATE()) AND YEAR(Fecha) = YEAR(CURRENT_DATE())');
-    const [[{ vencimientos }]] = await db.query('SELECT COUNT(*) AS vencimientos FROM Inspeccion WHERE Resultado = "Observaciones" OR Resultado = "Pendiente"');
 
     res.json({
-      inmuebles: totalInmuebles,
-      clientes: totalClientes,
-      servicios: serviciosMes,
-      vencimientos: vencimientos
+      inmuebles: totalInmuebles || 0,
+      clientes: totalClientes || 0,
+      servicios: serviciosMes || 0,
+      vencimientos: vencimientos || 0
     });
   } catch (error) {
-    console.error('Error en /resumen:', error);
+    console.error('Error en /api/conservador/:id/resumen:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// 2. LISTA DE INMUEBLES ASIGNADOS AL CONSERVADOR (Para el mapa y lista lateral)
-app.get('/api/conservador/:idConservador/inmuebles', async (req, res) => {
-  const { idConservador } = req.params;
+// 2. LISTA DE INMUEBLES ASIGNADOS AL CONSERVADOR
+app.get('/api/conservador/:id/inmuebles', async (req, res) => {
+  const { id } = req.params;
   try {
-    const [rows] = await db.query(`
-      SELECT DISTINCT
-// servicios de este mes
+    const [inmuebles] = await db.query(
+      `SELECT DISTINCT 
+        i.IdInmueble as id,
+        i.Nombre as nombre,
+        i.Domicilio as direccion,
+        i.Actividad as tipoInmueble,
+        -38.9516 AS latitud,
+        -68.0591 AS longitud
+       FROM Inspeccion insp
+       JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
+       WHERE insp.IdConservador = ?`,
+      [id]
+    );
+    res.json(inmuebles);
+  } catch (error) {
+    console.error('Error en /api/conservador/:id/inmuebles:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 3. SERVICIOS DE ESTE MES
 app.get('/api/servicios/mes', async (req, res) => {
   try {
-    const [rows] = await db.query(`
+    const [servicios] = await db.query(`
       SELECT 
         i.IdInmueble,
         i.Nombre AS inmuebleNombre,
         i.Domicilio,
         i.Actividad,
-        insp.Fecha,
-        insp.Resultado AS estado,
-        insp.Observaciones AS tipoServicio
+        insp.Resultado AS tipoServicio,
+        DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
+        insp.Resultado AS estado
       FROM Inspeccion insp
       JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
-      WHERE MONTH(insp.Fecha) = MONTH(CURRENT_DATE())
-      ORDER BY insp.Fecha ASC
+      WHERE MONTH(insp.Fecha) = MONTH(CURRENT_DATE()) AND YEAR(insp.Fecha) = YEAR(CURRENT_DATE())
     `);
-    res.json(rows);
+    res.json(servicios);
   } catch (error) {
+    console.error('Error en /api/servicios/mes:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// servicios por vencer
+// 4. SERVICIOS POR VENCER (PRÓXIMOS 30 DÍAS)
 app.get('/api/servicios/vencimientos', async (req, res) => {
   try {
-    const [rows] = await db.query(`
+    const [vencimientos] = await db.query(`
       SELECT 
         i.IdInmueble,
         i.Nombre AS inmuebleNombre,
         i.Domicilio,
         i.Actividad,
-        insp.Fecha,
+        insp.Observaciones AS tipoServicio,
+        DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
         DATEDIFF(insp.Fecha, CURRENT_DATE()) AS diasRestantes
       FROM Inspeccion insp
       JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
-      WHERE insp.Resultado = 'Pendiente' OR DATEDIFF(insp.Fecha, CURRENT_DATE()) BETWEEN 0 AND 30
-      ORDER BY insp.Fecha ASC
+      WHERE insp.Fecha >= CURRENT_DATE()
     `);
-    res.json(rows);
+    res.json(vencimientos);
   } catch (error) {
+    console.error('Error en /api/servicios/vencimientos:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// OBTENER TODOS LOS INMUEBLES (Para la vista Conservadores)
-app.get('/api/inmuebles', async (req, res) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT 
-        i.IdInmueble AS id,
-        i.Nombre AS nombre,
-        i.Domicilio AS direccion,
-        i.Actividad AS tipoInmueble,
-        i.NomenclaturaCatastral,
-        i.Superficie
-      FROM Inmueble i
-      JOIN Inspeccion insp ON i.IdInmueble = insp.IdInmueble
-      WHERE insp.IdConservador = ?
-    `, [idConservador]);
-
-    res.json(rows);
-  } catch (error) {
-    console.error('Error en /inmuebles:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 3. DETALLE DE UN INMUEBLE CON HISTORIAL DE INSPECCIONES
+// 5. EXPEDIENTE COMPLETO DEL INMUEBLE (FICHA)
 app.get('/api/inmuebles/:id', async (req, res) => {
   const { id } = req.params;
   try {
-        i.Superficie,
-        i.CantMatafuego,
-        i.RedAgua,
-        i.EstadoSistema,
-        p.IdPropietario,
-        u.Nombre AS nombrePropietario,
-        u.Apellido AS apellidoPropietario
-      FROM Inmueble i
-      JOIN Propietario p ON i.IdPropietario = p.IdPropietario
-      JOIN Usuarios u ON p.IdUsu = u.IdUsu
-    `);
-
-    res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      mensaje: 'Error al obtener inmuebles'
-    });
-  }
-});
-
-// OBTENER DETALLE DE UN INMUEBLE Y SUS INSPECCIONES
-app.get('/api/inmuebles/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    // Obtener datos del inmueble
     const [inmuebles] = await db.query(`
       SELECT 
         i.*,
         u.Nombre AS nombrePropietario,
         u.Apellido AS apellidoPropietario
       FROM Inmueble i
-      JOIN Propietario p ON i.IdPropietario = p.IdPropietario
-      JOIN Usuarios u ON p.IdUsu = u.IdUsu
+      LEFT JOIN Propietario p ON i.IdPropietario = p.IdPropietario
+      LEFT JOIN Usuarios u ON p.IdUsu = u.IdUsu
       WHERE i.IdInmueble = ?
     `, [id]);
 
     if (inmuebles.length === 0) {
-      return res.status(404).json({
-        mensaje: 'Inmueble no encontrado'
-      });
+      return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
     }
 
     const [inspecciones] = await db.query(`
       SELECT 
         IdInspeccion,
-        DATE_FORMAT(Fecha, '%d/%m/%Y') AS fecha,
-    // Obtener historial de inspecciones del inmueble
-    const [inspecciones] = await db.query(`
-      SELECT 
-        IdInspeccion,
-        DATE_FORMAT(Fecha, '%Y-%m-%d') AS fecha,
+        DATE_FORMAT(Fecha, '%d/%m/%Y') AS fechaFormat,
         Resultado,
         Observaciones
       FROM Inspeccion
@@ -218,122 +151,40 @@ app.get('/api/inmuebles/:id', async (req, res) => {
     `, [id]);
 
     res.json({
-    res.json({
       ...inmuebles[0],
       inspecciones: inspecciones
     });
   } catch (error) {
-    console.error('Error en /inmuebles/:id:', error);
+    console.error('Error en /api/inmuebles/:id:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// 4. SERVICIOS PROGRAMADOS PARA ESTE MES
-app.get('/api/servicios/mes', async (req, res) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT 
-        i.IdInmueble,
-        i.Nombre AS inmuebleNombre,
-        i.Domicilio,
-        i.Actividad,
-        DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
-        insp.Resultado AS estado,
-        insp.Observaciones AS tipoServicio
-      FROM Inspeccion insp
-      JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
-      WHERE MONTH(insp.Fecha) = MONTH(CURRENT_DATE())
-      ORDER BY insp.Fecha ASC
-    `);
-    res.json(rows);
-  } catch (error) {
-    console.error('Error en /servicios/mes:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 5. SERVICIOS PRÓXIMOS A VENCER
-app.get('/api/servicios/vencimientos', async (req, res) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT 
-        i.IdInmueble,
-        i.Nombre AS inmuebleNombre,
-        i.Domicilio,
-        i.Actividad,
-        DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
-        DATEDIFF(insp.Fecha, CURRENT_DATE()) AS diasRestantes
-      FROM Inspeccion insp
-      JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
-      WHERE insp.Resultado = 'Pendiente' OR DATEDIFF(insp.Fecha, CURRENT_DATE()) BETWEEN 0 AND 30
-      ORDER BY insp.Fecha ASC
-    `);
-    res.json(rows);
-  } catch (error) {
-    console.error('Error en /servicios/vencimientos:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Arrancamos el servidor en el puerto 3001
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Servidor backend de PRISCI corriendo en http://localhost:${PORT}`);
-    const detalleInmueble = {
-      ...inmuebles[0],
-      inspecciones
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      mensaje: 'Error al obtener detalle del inmueble'
-    });
-  }
-});
-
-// REGISTRAR UNA NUEVA INSPECCIÓN
+// 6. REGISTRAR NUEVA INSPECCIÓN
 app.post('/api/inspecciones', async (req, res) => {
-  const {
-    fecha,
-    resultado,
-    observaciones,
-    idInmueble,
-    idConservador
-  } = req.body;
-
+  const { idInmueble, idConservador, fecha, resultado, observaciones } = req.body;
   try {
-    const [result] = await db.query(`
-      INSERT INTO Inspeccion
-        (Fecha, Resultado, Observaciones, IdInmueble, IdConservador)
-      VALUES (?, ?, ?, ?, ?)
-    `, [
-      fecha,
-      resultado,
-      observaciones,
-      idInmueble,
-      idConservador
-    ]);
+    const [result] = await db.query(
+      'INSERT INTO Inspeccion (IdInmueble, IdConservador, Fecha, Resultado, Observaciones) VALUES (?, ?, ?, ?, ?)',
+      [idInmueble, idConservador || 1, fecha, resultado, observaciones]
+    );
 
-    res.status(201).json({
-      mensaje: 'Inspección registrada con éxito',
-      idInspeccion: result.insertId
+    res.status(201).json({ 
+      mensaje: 'Inspección guardada correctamente', 
+      idInspeccion: result.insertId 
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      mensaje: 'Error al guardar la inspección'
-    });
+    console.error('Error en POST /api/inspecciones:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// INICIAR SESIÓN
+// 7. INICIAR SESIÓN
 app.post('/api/login', async (req, res) => {
   const { email, contrasena } = req.body;
 
   if (!email || !contrasena) {
-    return res.status(400).json({
-      mensaje: 'Ingresá tu correo y contraseña'
-    });
+    return res.status(400).json({ mensaje: 'Ingresá tu correo y contraseña' });
   }
 
   try {
@@ -344,22 +195,14 @@ app.post('/api/login', async (req, res) => {
     `, [email]);
 
     if (usuarios.length === 0) {
-      return res.status(401).json({
-        mensaje: 'Correo o contraseña incorrectos'
-      });
+      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
     }
 
     const usuario = usuarios[0];
-
-    const contrasenaValida = await bcrypt.compare(
-      contrasena,
-      usuario.Contrasena
-    );
+    const contrasenaValida = await bcrypt.compare(contrasena, usuario.Contrasena);
 
     if (!contrasenaValida) {
-      return res.status(401).json({
-        mensaje: 'Correo o contraseña incorrectos'
-      });
+      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
     }
 
     res.json({
@@ -374,77 +217,44 @@ app.post('/api/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Error en el login:', error);
-
-    res.status(500).json({
-      mensaje: 'Error al iniciar sesión'
-    });
+    res.status(500).json({ mensaje: 'Error al iniciar sesión' });
   }
 });
 
-// REGISTRAR USUARIO DE PRUEBA
+// 8. REGISTRAR USUARIO DE PRUEBA
 app.post('/api/registro-prueba', async (req, res) => {
-  const {
-    nombre,
-    apellido,
-    dni,
-    email,
-    contrasena,
-    telefono
-  } = req.body;
+  const { nombre, apellido, dni, email, contrasena, telefono } = req.body;
 
   if (!nombre || !apellido || !dni || !email || !contrasena) {
-    return res.status(400).json({
-      mensaje: 'Completá todos los campos obligatorios'
-    });
+    return res.status(400).json({ mensaje: 'Completá todos los campos obligatorios' });
   }
 
   try {
-    const [existentes] = await db.query(
-      'SELECT IdUsu FROM Usuarios WHERE Email = ?',
-      [email]
-    );
+    const [existentes] = await db.query('SELECT IdUsu FROM Usuarios WHERE Email = ?', [email]);
 
     if (existentes.length > 0) {
-      return res.status(409).json({
-        mensaje: 'Ese correo ya está registrado'
-      });
+      return res.status(409).json({ mensaje: 'Ese correo ya está registrado' });
     }
 
     const hash = await bcrypt.hash(contrasena, 10);
 
     const [resultado] = await db.query(`
-      INSERT INTO Usuarios
-        (Nombre, Apellido, Dni, Email, Contrasena, Telefono, IdRol)
+      INSERT INTO Usuarios (Nombre, Apellido, Dni, Email, Contrasena, Telefono, IdRol)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [
-      nombre,
-      apellido,
-      dni,
-      email,
-      hash,
-      telefono || null,
-      1
-    ]);
+    `, [nombre, apellido, dni, email, hash, telefono || null, 1]);
 
     res.status(201).json({
-      mensaje: 'Usuario municipal creado correctamente',
+      mensaje: 'Usuario creado correctamente',
       idUsuario: resultado.insertId
     });
   } catch (error) {
     console.error('Error al registrar usuario:', error);
-    res.status(500).json({
-      mensaje: 'Error al registrar el usuario'
-    });
+    res.status(500).json({ mensaje: 'Error al registrar el usuario' });
   }
 });
 
-// INICIAR SERVIDOR
+// PUERTO Y ARRANQUE
 const PORT = 3001;
-
 app.listen(PORT, () => {
-  console.log(
-    `Servidor backend corriendo en http://localhost:${PORT}`
-  );
-});
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
 });

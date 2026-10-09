@@ -143,6 +143,7 @@ function App() {
             <Route path="/notificaciones" element={<Notificaciones />} />
             <Route path="/conservadores" element={<Conservadores />} />
             <Route path="/clientes" element={<Clientes />} />
+            <Route path="/clientes/:id" element={<Clientes />} />
             <Route path="/inspecciones" element={<Inspecciones />} />          
             <Route path="/notificacionesConservadores" element={<NotificacionesConservadores />} />
             <Route path="/servicios-mes" element={<ServiciosMes />} />
