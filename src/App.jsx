@@ -16,6 +16,7 @@ import ServiciosMes from './paginas/serviciosMes';
 import Vencimientos from './paginas/vencimientos';
 import HistorialInmueble from './paginas/historialInmueble';
 import TodosInmuebles from './paginas/todosInmuebles';
+import Bomberos from './paginas/bomberos';
 
 function Contenido() {
   const location = useLocation();
@@ -80,7 +81,19 @@ function Contenido() {
           <Routes>
             <Route
               path="/"
-              element={<PaginaMunicipal />}
+              element={
+                rol === "municipal" ? (
+                  <PaginaMunicipal />
+                ) : rol === "bomberos" ? (
+                  <Bomberos />
+                ) : rol === "profesional" ? (
+                  <Conservadores />
+                ) : rol === "propietario" ? (
+                  <Inspecciones />
+                ) : (
+                  <PaginaMunicipal />
+                )
+              }
             />
             <Route
               path="/login"

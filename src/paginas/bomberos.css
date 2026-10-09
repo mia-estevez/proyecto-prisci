@@ -1,0 +1,322 @@
+/* CONTENEDOR PRINCIPAL DE LA PÁGINA*/
+.bomberos-pagina {
+  width: 100%;
+  color: var(--texto-principal);
+}
+
+/* ENCABEZADO */
+.bomberos-encabezado {
+  margin-bottom: 25px;
+}
+
+.bomberos-encabezado h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.bomberos-encabezado p {
+  margin: 0;
+  color: var(--texto-secundario);
+}
+
+/*  BUSCADOR Y FILTRO */
+.bomberos-herramientas {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.bomberos-herramientas input,
+.bomberos-herramientas select {
+  padding: 12px 15px;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 10px;
+  background-color: var(--bg-tarjeta);
+  color: var(--texto-principal);
+  font: inherit;
+  outline: none;
+}
+
+/* Hace que el buscador ocupe el espacio disponible. */
+.bomberos-herramientas input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Cambia el borde cuando se selecciona un campo. */
+.bomberos-herramientas input:focus,
+.bomberos-herramientas select:focus {
+  border-color: var(--acento-azul);
+}
+
+/*  DISTRIBUCIÓN PRINCIPAL */
+.bomberos-contenido {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 22px;
+  align-items: stretch;
+}
+
+/* ESPACIO DEL MAPA */
+.bomberos-mapa {
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 14px;
+  background-color: var(--bg-tarjeta);
+  text-align: center;
+}
+
+/* Contenedor del icono y el mensaje del mapa. */
+.bomberos-mapa-mensaje {
+  max-width: 350px;
+}
+
+.bomberos-mapa-mensaje > i {
+  font-size: 52px;
+  color: var(--acento-azul);
+}
+
+.bomberos-mapa-mensaje h2 {
+  margin: 15px 0 8px;
+  font-size: 21px;
+}
+
+.bomberos-mapa-mensaje p {
+  margin: 0;
+  color: var(--texto-secundario);
+  line-height: 1.6;
+}
+
+/* PANEL LATERAL */
+.bomberos-panel {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 14px;
+  background-color: var(--bg-tarjeta);
+}
+
+.bomberos-panel h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+/* Texto que indica cuántos inmuebles hay. */
+.bomberos-cantidad {
+  margin: 0 0 18px;
+  color: var(--texto-secundario);
+  font-size: 13px;
+}
+
+/* LISTADO DE INMUEBLES */
+.bomberos-listado {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Tarjeta individual de cada inmueble. */
+.bomberos-inmueble {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 10px;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texto-principal);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Efecto visual al pasar el cursor por una tarjeta. */
+.bomberos-inmueble:hover {
+  background-color: var(--bg-oscuro);
+  border-color: var(--acento-azul);
+}
+
+/* Cuadrado que contiene el icono del inmueble. */
+.bomberos-inmueble-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: var(--bg-oscuro);
+  color: var(--acento-azul);
+  font-size: 20px;
+}
+
+/* Organiza el nombre, la dirección y el tipo. */
+.bomberos-inmueble-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.bomberos-inmueble-info strong {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.bomberos-inmueble-info small {
+  color: var(--texto-secundario);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+/* Flecha que indica que se puede abrir el inmueble. */
+.bomberos-inmueble > i {
+  color: var(--texto-secundario);
+}
+
+/* Mensaje que aparece cuando la búsqueda no encuentra datos. */
+.bomberos-sin-resultados {
+  padding: 20px 0;
+  color: var(--texto-secundario);
+  text-align: center;
+}
+
+/* DETALLE DEL INMUEBLE*/
+
+/* Botón para regresar al listado. */
+.bomberos-volver {
+  margin-bottom: 18px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--texto-secundario);
+  font: inherit;
+  cursor: pointer;
+}
+
+.bomberos-volver:hover {
+  color: var(--acento-azul);
+}
+
+/* Imagen del inmueble seleccionado. */
+.bomberos-foto {
+  display: block;
+  width: 100%;
+  height: 180px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* Título del inmueble en el detalle. */
+.bomberos-detalle h2 {
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+/* Dirección y su icono. */
+.bomberos-detalle > p {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+  color: var(--texto-secundario);
+  font-size: 14px;
+}
+
+/* Bloques que muestran tipo, estado y actualización. */
+.bomberos-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--borde-tarjeta);
+}
+
+/* Etiqueta de cada dato. */
+.bomberos-dato span {
+  color: var(--texto-secundario);
+  font-size: 13px;
+}
+
+/* Valor de cada dato. */
+.bomberos-dato strong {
+  font-size: 14px;
+}
+
+/* Color verde para inmuebles aprobados. */
+.bomberos-dato .estado-aprobado {
+  color: #299764;
+}
+
+/* Color amarillo para inmuebles pendientes. */
+.bomberos-dato .estado-pendiente {
+  color: #d99a27;
+}
+
+/* BOTÓN DE DESCARGA DEL PDF*/
+.bomberos-descargar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px 15px;
+  border: none;
+  border-radius: 9px;
+  background-color: var(--acento-azul);
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+/* Efecto al pasar el cursor por el botón. */
+.bomberos-descargar:hover {
+  opacity: 0.85;
+}
+
+/* DISEÑO PARA PANTALLAS MEDIANAS */
+@media (max-width: 1000px) {
+  .bomberos-contenido {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 15px;
+  }
+
+  .bomberos-panel {
+    padding: 16px;
+  }
+}
+
+/* DISEÑO PARA CELULARES */
+@media (max-width: 750px) {
+  .bomberos-encabezado h1 {
+    font-size: 23px;
+  }
+
+  .bomberos-herramientas {
+    flex-direction: column;
+  }
+
+  .bomberos-herramientas input,
+  .bomberos-herramientas select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .bomberos-contenido {
+    grid-template-columns: 1fr;
+  }
+
+  .bomberos-mapa {
+    min-height: 300px;
+  }
+}
