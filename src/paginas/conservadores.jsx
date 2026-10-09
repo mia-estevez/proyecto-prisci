@@ -49,6 +49,21 @@ const iconoAzul = new L.Icon({
 
 
 function Conservadores() {
+  const navigate = useNavigate();
+
+  // ESTADOS (REACT HOOKS)
+  // 1. Estado para almacenar el resumen numérico de las tarjetas superiores
+  const [resumen, setResumen] = useState({ inmuebles: 0, clientes: 0, servicios: 0, vencimientos: 0 });
+  
+  // 2. Estado para almacenar el listado completo de inmuebles desde MySQL
+  const [inmuebles, setInmuebles] = useState([]);
+  
+  // 3. Estado para el filtro de texto del buscador
+  const [busqueda, setBusqueda] = useState('');
+  
+  // 4. Estado para saber qué inmueble cliqueó el usuario en el mapa
+  const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
+  
   return (
     <div className="layout-dashboard">
       <aside>
