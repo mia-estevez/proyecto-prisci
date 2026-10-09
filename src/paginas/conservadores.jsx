@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // Importamos componentes de React-Leaflet para el mapa gratuito de OpenStreetMap
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import { Home, Users, ClipboardList, Clock, Bell, Search, Filter, ChevronRight, LogOut, Flame, ShieldCheck } from 'lucide-react';
-import './conservadores.css';
-// Importamos los íconos profesionales de Lucide React (vectoriales, sin emojis)
+
+// Importamos los íconos profesionales de Lucide React en UNA SOLA LÍNEA (sin duplicados)
 import { 
   Home, 
   Users, 
@@ -19,11 +18,10 @@ import {
   Flame, 
   ShieldCheck 
 } from 'lucide-react';
-// Estilos necesarios para que Leaflet renderice el mapa correctamente
+
+// Estilos necesarios para Leaflet y tu página
 import 'leaflet/dist/leaflet.css';
 import './conservadores.css';
-
-
 
 // Coordenadas geográficas centradas en Neuquén Capital
 const CENTRO_NEUQUEN = [-38.9516, -68.0591];
@@ -47,52 +45,50 @@ const iconoAzul = new L.Icon({
   shadowSize: [41, 41]
 });
 
-
 function Conservadores() {
   const navigate = useNavigate();
 
   // ESTADOS (REACT HOOKS)
-  // 1. Estado para almacenar el resumen numérico de las tarjetas superiores
+  // 1. Resumen numérico para las tarjetas superiores
   const [resumen, setResumen] = useState({ inmuebles: 0, clientes: 0, servicios: 0, vencimientos: 0 });
   
-  // 2. Estado para almacenar el listado completo de inmuebles desde MySQL
+  // 2. Listado completo de inmuebles desde la Base de Datos MySQL
   const [inmuebles, setInmuebles] = useState([]);
   
-  // 3. Estado para el filtro de texto del buscador
+  // 3. Filtro de búsqueda por texto
   const [busqueda, setBusqueda] = useState('');
   
-  // 4. Estado para saber qué inmueble cliqueó el usuario en el mapa
+  // 4. Inmueble seleccionado al hacer clic en el mapa
   const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
 
-  // EFECTO PRINCIPAL: Se ejecuta una sola vez al cargar el componente en pantalla
+  // EFECTO PRINCIPAL: Trae los datos de la base de datos al cargar la vista
   useEffect(() => {
-    // Petición HTTP al backend para traer los conteos calculados
+    // Petición al backend para métricas del dashboard
     fetch('http://localhost:3001/api/conservador/resumen')
       .then(res => res.json())
       .then(data => setResumen(data))
       .catch(err => console.error("Error al obtener resumen:", err));
 
-    // Petición HTTP al backend para obtener los inmuebles registrados
+    // Petición al backend para lista de inmuebles
     fetch('http://localhost:3001/api/inmuebles')
       .then(res => res.json())
       .then(data => setInmuebles(data))
       .catch(err => console.error("Error al obtener inmuebles:", err));
   }, []);
 
-  // FILTRADO DINÁMICO: Filtra el arreglo según el texto escrito en el buscador
+  // Filtrado de inmuebles según la búsqueda ingresada por el usuario
   const inmueblesFiltrados = inmuebles.filter(item =>
     item.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
     item.direccion?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-
   return (
     <div className="layout-dashboard">
       
-      {/* MENÚ LATERAL IZQUIERDO (SIDEBAR)         */}
-
+      {/* -------------------------------------------------- */}
+      {/* SECCIÓN 1: MENÚ LATERAL IZQUIERDO (SIDEBAR)         */}
+      {/* -------------------------------------------------- */}
       <aside className="sidebar">
-        {/* Identificación del sistema e Isologotipo */}
         <div className="sidebar-brand">
           <Flame className="brand-icon" size={28} />
           <div className="brand-text">
@@ -101,7 +97,6 @@ function Conservadores() {
           </div>
         </div>
 
-        {/* Opciones de Navegación del Sistema */}
         <nav className="sidebar-menu">
           <button className="menu-item active">
             <Home size={18} /> Inicio
@@ -114,7 +109,6 @@ function Conservadores() {
           </button>
         </nav>
 
-        {/* Botón de salida para cerrar sesión */}
         <div className="sidebar-footer">
           <button className="btn-logout-sidebar" onClick={() => navigate('/login')}>
             <LogOut size={18} /> Cerrar sesión
@@ -122,8 +116,9 @@ function Conservadores() {
         </div>
       </aside>
 
+      {/* -------------------------------------------------- */}
       {/* SECCIÓN 2: CONTENIDO PRINCIPAL                      */}
-      
+      {/* -------------------------------------------------- */}
       <main className="dashboard-content">
         
         {/* Barra superior con avatar de usuario y centro de notificaciones */}
@@ -141,13 +136,12 @@ function Conservadores() {
           </div>
         </header>
 
-        {/* Mensaje de bienvenida y tarjetas de accesos directos (KPIs) */}
+        {/* Mensaje de bienvenida y tarjetas de métricas (KPIs) */}
         <section className="welcome-section">
           <h1>¡Hola, Juan!</h1>
           <p>Gestioná y consultá la información de los inmuebles asignados.</p>
 
           <div className="kpi-grid">
-            {/* Tarjeta 1: Lleva al listado de inmuebles */}
             <div className="kpi-card" onClick={() => navigate('/inmuebles')}>
               <Home className="kpi-icon blue" size={24} />
               <div className="kpi-data">
@@ -156,7 +150,6 @@ function Conservadores() {
               </div>
             </div>
 
-            {/* Tarjeta 2: Lleva al listado de clientes activos */}
             <div className="kpi-card" onClick={() => navigate('/clientes')}>
               <Users className="kpi-icon cyan" size={24} />
               <div className="kpi-data">
@@ -165,7 +158,6 @@ function Conservadores() {
               </div>
             </div>
 
-            {/* Tarjeta 3: Lleva a los servicios de este mes */}
             <div className="kpi-card" onClick={() => navigate('/servicios-mes')}>
               <ClipboardList className="kpi-icon green" size={24} />
               <div className="kpi-data">
@@ -174,7 +166,6 @@ function Conservadores() {
               </div>
             </div>
 
-            {/* Tarjeta 4: Lleva a los servicios próximos a vencer */}
             <div className="kpi-card" onClick={() => navigate('/vencimientos')}>
               <Clock className="kpi-icon orange" size={24} />
               <div className="kpi-data">
@@ -185,8 +176,9 @@ function Conservadores() {
           </div>
         </section>
 
+        {/* -------------------------------------------------- */}
         {/* SECCIÓN 3: MAPA Y LISTA LATERAL                     */}
-        
+        {/* -------------------------------------------------- */}
         <div className="main-grid">
           
           {/* MAPA INTERACTIVO MUNICIPAL */}
@@ -196,7 +188,6 @@ function Conservadores() {
               <p>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
             </div>
 
-            {/* Campo de búsqueda sobre el mapa */}
             <div className="map-search-bar">
               <Search size={18} className="search-icon" />
               <input 
@@ -208,7 +199,7 @@ function Conservadores() {
               <button className="btn-filter"><Filter size={16} /> Filtros</button>
             </div>
 
-            {/* Renderizado del mapa de Leaflet */}
+            {/* Visualizador Leaflet */}
             <div className="map-display" style={{ height: '350px', width: '100%' }}>
               <MapContainer center={CENTRO_NEUQUEN} zoom={13} style={{ height: '100%', width: '100%', borderRadius: '8px' }}>
                 <TileLayer
@@ -216,7 +207,7 @@ function Conservadores() {
                   attribution='&copy; OpenStreetMap contributors'
                 />
                 
-                {/* Mapeo dinámico de marcadores traídos de la base de datos */}
+                {/* Renderizado dinámico de los marcadores desde MySQL */}
                 {inmueblesFiltrados.map((item) => (
                   <Marker
                     key={item.id}
