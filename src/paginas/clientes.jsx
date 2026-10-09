@@ -283,7 +283,6 @@ function Clientes() {
             </div>
 
             {/* BOTÓN PRINCIPAL PARA CARGAR INSPECCIÓN */}
-            // Al hacer clic en el botón, redirige hacia la ruta de inspecciones con el ID del inmueble
             <button 
               className="btn-primary-blue"
               onClick={() => navigate(`/inspecciones/${inmueble?.IdInmueble || id || 1}`)}
