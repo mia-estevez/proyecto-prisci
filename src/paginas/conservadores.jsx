@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
-// Importamos los íconos profesionales de Lucide React en UNA SOLA LÍNEA (sin duplicados)
+// Importamos los íconos profesionales de Lucide React en 
 import { 
   Home, 
   Users, 
