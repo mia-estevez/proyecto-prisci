@@ -38,6 +38,45 @@ function Clientes() {
       });
   }, [id]);
 
+  // FUNCIÓN PARA VISUALIZAR DOCUMENTOS / INSPECCIONES
+  const handleVerDocumento = (tipo, urlOriginal) => {
+    if (urlOriginal) {
+      window.open(urlOriginal, '_blank');
+      return;
+    }
+
+    // Si es la última inspección y tenemos datos cargados, mostramos el modal de inspección
+    if (tipo === 'inspeccion' && inmueble?.inspecciones && inmueble.inspecciones.length > 0) {
+      setInspeccionSeleccionada(inmueble.inspecciones[0]);
+      return;
+    }
+
+    // Si no hay archivo cargado en backend, simulamos la vista previa/alerta
+    alert(`Visualizando ${tipo}... (Asegúrate de colocar la URL o archivo real en tu backend/public folder).`);
+  };
+
+  // FUNCIÓN PARA DESCARGAR DOCUMENTOS
+  const handleDescargarDocumento = (nombreArchivo, url) => {
+    if (url) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = nombreArchivo;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // Simulación de descarga creando un documento de texto PDF demostrativo
+      const contenido = `Documento: ${nombreArchivo}\nInmueble: ${inmueble?.Nombre || 'Galería Comercial Centro'}\nFecha: ${new Date().toLocaleDateString()}`;
+      const blob = new Blob([contenido], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${nombreArchivo.toLowerCase().replace(/\s+/g, '_')}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   if (cargando) {
     return (
       <div className="clientes-page-container flex-center">
@@ -45,6 +84,11 @@ function Clientes() {
       </div>
     );
   }
+
+  // Obtener la última inspección realizada si existe
+  const ultimaInspeccion = inmueble?.inspecciones && inmueble.inspecciones.length > 0 
+    ? inmueble.inspecciones[0] 
+    : { fechaFormat: '15/03/2024', Observaciones: 'Sin observaciones', Resultado: 'Aprobado' };
 
   return (
     <div className="clientes-page-container">
@@ -58,7 +102,7 @@ function Clientes() {
         <strong className="current-page">{inmueble?.Nombre || 'Edificio Torres del Limay'}</strong>
       </div>
 
-      {/* ENCABEZADO CON TITULO Y BADGE */}
+      {/* ENCABEZADO */}
       <header className="ficha-header">
         <div className="title-group">
           <h1>{inmueble?.Nombre || 'Edificio Torres del Limay'}</h1>
@@ -66,10 +110,10 @@ function Clientes() {
         </div>
       </header>
 
-      {/* ESTRUCTURA PRINCIPAL EN GRID MÁS COMPLEJO */}
+      {/* ESTRUCTURA PRINCIPAL */}
       <div className="ficha-original-grid">
 
-        {/* FOTO (COLUMNA 1, FILA 1) */}
+        {/* FOTO */}
         <div className="card-panel photo-card-area">
           <img 
             src="/edificio-real.jpg" 
@@ -81,7 +125,7 @@ function Clientes() {
           />
         </div>
 
-        {/* INFORMACIÓN DEL INMUEBLE (COLUMNA 2, FILA 1) */}
+        {/* INFORMACIÓN DEL INMUEBLE */}
         <div className="card-panel info-card-area">
           <h3>Información del inmueble</h3>
 
@@ -122,47 +166,83 @@ function Clientes() {
           </div>
         </div>
 
-        {/* DOCUMENTACIÓN (ABARCA COLUMNA 1 Y 2, FILA 2) */}
+        {/* DOCUMENTACIÓN CON ACCIONES FUNCIONALES */}
         <div className="card-panel docs-card-area">
           <h3>Documentación</h3>
           
           <div className="docs-list">
+            {/* PLANO HABILITADO */}
             <div className="doc-row">
               <div className="doc-info">
                 <FileText size={18} className="doc-icon" />
                 <span>Plano habilitado (PDF)</span>
               </div>
               <div className="doc-actions-text">
-                <button className="btn-action-view">Ver</button>
-                <button className="icon-btn-download" title="Descargar"><Download size={16} /></button>
+                <button 
+                  className="btn-action-view" 
+                  onClick={() => handleVerDocumento('Plano habilitado', inmueble?.urlPlano)}
+                >
+                  Ver
+                </button>
+                <button 
+                  className="icon-btn-download" 
+                  title="Descargar Plano habilitado"
+                  onClick={() => handleDescargarDocumento('Plano_Habilitado', inmueble?.urlPlano)}
+                >
+                  <Download size={16} />
+                </button>
               </div>
             </div>
 
+            {/* CERTIFICADO DE INSTALACIONES */}
             <div className="doc-row">
               <div className="doc-info">
                 <FileText size={18} className="doc-icon" />
                 <span>Certificado de instalaciones</span>
               </div>
               <div className="doc-actions-text">
-                <button className="btn-action-view">Ver</button>
-                <button className="icon-btn-download" title="Descargar"><Download size={16} /></button>
+                <button 
+                  className="btn-action-view" 
+                  onClick={() => handleVerDocumento('Certificado de instalaciones', inmueble?.urlCertificado)}
+                >
+                  Ver
+                </button>
+                <button 
+                  className="icon-btn-download" 
+                  title="Descargar Certificado de instalaciones"
+                  onClick={() => handleDescargarDocumento('Certificado_de_Instalaciones', inmueble?.urlCertificado)}
+                >
+                  <Download size={16} />
+                </button>
               </div>
             </div>
 
+            {/* ÚLTIMA INSPECCIÓN */}
             <div className="doc-row">
               <div className="doc-info">
                 <FileText size={18} className="doc-icon" />
-                <span>Última inspección (15/03/2024)</span>
+                <span>Última inspección ({ultimaInspeccion.fechaFormat || ultimaInspeccion.Fecha || '15/03/2024'})</span>
               </div>
               <div className="doc-actions-text">
-                <button className="btn-action-view">Ver</button>
-                <button className="icon-btn-download" title="Descargar"><Download size={16} /></button>
+                <button 
+                  className="btn-action-view" 
+                  onClick={() => setInspeccionSeleccionada(ultimaInspeccion)}
+                >
+                  Ver
+                </button>
+                <button 
+                  className="icon-btn-download" 
+                  title="Descargar Informe de Inspección"
+                  onClick={() => handleDescargarDocumento(`Inspeccion_${ultimaInspeccion.fechaFormat || '15_03_2024'}`, ultimaInspeccion.urlInforme)}
+                >
+                  <Download size={16} />
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* COLUMNA 3 (SERVICIOS + HISTORIAL) */}
+        {/* COLUMNA 3 */}
         <div className="col-right-stack">
           
           {/* SERVICIOS ASOCIADOS */}
@@ -256,14 +336,14 @@ function Clientes() {
 
       </div>
 
-      {/* MODAL DETALLE */}
+      {/* MODAL PARA VER DETALLES DE CUALQUIER INSPECCIÓN */}
       {inspeccionSeleccionada && (
         <div className="modal-overlay" onClick={() => setInspeccionSeleccionada(null)}>
           <div className="modal-card-content" onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
               <div className="modal-header-title">
                 <ShieldCheck size={20} color="#38bdf8" />
-                <h3>Inspección del {inspeccionSeleccionada.fechaFormat || inspeccionSeleccionada.Fecha}</h3>
+                <h3>Inspección del {inspeccionSeleccionada.fechaFormat || inspeccionSeleccionada.Fecha || '15/03/2024'}</h3>
               </div>
               <button className="btn-close-modal" onClick={() => setInspeccionSeleccionada(null)}><X size={18} /></button>
             </header>
@@ -276,7 +356,7 @@ function Clientes() {
               </div>
               <div className="modal-info-block">
                 <strong>Observaciones:</strong>
-                <p>{inspeccionSeleccionada.Observaciones || 'Sin comentarios adicionales.'}</p>
+                <p>{inspeccionSeleccionada.Observaciones || 'Sin observaciones registradas.'}</p>
               </div>
             </div>
             <footer className="modal-footer">
