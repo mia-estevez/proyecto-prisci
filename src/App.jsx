@@ -177,7 +177,7 @@ feature/modificandojsxdemunicipal
             </Routes>
           </main>
         </div>
-
+      </div>
       <Contenido />
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
