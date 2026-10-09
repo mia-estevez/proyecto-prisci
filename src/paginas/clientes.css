@@ -371,3 +371,47 @@
 
 .modal-footer { margin-top: 20px; display: flex; justify-content: flex-end; }
 .btn-secondary { background-color: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+
+
+
+/* ========================================================== */
+/* ESTILOS COMPLEMENTARIOS PARA HISTORIAL Y FILTROS           */
+/* ========================================================== */
+
+.clientes-page-container {
+  padding: 30px;
+  background-color: #0b0f19;
+  min-height: 100vh;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Controles de formulario (Buscador y fechas) */
+.clientes-page-container input[type="text"],
+.clientes-page-container input[type="date"] {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.clientes-page-container input[type="text"]:focus,
+.clientes-page-container input[type="date"]:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+}
+
+/* Placeholder personalizado */
+.clientes-page-container input::placeholder {
+  color: #64748b;
+}
+
+/* Estilo para los inputs de fecha en navegadores oscuros */
+.clientes-page-container input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
