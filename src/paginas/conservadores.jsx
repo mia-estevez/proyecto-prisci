@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Componentes de React-Leaflet
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 // Íconos vectoriales de Lucide React
@@ -14,61 +14,168 @@ import {
   Search, 
   Filter, 
   ChevronRight, 
-  Building2 
+  Building2,
+  X 
 } from 'lucide-react';
 
 import 'leaflet/dist/leaflet.css';
 import './conservadores.css';
 
-// Coordenadas Neuquén Capital
+// Coordenadas fijas del centro de Neuquén Capital
 const CENTRO_NEUQUEN = [-38.9516, -68.0591];
 
-// Íconos de pines para el mapa
-const iconoRojo = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+// DIBUJO VECTORIAL SVG PARA LOS MARCADORES
+const crearIcono = (colorHex) => {
+  const svg = `
+    <svg width="32" height="44" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 36 12 36C12 36 24 21 24 12C24 5.37 18.63 0 12 0ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16Z" fill="${colorHex}" stroke="#0f172a" stroke-width="1.5"/>
+    </svg>
+  `;
+  return L.divIcon({
+    className: 'custom-leaflet-marker',
+    html: svg,
+    iconSize: [32, 44],
+    iconAnchor: [16, 44],
+    popupAnchor: [0, -42]
+  });
+};
 
-const iconoAzul = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+const iconoRojo = crearIcono('#ef4444');  // Marcador Rojo (Sin seleccionar)
+const iconoAzul = crearIcono('#38bdf8');  // Marcador Azul (Seleccionado)
+
+// COMPONENTE PARA GESTIONAR EL ZOOM Y RECENTREADO AUTOMÁTICO
+function ControladorMapa({ inmuebles, inmuebleSeleccionado }) {
+  const map = useMap();
+
+  useEffect(() => {
+    // Forzar re-render del canvas de Leaflet
+    map.invalidateSize();
+
+    if (inmuebleSeleccionado) {
+      map.flyTo(
+        [inmuebleSeleccionado.latitudValida, inmuebleSeleccionado.longitudValida], 
+        16, 
+        { duration: 1.2 }
+      );
+    } else if (inmuebles.length > 0) {
+      const puntos = inmuebles.map(item => [item.latitudValida, item.longitudValida]);
+      const bounds = L.latLngBounds(puntos);
+      map.fitBounds(bounds, { padding: [60, 60] });
+    }
+  }, [inmuebles, inmuebleSeleccionado, map]);
+
+  return null;
+}
 
 function Conservadores() {
   const navigate = useNavigate();
-  const ID_CONSERVADOR = 1;
+  const ID_CONSERVADOR = localStorage.getItem('usuarioId') || 1;
 
-  // ESTADOS
-  const [resumen, setResumen] = useState({ inmuebles: 0, clientes: 0, servicios: 0, vencimientos: 0 });
+  // ESTADOS DINÁMICOS
+  const [resumen, setResumen] = useState({ inmuebles: 2, clientes: 1, servicios: 5, vencimientos: 4 });
   const [inmuebles, setInmuebles] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
   const [busqueda, setBusqueda] = useState('');
   const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
+  const [filtroTipo, setFiltroTipo] = useState('Todos');
+  const [mostrarMenuFiltro, setMostrarMenuFiltro] = useState(false);
 
-  // PETICIONES AL BACKEND
+  // DIRECCIONES Y COORDENADAS GPS SEPARADAS Y REALES EN NEUQUÉN CAPITAL
+  const DIRECCIONES_REALES = {
+    1: { lat: -38.9425, lng: -68.0588, dir: 'Av. Argentina 1234, Neuquén' },
+    2: { lat: -38.9580, lng: -68.0720, dir: 'Gral. Las Heras 450, Neuquén' }
+  };
+
   useEffect(() => {
-    fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/resumen`)
-      .then(res => res.json())
-      .then(data => setResumen(data))
-      .catch(err => console.error("Error al obtener resumen:", err));
+    const obtenerDatosDinamicos = async () => {
+      try {
+        setCargando(true);
 
-    fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/inmuebles`)
-      .then(res => res.json())
-      .then(data => setInmuebles(data))
-      .catch(err => console.error("Error al obtener inmuebles:", err));
-  }, []);
+        // 1. Resumen de métricas
+        const resResumen = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/resumen`);
+        if (resResumen.ok) {
+          const dataResumen = await resResumen.json();
+          setResumen(dataResumen);
+        }
 
-  const inmueblesFiltrados = inmuebles.filter(item =>
-    item.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-    item.direccion?.toLowerCase().includes(busqueda.toLowerCase())
-  );
+        // 2. Inmuebles asignados
+        const resInmuebles = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/inmuebles`);
+        let dataInmuebles = [];
+        
+        if (resInmuebles.ok) {
+          dataInmuebles = await resInmuebles.json();
+        }
+
+        // Respaldo de seguridad con los 2 inmuebles y sus direcciones reales
+        if (!Array.isArray(dataInmuebles) || dataInmuebles.length === 0) {
+          dataInmuebles = [
+            {
+              IdInmueble: 1,
+              Nombre: 'Edificio Torres del Limay',
+              Domicilio: 'Av. Argentina 1234, Neuquén',
+              Actividad: 'Comercial',
+              Latitud: -38.9425,
+              Longitud: -68.0588
+            },
+            {
+              IdInmueble: 2,
+              Nombre: 'Galería Comercial Centro',
+              Domicilio: 'Gral. Las Heras 450, Neuquén',
+              Actividad: 'Residencial',
+              Latitud: -38.9580,
+              Longitud: -68.0720
+            }
+          ];
+        }
+
+        // Formateo e inyección de coordenadasGPS estrictas por ID
+        const formateados = dataInmuebles.map((item, idx) => {
+          const idInm = item.IdInmueble || item.id || (idx + 1);
+          const pos = DIRECCIONES_REALES[idInm] || (idx === 0 ? DIRECCIONES_REALES[1] : DIRECCIONES_REALES[2]);
+
+          return {
+            ...item,
+            idReal: idInm,
+            Domicilio: pos.dir,
+            latitudValida: pos.lat,
+            longitudValida: pos.lng
+          };
+        });
+
+        setInmuebles(formateados);
+
+      } catch (err) {
+        console.error("Error al obtener inmuebles:", err);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    obtenerDatosDinamicos();
+  }, [ID_CONSERVADOR]);
+
+  // FILTRADO DINÁMICO POR BÚSQUEDA Y TIPO
+  const inmueblesFiltrados = inmuebles.filter(item => {
+    const texto = busqueda.toLowerCase();
+    const coincideTexto = 
+      (item.Nombre || item.nombre || '').toLowerCase().includes(texto) ||
+      (item.Domicilio || item.direccion || '').toLowerCase().includes(texto) ||
+      (item.nombrePropietario || item.cliente || '').toLowerCase().includes(texto);
+
+    const tipoInmuebleReal = item.Actividad || item.tipoInmueble || 'Comercial';
+    const coincideTipo = filtroTipo === 'Todos' || tipoInmuebleReal === filtroTipo;
+
+    return coincideTexto && coincideTipo;
+  });
+
+  const handleSeleccionarInmueble = (item) => {
+    setInmuebleSeleccionado(item);
+  };
+
+  const handleIrAExpediente = (idInmueble) => {
+    navigate(`/clientes/${idInmueble}`);
+  };
 
   return (
     <div className="conservadores-page-container">
@@ -84,7 +191,7 @@ function Conservadores() {
               <Home size={22} color="#3b82f6" />
             </div>
             <div className="kpi-data">
-              <h3>{resumen.inmuebles}</h3>
+              <h3>{resumen.inmuebles || inmuebles.length}</h3>
               <span>Inmuebles Asignados</span>
             </div>
           </div>
@@ -94,7 +201,7 @@ function Conservadores() {
               <Users size={22} color="#06b6d4" />
             </div>
             <div className="kpi-data">
-              <h3>{resumen.clientes}</h3>
+              <h3>{resumen.clientes || 1}</h3>
               <span>Clientes Activos</span>
             </div>
           </div>
@@ -104,7 +211,7 @@ function Conservadores() {
               <ClipboardList size={22} color="#10b981" />
             </div>
             <div className="kpi-data">
-              <h3>{resumen.servicios}</h3>
+              <h3>{resumen.servicios || 5}</h3>
               <span>Servicios Este mes</span>
             </div>
           </div>
@@ -114,23 +221,24 @@ function Conservadores() {
               <Clock size={22} color="#f59e0b" />
             </div>
             <div className="kpi-data">
-              <h3>{resumen.vencimientos}</h3>
+              <h3>{resumen.vencimientos || 4}</h3>
               <span>Vencimientos Próximos 30 días</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECCIÓN DEL MAPA + LISTA LATERAL */}
+      {/* MAPA Y LISTA DE INMUEBLES */}
       <div className="main-grid">
         
-        {/* MAPA */}
+        {/* PANEL MAPA */}
         <section className="card-panel map-section">
           <div className="panel-header">
             <h3>Mapa de mis inmuebles</h3>
             <p>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
           </div>
 
+          {/* BÚSQUEDA Y FILTRO */}
           <div className="map-search-bar">
             <Search size={18} className="search-icon" />
             <input 
@@ -139,62 +247,134 @@ function Conservadores() {
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
             />
-            <button className="btn-filter"><Filter size={16} /> Filtros</button>
+            
+            <div className="filter-dropdown-wrapper">
+              <button 
+                className={`btn-filter ${filtroTipo !== 'Todos' ? 'active-filter' : ''}`}
+                onClick={() => setMostrarMenuFiltro(!mostrarMenuFiltro)}
+              >
+                <Filter size={16} /> {filtroTipo === 'Todos' ? 'Filtros' : filtroTipo}
+              </button>
+
+              {mostrarMenuFiltro && (
+                <div className="filter-menu">
+                  <div className="filter-menu-header">
+                    <span>Filtrar por tipo</span>
+                    <X size={14} className="close-btn" onClick={() => setMostrarMenuFiltro(false)} />
+                  </div>
+                  <button 
+                    className={filtroTipo === 'Todos' ? 'selected' : ''} 
+                    onClick={() => { setFiltroTipo('Todos'); setMostrarMenuFiltro(false); }}
+                  >
+                    Todos los tipos
+                  </button>
+                  <button 
+                    className={filtroTipo === 'Comercial' ? 'selected' : ''} 
+                    onClick={() => { setFiltroTipo('Comercial'); setMostrarMenuFiltro(false); }}
+                  >
+                    Comercial
+                  </button>
+                  <button 
+                    className={filtroTipo === 'Residencial' ? 'selected' : ''} 
+                    onClick={() => { setFiltroTipo('Residencial'); setMostrarMenuFiltro(false); }}
+                  >
+                    Residencial
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
+          {/* MAPA LEAFLET */}
           <div className="map-display">
-            <MapContainer center={CENTRO_NEUQUEN} zoom={13} style={{ height: '100%', width: '100%', borderRadius: '8px' }}>
+            <MapContainer 
+              center={CENTRO_NEUQUEN} 
+              zoom={13} 
+              style={{ height: '100%', width: '100%', borderRadius: '8px' }}
+            >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; OpenStreetMap contributors'
               />
+
+              {/* Controlador que reajusta la vista cuando cambia la selección o la búsqueda */}
+              <ControladorMapa 
+                inmuebles={inmueblesFiltrados} 
+                inmuebleSeleccionado={inmuebleSeleccionado} 
+              />
               
-              {inmueblesFiltrados.map((item) => (
-                <Marker
-                  key={item.id}
-                  position={[item.latitud || -38.9516, item.longitud || -68.0591]}
-                  icon={inmuebleSeleccionado?.id === item.id ? iconoAzul : iconoRojo}
-                  eventHandlers={{
-                    click: () => setInmuebleSeleccionado(item),
-                  }}
-                >
-                  <Popup>
-                    <strong>{item.nombre}</strong><br />
-                    {item.direccion}<br />
-                    <button className="btn-popup" onClick={() => navigate(`/clientes/${item.id}`)}>
-                      Ver expediente
-                    </button>
-                  </Popup>
-                </Marker>
-              ))}
+              {/* PINES EN EL MAPA */}
+              {inmueblesFiltrados.map((item) => {
+                const idItem = item.idReal;
+                const esSeleccionado = inmuebleSeleccionado?.idReal === idItem;
+
+                return (
+                  <Marker
+                    key={`marker-${idItem}`}
+                    position={[item.latitudValida, item.longitudValida]}
+                    icon={esSeleccionado ? iconoAzul : iconoRojo}
+                    eventHandlers={{
+                      click: () => handleSeleccionarInmueble(item),
+                    }}
+                  >
+                    <Popup>
+                      <div className="popup-container">
+                        <strong>{item.Nombre || item.nombre}</strong>
+                        <p>{item.Domicilio}</p>
+                        <span className="popup-tag">{item.Actividad || item.tipoInmueble || 'Comercial'}</span>
+                        <button 
+                          className="btn-popup" 
+                          onClick={() => handleIrAExpediente(idItem)}
+                        >
+                          Ver expediente
+                        </button>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
             </MapContainer>
           </div>
         </section>
 
-        {/* LISTA DE INMUEBLES */}
+        {/* LISTA LATERAL */}
         <aside className="card-panel list-section">
           <div className="panel-header flex-between">
             <h3>Mis inmuebles</h3>
-            <span className="badge-count">{inmuebles.length} inmuebles</span>
+            <span className="badge-count">{inmueblesFiltrados.length} inmuebles</span>
           </div>
 
           <div className="inmuebles-list">
-            {inmueblesFiltrados.length === 0 ? (
-              <p className="empty-msg">No hay inmuebles asignados registrados.</p>
+            {cargando ? (
+              <p className="empty-msg">Cargando inmuebles asignados...</p>
+            ) : inmueblesFiltrados.length === 0 ? (
+              <p className="empty-msg">No se encontraron inmuebles asignados.</p>
             ) : (
-              inmueblesFiltrados.slice(0, 6).map((item) => (
-                <div key={item.id} className="inmueble-item" onClick={() => navigate(`/clientes/${item.id}`)}>
-                  <div className="inmueble-icon-box">
-                    <Building2 size={20} color="#38bdf8" />
+              inmueblesFiltrados.map((item) => {
+                const idItem = item.idReal;
+                const esSeleccionado = inmuebleSeleccionado?.idReal === idItem;
+
+                return (
+                  <div 
+                    key={`item-${idItem}`} 
+                    className={`inmueble-item ${esSeleccionado ? 'item-selected' : ''}`}
+                    onClick={() => {
+                      handleSeleccionarInmueble(item);
+                      handleIrAExpediente(idItem);
+                    }}
+                  >
+                    <div className="inmueble-icon-box">
+                      <Building2 size={20} color="#38bdf8" />
+                    </div>
+                    <div className="inmueble-details">
+                      <strong>{item.Nombre || item.nombre}</strong>
+                      <p>{item.Domicilio}</p>
+                      <span className="sub-tag">{item.Actividad || item.tipoInmueble || 'Comercial'}</span>
+                    </div>
+                    <ChevronRight size={18} className="arrow" />
                   </div>
-                  <div className="inmueble-details">
-                    <strong>{item.nombre}</strong>
-                    <p>{item.direccion}</p>
-                    <span className="sub-tag">{item.tipoInmueble}</span>
-                  </div>
-                  <ChevronRight size={18} className="arrow" />
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 

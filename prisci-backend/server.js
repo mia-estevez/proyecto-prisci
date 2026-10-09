@@ -120,6 +120,31 @@ app.get('/api/servicios/vencimientos', async (req, res) => {
   }
 });
 
+// Ejemplo del Endpoint en Node.js / Express
+app.get('/api/conservador/:id/inmuebles', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query = `
+      SELECT 
+        i.IdInmueble,
+        i.Nombre,
+        i.Domicilio,
+        i.Actividad,
+        i.Latitud,
+        i.Longitud,
+        p.Nombre AS nombrePropietario
+      FROM inmuebles i
+      INNER JOIN conservador_inmuebles ci ON i.IdInmueble = ci.IdInmueble
+      LEFT JOIN propietarios p ON i.IdPropietario = p.IdPropietario
+      WHERE ci.IdConservador = ?
+    `;
+    const [rows] = await db.execute(query, [id]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener inmuebles" });
+  }
+});
+
 // 5. EXPEDIENTE COMPLETO DEL INMUEBLE (FICHA)
 app.get('/api/inmuebles/:id', async (req, res) => {
   const { id } = req.params;
