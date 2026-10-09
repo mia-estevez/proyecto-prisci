@@ -12,3 +12,20 @@
   align-items: flex-end;
   margin-bottom: 20px;
 }
+
+.prisci-municipal-content-only .welcome-box h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.prisci-municipal-content-only .welcome-box p {
+  color: #8d99ae;
+  font-size: 13px;
+}
+
+.prisci-municipal-content-only .date-box {
+  color: #8d99ae;
+  font-size: 13px;
+}
