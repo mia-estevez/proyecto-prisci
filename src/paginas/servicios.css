@@ -143,3 +143,28 @@
   display: inline-block;
   text-align: center;
 }
+
+/* Fila con borde de advertencia/vencimiento (Foto 3) */
+.service-card-row.warning-border-row {
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background-color: rgba(15, 23, 42, 0.95);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.service-card-row.warning-border-row:hover {
+  border-color: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
+}
+
+/* Badge de Vencimiento Rojo */
+.status-badge-red {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+}
