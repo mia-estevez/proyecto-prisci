@@ -4,3 +4,11 @@
   padding: 10px 0;
   color: #ffffff;
 }
+
+/*agregando estilos a cabecera y fecha*/
+.prisci-municipal-content-only .dashboard-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
