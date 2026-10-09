@@ -1,18 +1,91 @@
+
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcrypt'); // Si usás bcrypt para las contraseñas
+const bcrypt = require('bcrypt');
 const db = require('./db');
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
+// ======================================================
+// FUNCIONES AUXILIARES
+// ======================================================
+
+// Comprueba que el inmueble exista.
+async function existeInmueble(id) {
+  const [filas] = await db.query(
+    'SELECT IdInmueble FROM Inmueble WHERE IdInmueble = ?',
+    [id]
+  );
+
+  return filas.length > 0;
+}
+
+// Crea las instalaciones iniciales si todavía no existen.
+// No modifica las instalaciones que ya fueron guardadas.
+async function inicializarInstalaciones(idInmueble) {
+  const instalacionesIniciales = [
+    {
+      nombre: 'Extintores',
+      estado: 'Vigente',
+      vencimiento: '2026-12-15'
+    },
+    {
+      nombre: 'Hidrantes',
+      estado: 'Pendiente de revisión',
+      vencimiento: null
+    },
+    {
+      nombre: 'Detectores de humo',
+      estado: 'Vigente',
+      vencimiento: '2027-02-10'
+    },
+    {
+      nombre: 'Señalización de emergencia',
+      estado: 'Vigente',
+      vencimiento: null
+    }
+  ];
+
+  for (const instalacion of instalacionesIniciales) {
+    const [existentes] = await db.query(
+      `SELECT IdInstalacion
+       FROM InstalacionInmueble
+       WHERE IdInmueble = ? AND Nombre = ?
+       LIMIT 1`,
+      [idInmueble, instalacion.nombre]
+    );
+
+    if (existentes.length === 0) {
+      await db.query(
+        `INSERT INTO InstalacionInmueble
+         (IdInmueble, Nombre, Estado, Vencimiento)
+         VALUES (?, ?, ?, ?)`,
+        [
+          idInmueble,
+          instalacion.nombre,
+          instalacion.estado,
+          instalacion.vencimiento
+        ]
+      );
+    }
+  }
+}
+
+// ======================================================
 // 1. MÉTRICAS DEL DASHBOARD DEL CONSERVADOR
+// ======================================================
+
 app.get('/api/conservador/:id/resumen', async (req, res) => {
   const { id } = req.params;
+
   try {
     const [[{ totalInmuebles }]] = await db.query(
-      'SELECT COUNT(DISTINCT IdInmueble) AS totalInmuebles FROM Inspeccion WHERE IdConservador = ?',
+      `SELECT COUNT(DISTINCT IdInmueble) AS totalInmuebles
+       FROM Inspeccion
+       WHERE IdConservador = ?`,
       [id]
     );
 
@@ -27,14 +100,18 @@ app.get('/api/conservador/:id/resumen', async (req, res) => {
     const [[{ serviciosMes }]] = await db.query(
       `SELECT COUNT(*) AS serviciosMes
        FROM Inspeccion
-       WHERE IdConservador = ? AND MONTH(Fecha) = MONTH(CURRENT_DATE()) AND YEAR(Fecha) = YEAR(CURRENT_DATE())`,
+       WHERE IdConservador = ?
+       AND MONTH(Fecha) = MONTH(CURRENT_DATE())
+       AND YEAR(Fecha) = YEAR(CURRENT_DATE())`,
       [id]
     );
 
     const [[{ vencimientos }]] = await db.query(
       `SELECT COUNT(*) AS vencimientos
        FROM Inspeccion
-       WHERE IdConservador = ? AND Fecha >= CURRENT_DATE() AND Fecha <= DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)`,
+       WHERE IdConservador = ?
+       AND Fecha >= CURRENT_DATE()
+       AND Fecha <= DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)`,
       [id]
     );
 
@@ -45,189 +122,503 @@ app.get('/api/conservador/:id/resumen', async (req, res) => {
       vencimientos: vencimientos || 0
     });
   } catch (error) {
-    console.error('Error en /api/conservador/:id/resumen:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener el resumen:', error);
+    res.status(500).json({
+      mensaje: 'Error al obtener las métricas del conservador'
+    });
   }
 });
 
-// 2. LISTA DE INMUEBLES ASIGNADOS AL CONSERVADOR
+// ======================================================
+// 2. INMUEBLES ASIGNADOS AL CONSERVADOR
+// ======================================================
+
 app.get('/api/conservador/:id/inmuebles', async (req, res) => {
   const { id } = req.params;
+
   try {
     const [inmuebles] = await db.query(
-      `SELECT DISTINCT 
-        i.IdInmueble as id,
-        i.Nombre as nombre,
-        i.Domicilio as direccion,
-        i.Actividad as tipoInmueble,
-        -38.9516 AS latitud,
-        -68.0591 AS longitud
+      `SELECT DISTINCT
+         i.IdInmueble AS id,
+         i.Nombre AS nombre,
+         i.Domicilio AS direccion,
+         i.Actividad AS tipoInmueble,
+         i.Superficie AS superficie,
+         i.CantMatafuego AS cantidadMatafuegos,
+         i.RedAgua AS redAgua,
+         i.EstadoSistema AS estadoSistema,
+         i.IdPropietario AS idPropietario,
+         -38.9516 AS latitud,
+         -68.0591 AS longitud
        FROM Inspeccion insp
        JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
        WHERE insp.IdConservador = ?`,
       [id]
     );
+
     res.json(inmuebles);
   } catch (error) {
-    console.error('Error en /api/conservador/:id/inmuebles:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener inmuebles del conservador:', error);
+    res.status(500).json({
+      mensaje: 'Error al obtener los inmuebles asignados'
+    });
   }
 });
 
+// ======================================================
 // 3. SERVICIOS DE ESTE MES
+// ======================================================
+
 app.get('/api/servicios/mes', async (req, res) => {
   try {
-    const [servicios] = await db.query(`
-      SELECT 
-        i.IdInmueble,
-        i.Nombre AS inmuebleNombre,
-        i.Domicilio,
-        i.Actividad,
-        insp.Resultado AS tipoServicio,
-        DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
-        insp.Resultado AS estado
-      FROM Inspeccion insp
-      JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
-      WHERE MONTH(insp.Fecha) = MONTH(CURRENT_DATE()) AND YEAR(insp.Fecha) = YEAR(CURRENT_DATE())
-    `);
+    const [servicios] = await db.query(
+      `SELECT
+         i.IdInmueble,
+         i.Nombre AS inmuebleNombre,
+         i.Domicilio,
+         i.Actividad,
+         insp.Resultado AS tipoServicio,
+         DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
+         insp.Resultado AS estado
+       FROM Inspeccion insp
+       JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
+       WHERE MONTH(insp.Fecha) = MONTH(CURRENT_DATE())
+       AND YEAR(insp.Fecha) = YEAR(CURRENT_DATE())`
+    );
+
     res.json(servicios);
   } catch (error) {
-    console.error('Error en /api/servicios/mes:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener servicios del mes:', error);
+    res.status(500).json({
+      mensaje: 'Error al obtener los servicios'
+    });
   }
 });
 
-// 4. SERVICIOS POR VENCER (PRÓXIMOS 30 DÍAS)
+// ======================================================
+// 4. SERVICIOS POR VENCER
+// ======================================================
+
 app.get('/api/servicios/vencimientos', async (req, res) => {
   try {
-    const [vencimientos] = await db.query(`
-      SELECT 
-        i.IdInmueble,
-        i.Nombre AS inmuebleNombre,
-        i.Domicilio,
-        i.Actividad,
-        insp.Observaciones AS tipoServicio,
-        DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
-        DATEDIFF(insp.Fecha, CURRENT_DATE()) AS diasRestantes
-      FROM Inspeccion insp
-      JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
-      WHERE insp.Fecha >= CURRENT_DATE()
-    `);
+    const [vencimientos] = await db.query(
+      `SELECT
+         i.IdInmueble,
+         i.Nombre AS inmuebleNombre,
+         i.Domicilio,
+         i.Actividad,
+         insp.Observaciones AS tipoServicio,
+         DATE_FORMAT(insp.Fecha, '%d/%m/%Y') AS Fecha,
+         DATEDIFF(insp.Fecha, CURRENT_DATE()) AS diasRestantes
+       FROM Inspeccion insp
+       JOIN Inmueble i ON insp.IdInmueble = i.IdInmueble
+       WHERE insp.Fecha >= CURRENT_DATE()`
+    );
+
     res.json(vencimientos);
   } catch (error) {
-    console.error('Error en /api/servicios/vencimientos:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener vencimientos:', error);
+    res.status(500).json({
+      mensaje: 'Error al obtener los vencimientos'
+    });
   }
 });
 
-// Ejemplo del Endpoint en Node.js / Express
-app.get('/api/conservador/:id/inmuebles', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const query = `
-      SELECT 
-        i.IdInmueble,
-        i.Nombre,
-        i.Domicilio,
-        i.Actividad,
-        i.Latitud,
-        i.Longitud,
-        p.Nombre AS nombrePropietario
-      FROM inmuebles i
-      INNER JOIN conservador_inmuebles ci ON i.IdInmueble = ci.IdInmueble
-      LEFT JOIN propietarios p ON i.IdPropietario = p.IdPropietario
-      WHERE ci.IdConservador = ?
-    `;
-    const [rows] = await db.execute(query, [id]);
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener inmuebles" });
-  }
-});
+// ======================================================
+// 5. EXPEDIENTE COMPLETO DEL INMUEBLE
+// ======================================================
 
-// 5. EXPEDIENTE COMPLETO DEL INMUEBLE (FICHA)
 app.get('/api/inmuebles/:id', async (req, res) => {
   const { id } = req.params;
+
   try {
-    const [inmuebles] = await db.query(`
-      SELECT 
-        i.*,
-        u.Nombre AS nombrePropietario,
-        u.Apellido AS apellidoPropietario
-      FROM Inmueble i
-      LEFT JOIN Propietario p ON i.IdPropietario = p.IdPropietario
-      LEFT JOIN Usuarios u ON p.IdUsu = u.IdUsu
-      WHERE i.IdInmueble = ?
-    `, [id]);
+    const [inmuebles] = await db.query(
+      `SELECT
+         i.*,
+         u.Nombre AS nombrePropietario,
+         u.Apellido AS apellidoPropietario
+       FROM Inmueble i
+       LEFT JOIN Propietario p
+         ON i.IdPropietario = p.IdPropietario
+       LEFT JOIN Usuarios u
+         ON p.IdUsu = u.IdUsu
+       WHERE i.IdInmueble = ?`,
+      [id]
+    );
 
     if (inmuebles.length === 0) {
-      return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
+      return res.status(404).json({
+        mensaje: 'Inmueble no encontrado'
+      });
     }
 
-    const [inspecciones] = await db.query(`
-      SELECT 
-        IdInspeccion,
-        DATE_FORMAT(Fecha, '%d/%m/%Y') AS fechaFormat,
-        Resultado,
-        Observaciones
-      FROM Inspeccion
-      WHERE IdInmueble = ?
-      ORDER BY Fecha DESC
-    `, [id]);
+    const [inspecciones] = await db.query(
+      `SELECT
+         IdInspeccion,
+         DATE_FORMAT(Fecha, '%d/%m/%Y') AS fechaFormat,
+         Resultado,
+         Observaciones
+       FROM Inspeccion
+       WHERE IdInmueble = ?
+       ORDER BY Fecha DESC`,
+      [id]
+    );
 
     res.json({
       ...inmuebles[0],
-      inspecciones: inspecciones
+      inspecciones
     });
   } catch (error) {
-    console.error('Error en /api/inmuebles/:id:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error al obtener el expediente:', error);
+    res.status(500).json({
+      mensaje: 'Error al obtener el expediente del inmueble'
+    });
   }
 });
 
-// 6. REGISTRAR NUEVA INSPECCIÓN
-app.post('/api/inspecciones', async (req, res) => {
-  const { idInmueble, idConservador, fecha, resultado, observaciones } = req.body;
+app.get('/api/inmuebles/:id/inspecciones', async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const [result] = await db.query(
-      'INSERT INTO Inspeccion (IdInmueble, IdConservador, Fecha, Resultado, Observaciones) VALUES (?, ?, ?, ?, ?)',
-      [idInmueble, idConservador || 1, fecha, resultado, observaciones]
+    const [inspecciones] = await db.query(
+      `SELECT
+         IdInspeccion,
+         DATE_FORMAT(Fecha, '%Y-%m-%d') AS Fecha,
+         Resultado,
+         Observaciones,
+         IdInmueble,
+         IdConservador
+       FROM Inspeccion
+       WHERE IdInmueble = ?
+       ORDER BY Fecha DESC, IdInspeccion DESC`,
+      [id]
     );
 
-    res.status(201).json({ 
-      mensaje: 'Inspección guardada correctamente', 
-      idInspeccion: result.insertId 
-    });
+    res.json(inspecciones);
   } catch (error) {
-    console.error('Error en POST /api/inspecciones:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error al consultar las inspecciones:', error);
+
+    res.status(500).json({
+      mensaje: 'No se pudo cargar el historial de inspecciones'
+    });
   }
 });
 
+
+// ======================================================
+// 5.1. OBTENER INSTALACIONES TÉCNICAS
+// ======================================================
+
+app.get('/api/inmuebles/:id/instalaciones', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!(await existeInmueble(id))) {
+      return res.status(404).json({
+        mensaje: 'Inmueble no encontrado'
+      });
+    }
+
+    // Cargar instalaciones iniciales si aún no existen.
+    await inicializarInstalaciones(id);
+
+    const [instalaciones] = await db.query(
+      `SELECT
+         IdInstalacion,
+         IdInmueble,
+         Nombre,
+         Estado,
+         DATE_FORMAT(Vencimiento, '%Y-%m-%d') AS Vencimiento
+       FROM InstalacionInmueble
+       WHERE IdInmueble = ?
+       ORDER BY IdInstalacion`,
+      [id]
+    );
+
+    res.json(instalaciones);
+  } catch (error) {
+    console.error('Error al obtener instalaciones:', error);
+    res.status(500).json({
+      mensaje: 'Error al obtener las instalaciones'
+    });
+  }
+});
+
+// ======================================================
+// 5.2. GUARDAR MODIFICACIONES DE LAS INSTALACIONES
+// ======================================================
+
+app.put('/api/inmuebles/:id/instalaciones', async (req, res) => {
+  const { id } = req.params;
+  const { instalaciones } = req.body;
+
+  if (!Array.isArray(instalaciones)) {
+    return res.status(400).json({
+      mensaje: 'La lista de instalaciones no es válida'
+    });
+  }
+
+  const estadosPermitidos = [
+    'Vigente',
+    'Pendiente de revisión',
+    'Vencido',
+    'No aplica'
+  ];
+
+  for (const instalacion of instalaciones) {
+    if (
+      !Number.isInteger(Number(instalacion.IdInstalacion)) ||
+      !instalacion.Nombre ||
+      !estadosPermitidos.includes(instalacion.Estado) ||
+      (
+        instalacion.Vencimiento !== null &&
+        instalacion.Vencimiento !== '' &&
+        !/^\d{4}-\d{2}-\d{2}$/.test(instalacion.Vencimiento)
+      )
+    ) {
+      return res.status(400).json({
+        mensaje: 'Una o más instalaciones tienen datos inválidos'
+      });
+    }
+  }
+
+  const conexion = await db.getConnection();
+
+  try {
+    if (!(await existeInmueble(id))) {
+      conexion.release();
+
+      return res.status(404).json({
+        mensaje: 'Inmueble no encontrado'
+      });
+    }
+
+    await conexion.beginTransaction();
+
+    for (const instalacion of instalaciones) {
+      const [resultado] = await conexion.query(
+        `UPDATE InstalacionInmueble
+         SET Estado = ?, Vencimiento = ?
+         WHERE IdInstalacion = ? AND IdInmueble = ? AND Nombre = ?`,
+        [
+          instalacion.Estado,
+          instalacion.Vencimiento || null,
+          instalacion.IdInstalacion,
+          id,
+          instalacion.Nombre
+        ]
+      );
+
+      if (resultado.affectedRows === 0) {
+        const [coincidencias] = await conexion.query(
+          `SELECT IdInstalacion
+           FROM InstalacionInmueble
+           WHERE IdInstalacion = ? AND IdInmueble = ? AND Nombre = ?`,
+          [instalacion.IdInstalacion, id, instalacion.Nombre]
+        );
+
+        if (coincidencias.length === 0) {
+          throw new Error(
+            `La instalación "${instalacion.Nombre}" no pertenece al inmueble indicado`
+          );
+        }
+      }
+    }
+
+    await conexion.commit();
+
+    const [actualizadas] = await conexion.query(
+      `SELECT
+         IdInstalacion,
+         IdInmueble,
+         Nombre,
+         Estado,
+         DATE_FORMAT(Vencimiento, '%Y-%m-%d') AS Vencimiento
+       FROM InstalacionInmueble
+       WHERE IdInmueble = ?
+       ORDER BY IdInstalacion`,
+      [id]
+    );
+
+    res.json({
+      mensaje: 'Instalaciones guardadas correctamente',
+      instalaciones: actualizadas
+    });
+  } catch (error) {
+    await conexion.rollback();
+
+    console.error('Error al guardar instalaciones:', error);
+
+    res.status(500).json({
+      mensaje: 'Error al guardar las instalaciones'
+    });
+  } finally {
+    conexion.release();
+  }
+});
+
+// ======================================================
+// 5.3. OBTENER OBSERVACIONES DE LA FICHA
+// ======================================================
+
+app.get('/api/inmuebles/:id/observaciones', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!(await existeInmueble(id))) {
+      return res.status(404).json({
+        mensaje: 'Inmueble no encontrado'
+      });
+    }
+
+    const [filas] = await db.query(
+      `SELECT Observaciones, FechaActualizacion
+       FROM ObservacionesFicha
+       WHERE IdInmueble = ?`,
+      [id]
+    );
+
+    res.json({
+      observaciones: filas.length > 0
+        ? filas[0].Observaciones || ''
+        : '',
+      fechaActualizacion: filas.length > 0
+        ? filas[0].FechaActualizacion
+        : null
+    });
+  } catch (error) {
+    console.error('Error al obtener observaciones:', error);
+    res.status(500).json({
+      mensaje: 'Error al obtener las observaciones'
+    });
+  }
+});
+
+// ======================================================
+// 5.4. GUARDAR OBSERVACIONES DE LA FICHA
+// ======================================================
+
+app.put('/api/inmuebles/:id/observaciones', async (req, res) => {
+  const { id } = req.params;
+  const { observaciones } = req.body;
+
+  if (
+    typeof observaciones !== 'string' ||
+    observaciones.length > 10000
+  ) {
+    return res.status(400).json({
+      mensaje: 'Las observaciones no son válidas'
+    });
+  }
+
+  try {
+    if (!(await existeInmueble(id))) {
+      return res.status(404).json({
+        mensaje: 'Inmueble no encontrado'
+      });
+    }
+
+    await db.query(
+      `INSERT INTO ObservacionesFicha (IdInmueble, Observaciones)
+       VALUES (?, ?)
+       ON DUPLICATE KEY UPDATE Observaciones = VALUES(Observaciones)`,
+      [id, observaciones]
+    );
+
+    res.json({
+      mensaje: 'Observaciones guardadas correctamente'
+    });
+  } catch (error) {
+    console.error('Error al guardar observaciones:', error);
+    res.status(500).json({
+      mensaje: 'Error al guardar las observaciones'
+    });
+  }
+});
+
+// ======================================================
+// 6. REGISTRAR NUEVA INSPECCIÓN
+// ======================================================
+
+app.post('/api/inspecciones', async (req, res) => {
+  const {
+    idInmueble,
+    idConservador,
+    fecha,
+    resultado,
+    observaciones
+  } = req.body;
+
+  if (!idInmueble || !fecha || !resultado) {
+    return res.status(400).json({
+      mensaje: 'El inmueble, la fecha y el resultado son obligatorios'
+    });
+  }
+
+  try {
+    const [result] = await db.query(
+      `INSERT INTO Inspeccion
+       (IdInmueble, IdConservador, Fecha, Resultado, Observaciones)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        idInmueble,
+        idConservador || 1,
+        fecha,
+        resultado,
+        observaciones || null
+      ]
+    );
+
+    res.status(201).json({
+      mensaje: 'Inspección guardada correctamente',
+      idInspeccion: result.insertId
+    });
+  } catch (error) {
+    console.error('Error al registrar inspección:', error);
+    res.status(500).json({
+      mensaje: 'Error al registrar la inspección'
+    });
+  }
+});
+
+// ======================================================
 // 7. INICIAR SESIÓN
+// ======================================================
+
 app.post('/api/login', async (req, res) => {
   const { email, contrasena } = req.body;
 
   if (!email || !contrasena) {
-    return res.status(400).json({ mensaje: 'Ingresá tu correo y contraseña' });
+    return res.status(400).json({
+      mensaje: 'Ingresá tu correo y contraseña'
+    });
   }
 
   try {
-    const [usuarios] = await db.query(`
-      SELECT IdUsu, Nombre, Apellido, Email, Contrasena, IdRol
-      FROM Usuarios
-      WHERE Email = ?
-    `, [email]);
+    const [usuarios] = await db.query(
+      `SELECT IdUsu, Nombre, Apellido, Email, Contrasena, IdRol
+       FROM Usuarios
+       WHERE Email = ?`,
+      [email]
+    );
 
     if (usuarios.length === 0) {
-      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
+      return res.status(401).json({
+        mensaje: 'Correo o contraseña incorrectos'
+      });
     }
 
     const usuario = usuarios[0];
-    const contrasenaValida = await bcrypt.compare(contrasena, usuario.Contrasena);
+
+    const contrasenaValida = await bcrypt.compare(
+      contrasena,
+      usuario.Contrasena
+    );
 
     if (!contrasenaValida) {
-      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
+      return res.status(401).json({
+        mensaje: 'Correo o contraseña incorrectos'
+      });
     }
 
     res.json({
@@ -242,11 +633,16 @@ app.post('/api/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Error en el login:', error);
-    res.status(500).json({ mensaje: 'Error al iniciar sesión' });
+    res.status(500).json({
+      mensaje: 'Error al iniciar sesión'
+    });
   }
 });
 
+// ======================================================
 // 8. REGISTRAR USUARIO DE PRUEBA
+// ======================================================
+
 app.post('/api/registro-prueba', async (req, res) => {
   const {
     nombre,
@@ -311,8 +707,16 @@ app.post('/api/registro-prueba', async (req, res) => {
   }
 });
 
-// PUERTO Y ARRANQUE
+app.get('/api/prueba', (req, res) => {
+  res.json({ mensaje: 'El servidor actualizado funciona' });
+});
+
+// ======================================================
+// INICIAR SERVIDOR
+// ======================================================
+
 const PORT = 3001;
+
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
 });

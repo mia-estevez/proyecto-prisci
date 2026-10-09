@@ -21,6 +21,58 @@ import {
 import { dispararNotificacionConservador } from '../utils/notificacionesHelper';
 import './clientes.css';
 
+
+function prepararInspeccion(insp) {
+  let detalles = {};
+
+  try {
+    detalles =
+      typeof insp.Observaciones === "string"
+        ? JSON.parse(insp.Observaciones)
+        : insp.Observaciones || {};
+  } catch {
+    detalles = {
+      observacionesGenerales: insp.Observaciones || "",
+    };
+  }
+
+  return {
+    ...insp,
+    fecha:
+      insp.fecha ||
+      insp.fechaFormat ||
+      insp.Fecha ||
+      "",
+    resultado:
+      insp.resultado ||
+      insp.Resultado ||
+      "Sin resultado",
+    parteNro:
+      insp.parteNro ||
+      detalles.parteNro ||
+      "S/N",
+    observaciones:
+      insp.observaciones ||
+      detalles.observacionesGenerales ||
+      "",
+    relevamiento:
+      insp.relevamiento ||
+      detalles.relevamiento ||
+      {},
+    archivosAdjuntos:
+      insp.archivosAdjuntos ||
+      detalles.archivosAdjuntos ||
+      [],
+    tieneFirmaCliente:
+      insp.tieneFirmaCliente ??
+      Boolean(detalles.tieneFirmaCliente),
+    tieneFirmaProf:
+      insp.tieneFirmaProf ??
+      Boolean(detalles.tieneFirmaProf),
+  };
+}
+
+
 function Clientes() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -61,7 +113,7 @@ function Clientes() {
           Actividad: oficial.tipo,
           Superficie: oficial.superficie,
           Estado: estadoActual,
-          inspecciones: inspeccionesGuardadas.length > 0 ? inspeccionesGuardadas : (data.inspecciones || [])
+          inspecciones: (data.inspecciones || []).map(prepararInspeccion)
         });
         setCargando(false);
       })
@@ -75,7 +127,7 @@ function Clientes() {
           Estado: estadoActual,
           nombrePropietario: 'Juan',
           apellidoPropietario: 'Pérez',
-          inspecciones: inspeccionesGuardadas
+          inspecciones: []
         });
         setCargando(false);
       });

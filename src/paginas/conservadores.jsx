@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import FichaInm from '../componentes/fichaInm.jsx';
 
 // Componentes de React-Leaflet
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -80,6 +81,23 @@ function Conservadores() {
   const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
   const [filtroTipo, setFiltroTipo] = useState('Todos');
   const [mostrarMenuFiltro, setMostrarMenuFiltro] = useState(false);
+
+  // Controla la apertura y el cierre de la ficha
+  const [fichaAbierta, setFichaAbierta] = useState(false);
+
+  // Inmueble cuya ficha se va a consultar
+  const [inmuebleParaFicha, setInmuebleParaFicha] = useState(null);
+
+  // Abrir la ficha técnica
+  const handleAbrirFicha = (item) => {
+    setInmuebleParaFicha(item);
+    setFichaAbierta(true);
+  };
+
+  // Cerrar la ficha y volver a Conservadores
+  const handleCerrarFicha = () => {
+    setFichaAbierta(false);
+  };
 
   // DIRECCIONES Y COORDENADAS GPS SEPARADAS Y REALES EN NEUQUÉN CAPITAL
   const DIRECCIONES_REALES = {
@@ -328,6 +346,13 @@ function Conservadores() {
                         >
                           Ver expediente
                         </button>
+
+                        <button
+                          className="btn-popup"
+                          onClick={() => handleAbrirFicha(item)}
+                        >
+                          Ver ficha técnica
+                        </button>
                       </div>
                     </Popup>
                   </Marker>
@@ -387,6 +412,30 @@ function Conservadores() {
         </aside>
 
       </div>
+
+      {/* MODAL DE LA FICHA TÉCNICA */}
+      {fichaAbierta && inmuebleParaFicha && (
+        <FichaInm
+          inmueble={{
+            ...inmuebleParaFicha,
+            id: inmuebleParaFicha.IdInmueble || inmuebleParaFicha.idReal,
+            nombre:
+              inmuebleParaFicha.Nombre ||
+              inmuebleParaFicha.nombre ||
+              "Inmueble sin nombre",
+            direccion:
+              inmuebleParaFicha.Domicilio ||
+              inmuebleParaFicha.direccion ||
+              "Dirección no disponible",
+            tipo:
+              inmuebleParaFicha.Actividad ||
+              inmuebleParaFicha.tipoInmueble ||
+              "No especificado",
+          }}
+          rol="profesional"
+          onCerrar={handleCerrarFicha}
+        />
+      )}
 
     </div>
   );
