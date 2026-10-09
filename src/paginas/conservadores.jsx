@@ -121,6 +121,69 @@ function Conservadores() {
           </button>
         </div>
       </aside>
+
+      {/* SECCIÓN 2: CONTENIDO PRINCIPAL                      */}
+      {/* -------------------------------------------------- */}
+      <main className="dashboard-content">
+        
+        {/* Barra superior con avatar de usuario y centro de notificaciones */}
+        <header className="topbar">
+          <div className="user-profile">
+            <button className="icon-btn-bell" onClick={() => navigate('/notificaciones')} title="Notificaciones">
+              <Bell size={20} />
+              <span className="notif-badge"></span>
+            </button>
+            <ShieldCheck size={24} className="user-avatar-icon" />
+            <div className="user-info">
+              <strong>Juan Pérez</strong>
+              <span>Profesional</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Mensaje de bienvenida y tarjetas de accesos directos (KPIs) */}
+        <section className="welcome-section">
+          <h1>¡Hola, Juan!</h1>
+          <p>Gestioná y consultá la información de los inmuebles asignados.</p>
+
+          <div className="kpi-grid">
+            {/* Tarjeta 1: Lleva al listado de inmuebles */}
+            <div className="kpi-card" onClick={() => navigate('/inmuebles')}>
+              <Home className="kpi-icon blue" size={24} />
+              <div className="kpi-data">
+                <h3>{resumen.inmuebles}</h3>
+                <span>Inmuebles Asignados</span>
+              </div>
+            </div>
+
+            {/* Tarjeta 2: Lleva al listado de clientes activos */}
+            <div className="kpi-card" onClick={() => navigate('/clientes')}>
+              <Users className="kpi-icon cyan" size={24} />
+              <div className="kpi-data">
+                <h3>{resumen.clientes}</h3>
+                <span>Clientes Activos</span>
+              </div>
+            </div>
+
+            {/* Tarjeta 3: Lleva a los servicios de este mes */}
+            <div className="kpi-card" onClick={() => navigate('/servicios-mes')}>
+              <ClipboardList className="kpi-icon green" size={24} />
+              <div className="kpi-data">
+                <h3>{resumen.servicios}</h3>
+                <span>Servicios Este mes</span>
+              </div>
+            </div>
+
+            {/* Tarjeta 4: Lleva a los servicios próximos a vencer */}
+            <div className="kpi-card" onClick={() => navigate('/vencimientos')}>
+              <Clock className="kpi-icon orange" size={24} />
+              <div className="kpi-data">
+                <h3>{resumen.vencimientos}</h3>
+                <span>Vencimientos Próximos 30 días</span>
+              </div>
+            </div>
+          </div>
+        </section>
   );
 }
 
