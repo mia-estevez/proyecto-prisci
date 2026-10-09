@@ -1,358 +1,260 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { 
-  FileText, Upload, Edit3, Save, X, CheckCircle2, AlertTriangle, ArrowLeft, Trash2 
-} from 'lucide-react';
-import './inspecciones.css';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Save, FileText, CheckCircle2, AlertCircle, Paperclip, Trash2 } from 'lucide-react';
+import { dispararNotificacionConservador } from '../utils/notificacionesHelper';
+import './clientes.css'; // Mantenemos la estética unificada
 
 function Inspecciones() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { idInmueble } = useParams();
   const [searchParams] = useSearchParams();
-  
-  const inmuebleIdParam = idInmueble || searchParams.get('inmuebleId') || 1;
-  const borradorIndex = searchParams.get('borrador'); // Detecta si estamos abriendo un borrador guardado
+  const indexBorrador = searchParams.get('borrador');
 
-  const [inmueble, setInmueble] = useState(null);
-  const [cargando, setCargando] = useState(true);
-
-  // Campos principales
-  const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
-  const [parteNro, setParteNro] = useState(`PR-2026-${Math.floor(1000 + Math.random() * 9000)}`);
-  const [empresaCliente, setEmpresaCliente] = useState('');
-  const [establecimiento, setEstablecimiento] = useState('');
-  const [domicilio, setDomicilio] = useState('');
-  const [localidad, setLocalidad] = useState('Neuquén');
-  const [observacionesGenerales, setObservacionesGenerales] = useState('');
-
+  const inmuebleId = Number(id || 1);
   const DIRECCIONES_OFICIALES = {
-    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial' },
-    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial' }
+    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén' },
+    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén' }
   };
+  const oficial = DIRECCIONES_OFICIALES[inmuebleId] || DIRECCIONES_OFICIALES[1];
 
+  // Estados del formulario
+  const [parteNro, setParteNro] = useState(`PR-2026-${Math.floor(1000 + Math.random() * 9000)}`);
+  const [fecha, setFecha] = useState('2026-10-09');
+  const [resultado, setResultado] = useState('Aprobado');
+  const [observaciones, setObservaciones] = useState('');
+  const [archivos, setArchivos] = useState([]);
+  
+  // Secciones de relevamiento técnico
   const [relevamiento, setRelevamiento] = useState({
-    viasEscape: { estado: 'Correcto', obs: '' },
-    lucesEmergencia: { estado: 'Correcto', obs: '' },
-    deteccionIncendios: { estado: 'Correcto', obs: '' },
-    instalacionFijaAgua: { estado: 'Correcto', obs: '' },
-    matafuegos: { estado: 'Correcto', obs: '' },
-    instalacionElectrica: { estado: 'Correcto', obs: '' },
-    instalacionGas: { estado: 'Correcto', obs: '' },
-    productosQuimicos: { estado: 'Correcto', obs: '' },
-    ordenLimpia: { estado: 'Correcto', obs: '' },
+    evacuacion: { estado: 'OK', obs: '' },
+    extincion: { estado: 'OK', obs: '' },
+    deteccion: { estado: 'OK', obs: '' },
+    prevencionElectrica: { estado: 'OK', obs: '' },
+    prevencionGas: { estado: 'OK', obs: '' },
+    productosQuimicos: { estado: 'OK', obs: '' },
+    ordenLimpieza: { estado: 'OK', obs: '' }
   });
 
-  const [archivos, setArchivos] = useState([]);
-
-  const canvasClienteRef = useRef(null);
-  const canvasProfRef = useRef(null);
-  const [dibujandoCliente, setDibujandoCliente] = useState(false);
-  const [dibujandoProf, setDibujandoProf] = useState(false);
-  const [firmaClienteData, setFirmaClienteData] = useState(null);
-  const [firmaProfData, setFirmaProfData] = useState(null);
-
+  // Cargar borrador si se está editando uno existente
   useEffect(() => {
-    const idNum = Number(inmuebleIdParam);
-    const oficial = DIRECCIONES_OFICIALES[idNum] || DIRECCIONES_OFICIALES[1];
-
-    // Si pasaron un índice de borrador por URL, cargamos esos datos guardados previamente
-    if (borradorIndex !== null && borradorIndex !== undefined) {
-      const borradores = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
-      const borradorSeleccionado = borradores[parseInt(borradorIndex)];
-      if (borradorSeleccionado) {
-        setFecha(borradorSeleccionado.fecha || fecha);
-        setParteNro(borradorSeleccionado.parteNro || parteNro);
-        setEmpresaCliente(borradorSeleccionado.empresaCliente || 'Juan Pérez');
-        setEstablecimiento(oficial.nombre);
-        setDomicilio(oficial.domicilio);
-        setLocalidad(borradorSeleccionado.localidad || 'Neuquén');
-        setObservacionesGenerales(borradorSeleccionado.observaciones || '');
-        if (borradorSeleccionado.relevamiento) {
-          setRelevamiento(borradorSeleccionado.relevamiento);
-        }
-        if (borradorSeleccionado.archivosAdjuntos) {
-          setArchivos(borradorSeleccionado.archivosAdjuntos);
+    if (indexBorrador !== null) {
+      const borradoresGuardados = JSON.parse(localStorage.getItem(`borradores_inmueble_${inmuebleId}`) || '[]');
+      const borradorAEditar = borradoresGuardados[Number(indexBorrador)];
+      if (borradorAEditar) {
+        setParteNro(borradorAEditar.parteNro || parteNro);
+        setFecha(borradorAEditar.fecha || fecha);
+        setResultado(borradorAEditar.resultado || resultado);
+        setObservaciones(borradorAEditar.observaciones || '');
+        setArchivos(borradorAEditar.archivosAdjuntos || []);
+        if (borradorAEditar.relevamiento) {
+          setRelevamiento(borradorAEditar.relevamiento);
         }
       }
     }
+  }, [indexBorrador, inmuebleId]);
 
-    fetch(`http://localhost:3001/api/inmuebles/${inmuebleIdParam}`)
-      .then(res => res.json())
-      .then(data => {
-        setInmueble(data);
-        if (borradorIndex === null) {
-          setEstablecimiento(oficial.nombre || data.Nombre || '');
-          setDomicilio(oficial.domicilio || data.Domicilio || '');
-          setEmpresaCliente(data.nombrePropietario ? `${data.nombrePropietario} ${data.apellidoPropietario || ''}`.trim() : 'Juan Pérez');
-        }
-        setCargando(false);
-      })
-      .catch(err => {
-        setInmueble({ Nombre: oficial.nombre, Domicilio: oficial.domicilio, Actividad: oficial.tipo });
-        if (borradorIndex === null) {
-          setEstablecimiento(oficial.nombre);
-          setDomicilio(oficial.domicilio);
-          setEmpresaCliente('Juan Pérez');
-        }
-        setCargando(false);
-      });
-  }, [inmuebleIdParam, borradorIndex]);
-
-  const handleFileChange = (e) => {
-    if (e.target.files) {
-      const nuevos = Array.from(e.target.files).map(file => ({
-        nombre: file.name,
-        url: URL.createObjectURL(file),
-        tipo: file.type
-      }));
-      setArchivos(prev => [...prev, ...nuevos]);
-    }
+  const handleCambioRelevamiento = (seccion, campo, valor) => {
+    setRelevamiento(prev => ({
+      ...prev,
+      [seccion]: { ...prev[seccion], [campo]: valor }
+    }));
   };
 
-  const eliminarArchivo = (index) => {
-    setArchivos(prev => prev.filter((_, i) => i !== index));
+  const handleAdjuntarArchivo = (e) => {
+    const files = Array.from(e.target.files);
+    const nuevosArchivos = files.map(file => ({
+      nombre: file.name,
+      url: URL.createObjectURL(file)
+    }));
+    setArchivos(prev => [...prev, ...nuevosArchivos]);
   };
 
-  const iniciarDibujo = (e, setDibujando, canvasRef) => {
-    setDibujando(true);
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-  };
-
-  const dibujar = (e, dibujando, canvasRef) => {
-    if (!dibujando) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.stroke();
-  };
-
-  const detenerDibujo = (setDibujando, canvasRef, setFirmaData) => {
-    setDibujando(false);
-    if (canvasRef.current) {
-      setFirmaData(canvasRef.current.toDataURL());
-    }
-  };
-
-  const limpiarCanvas = (canvasRef, setFirmaData) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setFirmaData(null);
-  };
-
-  // FUNCIÓN PARA GUARDAR (BORRADOR O INSPECCIÓN FINAL)
-  const guardarInspeccion = (esBorrador) => {
-    const idNum = parseInt(inmuebleIdParam);
-    const tieneObs = Object.values(relevamiento).some(item => item.estado === 'Con observaciones');
-    const resultadoFinal = esBorrador ? 'Borrador (Pendiente)' : (tieneObs ? 'Con observaciones' : 'Aprobado');
-
-    const objetoInspeccion = {
-      idInmueble: idNum,
-      fecha: fecha,
-      parteNro: parteNro,
-      empresaCliente: empresaCliente,
-      localidad: localidad,
-      resultado: resultadoFinal,
-      relevamiento: relevamiento,
-      observaciones: observacionesGenerales || `Parte N°: ${parteNro}. Relevamiento completado.`,
+  // Guardar como Borrador
+  const handleGuardarBorrador = () => {
+    const borradorData = {
+      parteNro,
+      fecha,
+      resultado,
+      observaciones,
+      relevamiento,
       archivosAdjuntos: archivos,
-      tieneFirmaCliente: !!firmaClienteData,
-      tieneFirmaProf: !!firmaProfData
+      tieneFirmaCliente: true,
+      tieneFirmaProf: true
     };
 
-    if (esBorrador) {
-      // Guardar en la lista específica de borradores
-      const borradoresPrevios = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
-      
-      if (borradorIndex !== null && borradorIndex !== undefined) {
-        // Si estábamos editando un borrador existente, lo actualizamos
-        borradoresPrevios[parseInt(borradorIndex)] = objetoInspeccion;
-      } else {
-        // Si es nuevo, lo agregamos al principio
-        borradoresPrevios.unshift(objetoInspeccion);
-      }
-
-      localStorage.setItem(`borradores_inmueble_${idNum}`, JSON.stringify(borradoresPrevios));
-      alert('¡Borrador guardado correctamente!');
+    const borradoresGuardados = JSON.parse(localStorage.getItem(`borradores_inmueble_${inmuebleId}`) || '[]');
+    
+    if (indexBorrador !== null) {
+      borradoresGuardados[Number(indexBorrador)] = borradorData;
     } else {
-      // Guardar como inspección definitiva en el historial de inspecciones
-      const inspeccionesPrevias = JSON.parse(localStorage.getItem(`inspecciones_inmueble_${idNum}`) || '[]');
-      localStorage.setItem(`inspecciones_inmueble_${idNum}`, JSON.stringify([objetoInspeccion, ...inspeccionesPrevias]));
-
-      // Si venía de un borrador, lo removemos de borradores
-      if (borradorIndex !== null && borradorIndex !== undefined) {
-        const borradoresPrevios = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
-        borradoresPrevios.splice(parseInt(borradorIndex), 1);
-        localStorage.setItem(`borradores_inmueble_${idNum}`, JSON.stringify(borradoresPrevios));
-      }
-
-      alert('¡Inspección guardada con éxito!');
+      borradoresGuardados.push(borradorData);
     }
 
-    navigate(`/clientes/${idNum}`);
+    localStorage.setItem(`borradores_inmueble_${inmuebleId}`, JSON.stringify(borradoresGuardados));
+
+    // DISPARAR NOTIFICACIÓN AUTOMÁTICA
+    dispararNotificacionConservador(
+      'Borrador de Inspección Guardado',
+      `Se guardó un borrador técnico (Parte N°: ${parteNro}) para ${oficial.nombre}.`,
+      'info',
+      inmuebleId
+    );
+
+    alert('Borrador guardado exitosamente.');
+    navigate(`/clientes/${inmuebleId}`);
   };
 
-  if (cargando) return <div className="cargando-container">Cargando datos...</div>;
+  // Guardar / Finalizar Inspección Definitiva
+  const handleGuardarInspeccionDefinitiva = (e) => {
+    e.preventDefault();
+    
+    const nuevaInspeccion = {
+      parteNro,
+      fecha,
+      resultado,
+      observaciones,
+      relevamiento,
+      archivosAdjuntos: archivos,
+      tieneFirmaCliente: true,
+      tieneFirmaProf: true
+    };
+
+    // Guardar en inspecciones del inmueble
+    const inspeccionesActuales = JSON.parse(localStorage.getItem(`inspecciones_inmueble_${inmuebleId}`) || '[]');
+    const actualizadas = [nuevaInspeccion, ...inspeccionesActuales];
+    localStorage.setItem(`inspecciones_inmueble_${inmuebleId}`, JSON.stringify(actualizadas));
+
+    // Si venía de un borrador, eliminarlo de la lista de borradores
+    if (indexBorrador !== null) {
+      const borradoresGuardados = JSON.parse(localStorage.getItem(`borradores_inmueble_${inmuebleId}`) || '[]');
+      const filtrados = borradoresGuardados.filter((_, i) => i !== Number(indexBorrador));
+      localStorage.setItem(`borradores_inmueble_${inmuebleId}`, JSON.stringify(filtrados));
+    }
+
+    // DISPARAR NOTIFICACIÓN AUTOMÁTICA DE ÉXITO
+    dispararNotificacionConservador(
+      'Inspección Registrada',
+      `Se completó exitosamente el acta de inspección (Parte N°: ${parteNro}) para ${oficial.nombre}.`,
+      'exito',
+      inmuebleId
+    );
+
+    alert('Inspección guardada y registrada correctamente.');
+    navigate(`/clientes/${inmuebleId}`);
+  };
 
   return (
-    <div className="cargar-inspeccion-container">
-      <nav className="breadcrumb">
-        <span onClick={() => navigate('/conservadores')}>Mapa de inmuebles</span> &gt; 
-        <span onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}> {establecimiento}</span> &gt; 
-        <span className="active"> Cargar inspección</span>
-      </nav>
-
-      <header className="page-title-header">
-        <h1>{borradorIndex !== null ? 'Editar borrador de inspección' : 'Cargar inspección'}</h1>
-        <p>Completá o modificá el relevamiento de las instalaciones de seguridad contra incendios.</p>
-      </header>
-
-      <div className="inmueble-card-header">
-        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80" alt="Inmueble" className="inmueble-thumb"/>
-        <div className="inmueble-card-info">
-          <h2>{establecimiento}</h2>
-          <p className="inmueble-direccion">{domicilio}</p>
-          <span className="inmueble-tag">{inmueble?.Actividad || 'Comercial'}</span>
-        </div>
+    <div className="clientes-page-container" style={{ padding: '30px' }}>
+      <div className="breadcrumb-bar" style={{ marginBottom: '20px' }}>
+        <button className="btn-back-link" onClick={() => navigate(`/clientes/${inmuebleId}`)}>
+          <ArrowLeft size={16} /> Volver al expediente ({oficial.nombre})
+        </button>
       </div>
 
-      <form onSubmit={(e) => { e.preventDefault(); guardarInspeccion(false); }}>
-        <section className="form-card-section">
-          <div className="section-header"><FileText size={18} /><h3>Datos generales</h3></div>
-          <div className="form-grid-2col">
-            <div className="form-group"><label>Fecha *</label><input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required /></div>
-            <div className="form-group"><label>Parte N° *</label><input type="text" value={parteNro} onChange={(e) => setParteNro(e.target.value)} required /></div>
-            <div className="form-group"><label>Empresa / Cliente *</label><input type="text" value={empresaCliente} onChange={(e) => setEmpresaCliente(e.target.value)} required /></div>
-            <div className="form-group"><label>Establecimiento *</label><input type="text" value={establecimiento} onChange={(e) => setEstablecimiento(e.target.value)} required /></div>
-            <div className="form-group"><label>Domicilio *</label><input type="text" value={domicilio} onChange={(e) => setDomicilio(e.target.value)} required /></div>
-            <div className="form-group"><label>Localidad *</label>
-              <select value={localidad} onChange={(e) => setLocalidad(e.target.value)}>
-                <option value="Neuquén">Neuquén</option>
-                <option value="Plottier">Plottier</option>
-                <option value="Cipolletti">Cipolletti</option>
+      <header className="ficha-header" style={{ marginBottom: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="title-group">
+          <h1>{indexBorrador !== null ? 'Editar Borrador de Inspección' : 'Nueva Inspección Técnica'}</h1>
+          <p style={{ color: '#94a3b8', marginTop: '5px' }}>{oficial.nombre} — {oficial.domicilio}</p>
+        </div>
+        <button 
+          type="button" 
+          onClick={handleGuardarBorrador}
+          style={{ background: 'rgba(56, 189, 248, 0.1)', border: '1px solid #38bdf8', color: '#38bdf8', padding: '10px 18px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}
+        >
+          <Save size={18} /> Guardar borrador
+        </button>
+      </header>
+
+      <form onSubmit={handleGuardarInspeccionDefinitiva} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        
+        {/* DATOS GENERALES */}
+        <div className="card-panel" style={{ width: '100%', padding: '24px' }}>
+          <h3 style={{ marginBottom: '15px' }}>Datos Generales del Parte</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>N° de Parte</label>
+              <input type="text" value={parteNro} onChange={(e) => setParteNro(e.target.value)} required style={{ width: '100%', padding: '10px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Fecha</label>
+              <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required style={{ width: '100%', padding: '10px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Resultado</label>
+              <select value={resultado} onChange={(e) => setResultado(e.target.value)} style={{ width: '100%', padding: '10px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Observado / Con observaciones">Observado</option>
+                <option value="Rechazado">Rechazado</option>
               </select>
             </div>
           </div>
-        </section>
-
-        <section className="form-card-section">
-          <div className="section-header"><FileText size={18} /><h3>Relevamiento general del establecimiento</h3></div>
-          
-          <div className="relevamiento-block">
-            <h4 className="block-category-title">EVACUACIÓN</h4>
-            {renderRow("Vías de escape *", "viasEscape")}
-            {renderRow("Luces de emergencia *", "lucesEmergencia")}
-          </div>
-
-          <div className="relevamiento-block">
-            <h4 className="block-category-title">EXTINCIÓN Y DETECCIÓN</h4>
-            {renderRow("Detección de incendios *", "deteccionIncendios")}
-            {renderRow("Instalación fija de agua *", "instalacionFijaAgua")}
-            {renderRow("Matafuegos *", "matafuegos")}
-          </div>
-
-          <div className="relevamiento-block">
-            <h4 className="block-category-title">PREVENCIÓN</h4>
-            {renderRow("Instalación eléctrica *", "instalacionElectrica")}
-            {renderRow("Instalación de gas *", "instalacionGas")}
-            {renderRow("Productos químicos *", "productosQuimicos")}
-            {renderRow("Orden y limpieza *", "ordenLimpia")}
-          </div>
-
-          <div className="relevamiento-block">
-            <h4 className="block-category-title">OBSERVACIONES GENERALES</h4>
-            <div className="textarea-container">
-              <textarea rows="4" maxLength="1000" placeholder="Escribí las observaciones generales del establecimiento..." value={observacionesGenerales} onChange={(e) => setObservacionesGenerales(e.target.value)}/>
-              <span className="char-count">{observacionesGenerales.length}/1000</span>
-            </div>
-          </div>
-
-          <div className="file-upload-box">
-            <div className="upload-info">
-              <Upload size={24} />
-              <div>
-                <strong>Adjuntar fotos o documentos (opcional)</strong>
-                <p>Arrastrá archivos aquí o seleccioná desde tu equipo</p>
-              </div>
-            </div>
-            <label className="btn-upload-trigger">
-              <span>Seleccionar archivos</span>
-              <input type="file" multiple onChange={handleFileChange} hidden />
-            </label>
-          </div>
-
-          {archivos.length > 0 && (
-            <div className="files-list-container">
-              {archivos.map((file, i) => (
-                <div key={i} className="file-item-pill">
-                  <span>📎 {file.nombre}</span>
-                  <button type="button" onClick={() => eliminarArchivo(i)}><Trash2 size={14} /></button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="firmas-grid">
-            <div className="firma-box">
-              <div className="firma-header">
-                <Edit3 size={16} /><span>Firma del cliente</span>
-                <button type="button" className="btn-clear-sig" onClick={() => limpiarCanvas(canvasClienteRef, setFirmaClienteData)}>Limpiar</button>
-              </div>
-              <canvas ref={canvasClienteRef} width={350} height={100} className="canvas-pad"
-                onMouseDown={(e) => iniciarDibujo(e, setDibujandoCliente, canvasClienteRef)}
-                onMouseMove={(e) => dibujar(e, dibujandoCliente, canvasClienteRef)}
-                onMouseUp={() => detenerDibujo(setDibujandoCliente, canvasClienteRef, setFirmaClienteData)}
-              />
-            </div>
-
-            <div className="firma-box">
-              <div className="firma-header">
-                <Edit3 size={16} /><span>Firma del profesional</span>
-                <button type="button" className="btn-clear-sig" onClick={() => limpiarCanvas(canvasProfRef, setFirmaProfData)}>Limpiar</button>
-              </div>
-              <canvas ref={canvasProfRef} width={350} height={100} className="canvas-pad"
-                onMouseDown={(e) => iniciarDibujo(e, setDibujandoProf, canvasProfRef)}
-                onMouseMove={(e) => dibujar(e, dibujandoProf, canvasProfRef)}
-                onMouseUp={() => detenerDibujo(setDibujandoProf, canvasProfRef, setFirmaProfData)}
-              />
-            </div>
-          </div>
-        </section>
-
-        <div className="form-actions-footer">
-          <button type="button" className="btn-secondary" onClick={() => guardarInspeccion(true)}>Guardar borrador</button>
-          <button type="button" className="btn-secondary" onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}>Cancelar</button>
-          <button type="submit" className="btn-primary-cyan">Guardar inspección</button>
         </div>
+
+        {/* RELEVAMIENTO TÉCNICO */}
+        <div className="card-panel" style={{ width: '100%', padding: '24px' }}>
+          <h3 style={{ marginBottom: '15px' }}>Relevamiento de Sistemas e Instalaciones</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {Object.entries(relevamiento).map(([key, val]) => (
+              <div key={key} style={{ display: 'flex', gap: '15px', alignItems: 'center', padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
+                <span style={{ width: '200px', fontSize: '14px', textTransform: 'capitalize', color: '#cbd5e1' }}>{key.replace(/([A-Z])/g, ' $1')}</span>
+                <select 
+                  value={val.estado} 
+                  onChange={(e) => handleCambioRelevamiento(key, 'estado', e.target.value)}
+                  style={{ padding: '8px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff' }}
+                >
+                  <option value="OK">OK / Vigente</option>
+                  <option value="Deficiente">Deficiente</option>
+                  <option value="Sin Instalar">Sin Instalar</option>
+                </select>
+                <input 
+                  type="text" 
+                  placeholder="Observaciones específicas..." 
+                  value={val.obs} 
+                  onChange={(e) => handleCambioRelevamiento(key, 'obs', e.target.value)}
+                  style={{ flex: 1, padding: '8px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff' }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* OBSERVACIONES GENERALES Y ARCHIVOS */}
+        <div className="card-panel" style={{ width: '100%', padding: '24px' }}>
+          <h3 style={{ marginBottom: '15px' }}>Observaciones y Archivos Adjuntos</h3>
+          <textarea 
+            rows="3" 
+            placeholder="Ingrese observaciones generales de la inspección..." 
+            value={observaciones} 
+            onChange={(e) => setObservaciones(e.target.value)}
+            style={{ width: '100%', padding: '12px', background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', marginBottom: '15px' }}
+          />
+          
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', color: '#94a3b8', marginBottom: '8px' }}>Adjuntar planos o fotos:</label>
+            <input type="file" multiple onChange={handleAdjuntarArchivo} style={{ color: '#94a3b8' }} />
+            {archivos.length > 0 && (
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
+                {archivos.map((file, i) => (
+                  <span key={i} style={{ background: 'rgba(56,189,248,0.1)', color: '#38bdf8', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Paperclip size={12} /> {file.nombre}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* BOTÓN FINALIZAR */}
+        <button 
+          type="submit" 
+          style={{ background: '#38bdf8', color: '#0f172a', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+        >
+          <CheckCircle2 size={20} /> Finalizar y Registrar Inspección
+        </button>
+
       </form>
     </div>
   );
-
-  function renderRow(label, key) {
-    const data = relevamiento[key];
-    return (
-      <div className="relevamiento-row">
-        <span className="item-label">{label}</span>
-        <div className="radio-options-group">
-          {['Correcto', 'Con observaciones', 'No aplica'].map(st => (
-            <label key={st} className={`radio-pill ${data.estado === st ? 'active-pill' : ''}`}>
-              <input type="radio" name={key} checked={data.estado === st} onChange={() => setRelevamiento(p => ({...p, [key]: {...p[key], estado: st}}))} />
-              <span>{st}</span>
-            </label>
-          ))}
-        </div>
-        <input type="text" className="row-obs-input" placeholder="Observaciones..." value={data.obs} onChange={(e) => setRelevamiento(p => ({...p, [key]: {...p[key], obs: e.target.value}}))} />
-      </div>
-    );
-  }
 }
 
 export default Inspecciones;
