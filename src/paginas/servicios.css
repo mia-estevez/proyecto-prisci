@@ -175,3 +175,13 @@
   margin: 0 auto;
   box-sizing: border-box;
 }
+
+.servicios-page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  box-sizing: border-box;
+  background-color: transparent; /* Permite tomar el fondo oscuro de App.jsx */
+  color: #f1f5f9;
+}
