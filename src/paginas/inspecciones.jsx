@@ -24,13 +24,11 @@ function Inspecciones() {
   const [localidad, setLocalidad] = useState('Neuquén');
   const [observacionesGenerales, setObservacionesGenerales] = useState('');
 
-  // DICCIONARIO OFICIAL UNIFICADO
   const DIRECCIONES_OFICIALES = {
     1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial' },
     2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial' }
   };
 
-  // Relevamiento (incluyendo Prevención)
   const [relevamiento, setRelevamiento] = useState({
     viasEscape: { estado: 'Correcto', obs: '' },
     lucesEmergencia: { estado: 'Correcto', obs: '' },
@@ -43,10 +41,8 @@ function Inspecciones() {
     ordenLimpia: { estado: 'Correcto', obs: '' },
   });
 
-  // Archivos
   const [archivos, setArchivos] = useState([]);
 
-  // Firmas Canvas
   const canvasClienteRef = useRef(null);
   const canvasProfRef = useRef(null);
   const [dibujandoCliente, setDibujandoCliente] = useState(false);
@@ -69,11 +65,7 @@ function Inspecciones() {
           setCargando(false);
         })
         .catch(err => {
-          setInmueble({
-            Nombre: oficial.nombre,
-            Domicilio: oficial.domicilio,
-            Actividad: oficial.tipo
-          });
+          setInmueble({ Nombre: oficial.nombre, Domicilio: oficial.domicilio, Actividad: oficial.tipo });
           setEstablecimiento(oficial.nombre);
           setDomicilio(oficial.domicilio);
           setEmpresaCliente('Juan Pérez');
@@ -82,10 +74,13 @@ function Inspecciones() {
     }
   }, [inmuebleIdParam]);
 
-  // Manejo de Archivos
   const handleFileChange = (e) => {
     if (e.target.files) {
-      const nuevos = Array.from(e.target.files);
+      const nuevos = Array.from(e.target.files).map(file => ({
+        nombre: file.name,
+        url: URL.createObjectURL(file), // Creamos una URL temporal operable para abrir el archivo real
+        tipo: file.type
+      }));
       setArchivos(prev => [...prev, ...nuevos]);
     }
   };
@@ -94,7 +89,6 @@ function Inspecciones() {
     setArchivos(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Manejo de Dibujo en Canvas
   const iniciarDibujo = (e, setDibujando, canvasRef) => {
     setDibujando(true);
     const canvas = canvasRef.current;
@@ -130,36 +124,29 @@ function Inspecciones() {
     setFirmaData(null);
   };
 
-  const handleSubmit = async (e, esBorrador = false) => {
-    e.preventDefault();
+  // MANEJADOR UNIFICADO PARA GUARDAR (INSPECCIÓN O BORRADOR)
+  const guardarInspeccion = (esBorrador) => {
     const tieneObs = Object.values(relevamiento).some(item => item.estado === 'Con observaciones');
-    const resultadoFinal = esBorrador ? 'Pendiente' : (tieneObs ? 'Con observaciones' : 'Aprobado');
+    const resultadoFinal = esBorrador ? 'Borrador (Pendiente)' : (tieneObs ? 'Con observaciones' : 'Aprobado');
 
-    const payload = {
+    const nuevaInspeccion = {
       idInmueble: parseInt(inmuebleIdParam),
-      idConservador: 1,
       fecha: fecha,
+      parteNro: parteNro,
       resultado: resultadoFinal,
+      relevamiento: relevamiento,
       observaciones: observacionesGenerales || `Parte N°: ${parteNro}. Relevamiento completado.`,
-      archivosNombres: archivos.map(f => f.name),
+      archivosAdjuntos: archivos, // Guardamos los objetos con nombre y URL temporal real
       tieneFirmaCliente: !!firmaClienteData,
       tieneFirmaProf: !!firmaProfData
     };
 
-    try {
-      const response = await fetch('http://localhost:3001/api/inspecciones', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+    const idNum = parseInt(inmuebleIdParam);
+    const inspeccionesPrevias = JSON.parse(localStorage.getItem(`inspecciones_inmueble_${idNum}`) || '[]');
+    localStorage.setItem(`inspecciones_inmueble_${idNum}`, JSON.stringify([nuevaInspeccion, ...inspeccionesPrevias]));
 
-      if (response.ok) {
-        alert(esBorrador ? 'Borrador guardado' : '¡Inspección guardada con éxito!');
-        navigate(`/clientes/${inmuebleIdParam}`);
-      }
-    } catch (error) {
-      alert('Error al conectar con la API');
-    }
+    alert(esBorrador ? '¡Borrador guardado con éxito!' : '¡Inspección guardada con éxito!');
+    navigate(`/clientes/${inmuebleIdParam}`);
   };
 
   if (cargando) return <div className="cargando-container">Cargando datos...</div>;
@@ -186,7 +173,7 @@ function Inspecciones() {
         </div>
       </div>
 
-      <form onSubmit={(e) => handleSubmit(e, false)}>
+      <form onSubmit={(e) => { e.preventDefault(); guardarInspeccion(false); }}>
         {/* DATOS GENERALES */}
         <section className="form-card-section">
           <div className="section-header"><FileText size={18} /><h3>Datos generales</h3></div>
@@ -223,7 +210,6 @@ function Inspecciones() {
             {renderRow("Matafuegos *", "matafuegos")}
           </div>
 
-          {/* SECCIÓN PREVENCIÓN */}
           <div className="relevamiento-block">
             <h4 className="block-category-title">PREVENCIÓN</h4>
             {renderRow("Instalación eléctrica *", "instalacionElectrica")}
@@ -232,7 +218,6 @@ function Inspecciones() {
             {renderRow("Orden y limpieza *", "ordenLimpia")}
           </div>
 
-          {/* OBSERVACIONES GENERALES */}
           <div className="relevamiento-block">
             <h4 className="block-category-title">OBSERVACIONES GENERALES</h4>
             <div className="textarea-container">
@@ -241,7 +226,7 @@ function Inspecciones() {
             </div>
           </div>
 
-          {/* SUBIDA DE ARCHIVOS CON LISTADO VISUAL */}
+          {/* SUBIDA DE ARCHIVOS */}
           <div className="file-upload-box">
             <div className="upload-info">
               <Upload size={24} />
@@ -260,7 +245,7 @@ function Inspecciones() {
             <div className="files-list-container">
               {archivos.map((file, i) => (
                 <div key={i} className="file-item-pill">
-                  <span>📎 {file.name}</span>
+                  <span>📎 {file.nombre}</span>
                   <button type="button" onClick={() => eliminarArchivo(i)}><Trash2 size={14} /></button>
                 </div>
               ))}
@@ -275,10 +260,7 @@ function Inspecciones() {
                 <button type="button" className="btn-clear-sig" onClick={() => limpiarCanvas(canvasClienteRef, setFirmaClienteData)}>Limpiar</button>
               </div>
               <canvas 
-                ref={canvasClienteRef} 
-                width={350} 
-                height={100} 
-                className="canvas-pad"
+                ref={canvasClienteRef} width={350} height={100} className="canvas-pad"
                 onMouseDown={(e) => iniciarDibujo(e, setDibujandoCliente, canvasClienteRef)}
                 onMouseMove={(e) => dibujar(e, dibujandoCliente, canvasClienteRef)}
                 onMouseUp={() => detenerDibujo(setDibujandoCliente, canvasClienteRef, setFirmaClienteData)}
@@ -291,10 +273,7 @@ function Inspecciones() {
                 <button type="button" className="btn-clear-sig" onClick={() => limpiarCanvas(canvasProfRef, setFirmaProfData)}>Limpiar</button>
               </div>
               <canvas 
-                ref={canvasProfRef} 
-                width={350} 
-                height={100} 
-                className="canvas-pad"
+                ref={canvasProfRef} width={350} height={100} className="canvas-pad"
                 onMouseDown={(e) => iniciarDibujo(e, setDibujandoProf, canvasProfRef)}
                 onMouseMove={(e) => dibujar(e, dibujandoProf, canvasProfRef)}
                 onMouseUp={() => detenerDibujo(setDibujandoProf, canvasProfRef, setFirmaProfData)}
@@ -304,7 +283,8 @@ function Inspecciones() {
         </section>
 
         <div className="form-actions-footer">
-          <button type="button" className="btn-secondary" onClick={(e) => handleSubmit(e, true)}>Guardar borrador</button>
+          {/* BOTÓN DE BORRADOR OPERATIVO */}
+          <button type="button" className="btn-secondary" onClick={() => guardarInspeccion(true)}>Guardar borrador</button>
           <button type="button" className="btn-secondary" onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}>Cancelar</button>
           <button type="submit" className="btn-primary-cyan">Guardar inspección</button>
         </div>
