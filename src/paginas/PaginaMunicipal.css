@@ -199,3 +199,107 @@
   color: #8d99ae;
   opacity: 0.5;
 }
+
+
+/* Subsección: Panel Lateral de Últimos Inmuebles*/
+
+.prisci-municipal-content-only .properties-sidebar-card {
+  background-color: #111c38;
+  border: 1px solid #1c2541;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.prisci-municipal-content-only .sidebar-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.prisci-municipal-content-only .title-with-ico {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prisci-municipal-content-only .title-with-ico h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.prisci-municipal-content-only .see-all-link {
+  font-size: 12px;
+  color: #00b4d8;
+  text-decoration: none;
+}
+
+.prisci-municipal-content-only .properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.prisci-municipal-content-only .property-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #0b132b;
+  border: 1px solid #1c2541;
+}
+
+.prisci-municipal-content-only .property-thumb {
+  width: 48px;
+  height: 48px;
+  background-color: #1d3557;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.prisci-municipal-content-only .property-details {
+  flex: 1;
+}
+
+.prisci-municipal-content-only .property-details h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.prisci-municipal-content-only .property-details p {
+  font-size: 11px;
+  color: #8d99ae;
+  margin-bottom: 1px;
+}
+
+.prisci-municipal-content-only .property-details small {
+  font-size: 10px;
+  color: #6c757d;
+}
+
+.prisci-municipal-content-only .arrow-right {
+  color: #8d99ae;
+  font-size: 18px;
+  padding-right: 4px;
+}
+
+.prisci-municipal-content-only .add-property-main-btn {
+  background-color: #0096ff;
+  color: #fff;
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  margin-top: 16px;
+  display: block;
+}
