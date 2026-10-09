@@ -1,32 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Building2, Search, MapPin, ChevronRight, ShieldCheck } from 'lucide-react';
-import './clientes.css'; // Reutilizamos estilos globales
+import { ArrowLeft, Building2, Search, MapPin, ChevronRight } from 'lucide-react';
+import './clientes.css';
 
 function TodosInmuebles() {
   const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState('');
 
-  // Listado oficial de inmuebles asignados al conservador
+  // Al cargar el componente, leemos los estados dinámicos
+  const estadosGuardados = JSON.parse(localStorage.getItem('estados_inmuebles') || '{}');
+
+  const DIRECCIONES_OFICIALES = {
+    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250 m²', estado: estadosGuardados[1] || 'Activo' },
+    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200 m²', estado: estadosGuardados[2] || 'Inactivo' }
+  };
+
   const inmueblesAsignados = [
-    {
-      id: 1,
-      nombre: 'Edificio Torres del Limay',
-      domicilio: 'Av. Argentina 1234, Neuquén',
-      tipo: 'Comercial',
-      superficie: '1.250 m²',
-      estado: 'Activo',
-      serviciosVigentes: 5
-    },
-    {
-      id: 2,
-      nombre: 'Galería Comercial Centro',
-      domicilio: 'Gral. Las Heras 450, Neuquén',
-      tipo: 'Residencial',
-      superficie: '1.200 m²',
-      estado: 'Activo',
-      serviciosVigentes: 5
-    }
+    { id: 1, ...DIRECCIONES_OFICIALES[1] },
+    { id: 2, ...DIRECCIONES_OFICIALES[2] }
   ];
 
   const inmueblesFiltrados = inmueblesAsignados.filter(inm => 
@@ -74,62 +65,80 @@ function TodosInmuebles() {
         </div>
       </div>
 
-      {/* GRILLA DE INMUEBLES */}
+      {/* GRILLA DE INMUEBLES DINÁMICA */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
         {inmueblesFiltrados.length > 0 ? (
-          inmueblesFiltrados.map((inm) => (
-            <div 
-              key={inm.id}
-              onClick={() => navigate(`/clientes/${inm.id}`)}
-              className="card-panel" 
-              style={{ 
-                margin: 0, 
-                cursor: 'pointer', 
-                transition: 'transform 0.2s, border-color 0.2s',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#38bdf8';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ padding: '10px', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '8px', color: '#38bdf8' }}>
-                      <Building2 size={20} />
+          inmueblesFiltrados.map((inm) => {
+            const esActivo = inm.estado === 'Activo';
+            return (
+              <div 
+                key={inm.id}
+                onClick={() => navigate(`/clientes/${inm.id}`)}
+                className="card-panel" 
+                style={{ 
+                  margin: 0, 
+                  cursor: 'pointer', 
+                  transition: 'transform 0.2s, border-color 0.2s',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#38bdf8';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ padding: '10px', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '8px', color: '#38bdf8' }}>
+                        <Building2 size={20} />
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: '16px', color: '#f8fafc', margin: 0 }}>{inm.nombre}</h3>
+                        {/* ESTADO DINÁMICO CONDICIONAL */}
+                        <span 
+                          style={{ 
+                            marginTop: '4px', 
+                            display: 'inline-block',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            backgroundColor: esActivo ? 'rgba(34, 197, 94, 0.15)' : 'rgba(148, 163, 184, 0.15)',
+                            color: esActivo ? '#4ade80' : '#94a3b8',
+                            border: `1px solid ${esActivo ? 'rgba(34, 197, 94, 0.3)' : 'rgba(148, 163, 184, 0.3)'}`
+                          }}
+                        >
+                          {inm.estado}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <h3 style={{ fontSize: '16px', color: '#f8fafc', margin: 0 }}>{inm.nombre}</h3>
-                      <span className="badge-activo" style={{ marginTop: '4px', display: 'inline-block' }}>{inm.estado}</span>
-                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', fontSize: '13px', marginBottom: '15px' }}>
+                    <MapPin size={14} />
+                    <span>{inm.domicilio}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', fontSize: '12px', color: '#cbd5e1', marginBottom: '15px' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>Tipo: {inm.tipo}</span>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>Superficie: {inm.superficie}</span>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', fontSize: '13px', marginBottom: '15px' }}>
-                  <MapPin size={14} />
-                  <span>{inm.domicilio}</span>
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', fontSize: '12px', color: '#cbd5e1', marginBottom: '15px' }}>
-                  <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>Tipo: {inm.tipo}</span>
-                  <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>Superficie: {inm.superficie}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px', marginTop: '10px' }}>
+                  <span style={{ fontSize: '13px', color: '#38bdf8' }}>Ver expediente técnico</span>
+                  <ChevronRight size={16} color="#38bdf8" />
                 </div>
               </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px', marginTop: '10px' }}>
-                <span style={{ fontSize: '13px', color: '#38bdf8' }}>Ver expediente técnico</span>
-                <ChevronRight size={16} color="#38bdf8" />
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p style={{ color: '#94a3b8', gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>No se encontraron inmuebles que coincidan con la búsqueda.</p>
         )}
