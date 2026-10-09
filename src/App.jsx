@@ -131,7 +131,6 @@ function Contenido() {
 function App() {
   return (
     <BrowserRouter>
-feature/modificandojsxdemunicipal
       <div
         style={{
           display: 'flex',
@@ -197,7 +196,6 @@ feature/modificandojsxdemunicipal
             <Route path="/vencimientos" element={<Vencimientos />} />
           </Routes>
         </main>
- main
 
         <Footer />
       </div>
