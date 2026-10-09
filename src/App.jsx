@@ -14,6 +14,7 @@ import Inspecciones from "./paginas/inspecciones";
 import NotificacionesConservadores from "./paginas/notificacionesConservadores";
 import ServiciosMes from './paginas/serviciosMes';
 import Vencimientos from './paginas/vencimientos';
+import HistorialInmueble from './paginas/historialInmueble';
 
 function Contenido() {
   const location = useLocation();
@@ -93,6 +94,7 @@ function Contenido() {
             <Route path="/notificacionesConservadores" element={<NotificacionesConservadores />} />
             <Route path="/servicios-mes" element={<ServiciosMes />} />
             <Route path="/vencimientos" element={<Vencimientos />} />
+            <Route path='/historial-inmueble/:id' element={<HistorialInmueble />} />
           </Routes>
         </main>
       </div>

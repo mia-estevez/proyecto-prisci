@@ -279,7 +279,7 @@ ${insp.observaciones || 'Sin observaciones.'}
             <div>
               <div className="panel-header-between">
                 <h3>Historial de inspecciones</h3>
-                <button className="link-action" onClick={() => navigate('/historial')}>Ver todos</button>
+                <button className="link-action" onClick={() => navigate(`/historial-inmueble/${inmueble?.IdInmueble || id || 1}`)}>Ver todos</button>
               </div>
 
               <div className="history-items-list">
