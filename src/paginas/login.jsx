@@ -25,6 +25,7 @@ function Login({ onLogin }) {
       });
 
       const datos = await respuesta.json();
+      console.log("Datos del usuario:", datos.usuario);
 
       if (!respuesta.ok) {
         setMensaje(datos.mensaje || "No se pudo iniciar sesión");
