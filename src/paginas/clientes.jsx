@@ -18,6 +18,7 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
+import { dispararNotificacionConservador } from '../utils/notificacionesHelper';
 import './clientes.css';
 
 function Clientes() {
@@ -29,23 +30,16 @@ function Clientes() {
   const [borradores, setBorradores] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  const DIRECCIONES_OFICIALES = {
-    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250' },
-    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200' }
-  };
-
   useEffect(() => {
     const inmuebleId = id || 1;
     const idNum = Number(inmuebleId);
     
-    // Diccionario oficial base
     const DIRECCIONES_OFICIALES = {
       1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250', estado: 'Activo' },
       2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200', estado: 'Inactivo' }
     };
     const oficial = DIRECCIONES_OFICIALES[idNum] || DIRECCIONES_OFICIALES[1];
 
-    // Sincronizar estado global del inmueble en localStorage
     const estadosGuardados = JSON.parse(localStorage.getItem('estados_inmuebles') || '{}');
     if (!estadosGuardados[idNum]) {
       estadosGuardados[idNum] = oficial.estado;
@@ -86,6 +80,7 @@ function Clientes() {
         setCargando(false);
       });
   }, [id]);
+
   const handleBorrarBorrador = (indexAEliminar, e) => {
     e.stopPropagation();
     if (window.confirm('¿Estás seguro de que deseas eliminar este borrador?')) {
@@ -93,6 +88,14 @@ function Clientes() {
       const nuevosBorradores = borradores.filter((_, i) => i !== indexAEliminar);
       setBorradores(nuevosBorradores);
       localStorage.setItem(`borradores_inmueble_${idNum}`, JSON.stringify(nuevosBorradores));
+
+      // DISPARAR NOTIFICACIÓN AUTOMÁTICA AL ELIMINAR BORRADOR
+      dispararNotificacionConservador(
+        'Borrador Eliminado',
+        `Se eliminó un borrador de inspección para ${inmueble?.Nombre}.`,
+        'alerta',
+        idNum
+      );
     }
   };
 
@@ -180,7 +183,6 @@ ${insp.observaciones || 'Sin observaciones.'}
 
         {/* 1. PRIMERA COLUMNA */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%' }}>
-          
           <div className="card-panel photo-card-area" style={{ margin: 0, flex: 1, display: 'flex' }}>
             <img 
               src="/edificio-real.jpg" 
@@ -203,12 +205,10 @@ ${insp.observaciones || 'Sin observaciones.'}
               <div className="service-status-item"><div className="service-name"><FileText size={16} className="item-icon" /><span>Señalización</span></div><span className="badge-vigente">Vigente</span></div>
             </div>
           </div>
-
         </div>
 
         {/* 2. SEGUNDA COLUMNA */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%' }}>
-          
           <div className="card-panel info-card-area" style={{ margin: 0, width: '100%' }}>
             <h3>Información del inmueble</h3>
             <div className="info-group"><label>Dirección</label><p>{inmueble?.Domicilio}</p></div>
@@ -219,17 +219,15 @@ ${insp.observaciones || 'Sin observaciones.'}
             <div className="info-group">
               <label>Estado</label>
               <div>
-                <span 
-                  style={{ 
-                    padding: '2px 10px',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    backgroundColor: inmueble?.Estado === 'Activo' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(148, 163, 184, 0.15)',
-                    color: inmueble?.Estado === 'Activo' ? '#4ade80' : '#94a3b8',
-                    border: `1px solid ${inmueble?.Estado === 'Activo' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(148, 163, 184, 0.3)'}`
-                  }}
-                >
+                <span style={{ 
+                  padding: '2px 10px',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  backgroundColor: inmueble?.Estado === 'Activo' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(148, 163, 184, 0.15)',
+                  color: inmueble?.Estado === 'Activo' ? '#4ade80' : '#94a3b8',
+                  border: `1px solid ${inmueble?.Estado === 'Activo' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(148, 163, 184, 0.3)'}`
+                }}>
                   {inmueble?.Estado || 'Activo'}
                 </span>
               </div>
@@ -246,7 +244,6 @@ ${insp.observaciones || 'Sin observaciones.'}
                   <button className="icon-btn-download" onClick={() => handleDescargarDocumento('Plano_Habilitado')}><Download size={16} /></button>
                 </div>
               </div>
-
               <div className="doc-row">
                 <div className="doc-info"><FileText size={18} className="doc-icon" /><span>Certificado de instalaciones</span></div>
                 <div className="doc-actions-text">
@@ -254,7 +251,6 @@ ${insp.observaciones || 'Sin observaciones.'}
                   <button className="icon-btn-download" onClick={() => handleDescargarDocumento('Certificado_Instalaciones')}><Download size={16} /></button>
                 </div>
               </div>
-
               <div className="doc-row">
                 <div className="doc-info"><FileText size={18} className="doc-icon" /><span>Última inspección ({ultimaInspeccion.fecha})</span></div>
                 <div className="doc-actions-text">
@@ -264,12 +260,10 @@ ${insp.observaciones || 'Sin observaciones.'}
               </div>
             </div>
           </div>
-
         </div>
 
         {/* 3. TERCERA COLUMNA */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%' }}>
-          
           {borradores.length > 0 && (
             <div className="card-panel history-panel" style={{ margin: 0, border: '1px dashed #38bdf8', width: '100%' }}>
               <div className="panel-header-between">
@@ -278,28 +272,14 @@ ${insp.observaciones || 'Sin observaciones.'}
               <div className="history-items-list">
                 {borradores.map((borrador, index) => (
                   <div key={index} className="history-item" style={{ background: 'rgba(56, 189, 248, 0.05)' }}>
-                    <div className="status-indicator">
-                      <Edit size={18} color="#38bdf8" />
-                    </div>
+                    <div className="status-indicator"><Edit size={18} color="#38bdf8" /></div>
                     <div className="history-data">
                       <strong>{borrador.fecha} (Parte: {borrador.parteNro})</strong>
                       <p>{borrador.observaciones || 'Borrador sin observaciones'}</p>
                     </div>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      <button 
-                        className="btn-link-view" 
-                        style={{ color: '#38bdf8' }}
-                        onClick={() => navigate(`/inspecciones/${inmueble?.IdInmueble || id || 1}?borrador=${index}`)}
-                      >
-                        Continuar
-                      </button>
-                      <button 
-                        title="Eliminar borrador"
-                        style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px' }}
-                        onClick={(e) => handleBorrarBorrador(index, e)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <button className="btn-link-view" style={{ color: '#38bdf8' }} onClick={() => navigate(`/inspecciones/${inmueble?.IdInmueble || id || 1}?borrador=${index}`)}>Continuar</button>
+                      <button title="Eliminar borrador" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px' }} onClick={(e) => handleBorrarBorrador(index, e)}><Trash2 size={16} /></button>
                     </div>
                   </div>
                 ))}
@@ -349,7 +329,6 @@ ${insp.observaciones || 'Sin observaciones.'}
               <Plus size={18} /> Cargar inspección
             </button>
           </div>
-
         </div>
 
       </div>
@@ -373,39 +352,9 @@ ${insp.observaciones || 'Sin observaciones.'}
                   {inspeccionSeleccionada.resultado || 'Aprobado'}
                 </span>
               </div>
-
               <div className="modal-info-block">
                 <strong>Observaciones generales:</strong>
                 <p>{inspeccionSeleccionada.observaciones || 'Sin observaciones.'}</p>
-              </div>
-
-              <div className="modal-info-block">
-                <strong>Archivos adjuntos en esta inspección:</strong>
-                {inspeccionSeleccionada.archivosAdjuntos && inspeccionSeleccionada.archivosAdjuntos.length > 0 ? (
-                  <div className="modal-files-list">
-                    {inspeccionSeleccionada.archivosAdjuntos.map((file, i) => (
-                      <a key={i} href={file.url} target="_blank" rel="noopener noreferrer" className="modal-file-pill">
-                        <Paperclip size={14} />
-                        <span>{file.nombre}</span>
-                        <ExternalLink size={12} />
-                      </a>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted">No se adjuntaron archivos en esta inspección.</p>
-                )}
-              </div>
-
-              <div className="modal-info-row firmas-status-row">
-                <span>Firmas registradas:</span>
-                <div>
-                  <span className={`badge-firma ${inspeccionSeleccionada.tieneFirmaCliente ? 'ok' : 'no'}`}>
-                    Cliente: {inspeccionSeleccionada.tieneFirmaCliente ? 'Firmado ✓' : 'Pendiente'}
-                  </span>
-                  <span className={`badge-firma ${inspeccionSeleccionada.tieneFirmaProf ? 'ok' : 'no'}`}>
-                    Profesional: {inspeccionSeleccionada.tieneFirmaProf ? 'Firmado ✓' : 'Pendiente'}
-                  </span>
-                </div>
               </div>
             </div>
 
