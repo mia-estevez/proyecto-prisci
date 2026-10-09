@@ -59,7 +59,7 @@ function Contenido() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#0b1329" }}>
       
       {/* NAVBAR SUPERIOR */}
-      {!esLogin && <Navbar />}
+      {!esLogin && usuario && <Navbar usuario={usuario} />}
 
       <div style={{ display: "flex", flex: 1, width: "100%", minHeight: 0 }}>
         
