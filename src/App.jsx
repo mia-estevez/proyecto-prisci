@@ -32,7 +32,8 @@ function App() {
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/inspecciones" element={<Inspecciones />} />          
             <Route path="/notificacionesConservadores" element={<NotificacionesConservadores />} />
-            <Route path="/servicios-mes" element={<ServiciosMEs />} />
+            <Route path="/servicios-mes" element={<ServiciosMes />} />
+            
           </Routes>
         </main>
 
