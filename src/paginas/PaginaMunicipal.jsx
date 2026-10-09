@@ -2,68 +2,155 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './PaginaMunicipal.css';
 
-function PaginaMunicipal() {
+export default function PaginaMunicipal() {
   return (
-    <div className="contenedor-principal">
-      
+    <div className="prisci-municipal-wrapper">
+      {/* Sección de Bienvenida y Fecha */}
+      <div className="dashboard-header-row">
+        <div className="welcome-box">
+          <h1>¡Hola, María!</h1>
+          <p>Gestioná y supervisá toda la información del sistema.</p>
+        </div>
+        <div className="date-box">
+          Martes, 19 de agosto de 2025
+        </div>
+      </div>
 
-      {/* 2. Contenedor de Layout Principal */}
-      <main className="layout-principal">
+      {/* Tarjetas de Métricas Superiores */}
+      <div className="metrics-grid">
+        <div className="metric-card">
+          <div className="metric-icon-box blue-bg">🏢</div>
+          <div className="metric-data">
+            <span className="metric-number">156</span>
+            <span className="metric-label">Inmuebles registrados</span>
+          </div>
+          <span className="metric-trend positive">↑ 12%</span>
+        </div>
+
+        <div className="metric-card">
+          <div className="metric-icon-box blue-bg">👥</div>
+          <div className="metric-data">
+            <span className="metric-number">48</span>
+            <span className="metric-label">Profesionales registrados</span>
+          </div>
+          <span className="metric-trend positive">↑ 8% <small>respecto al mes anterior</small></span>
+        </div>
+
+        <div className="metric-card">
+          <div className="metric-icon-box blue-bg">💼</div>
+          <div className="metric-data">
+            <span className="metric-number">36</span>
+            <span className="metric-label">Conservadores registrados</span>
+          </div>
+          <span className="metric-trend positive">↑ 5% <small>respecto al mes anterior</small></span>
+        </div>
+
+        <div className="metric-card">
+          <div className="metric-icon-box blue-bg">📋</div>
+          <div className="metric-data">
+            <span className="metric-number">28</span>
+            <span className="metric-label">Inspecciones este mes</span>
+          </div>
+          <span className="metric-trend positive">↑ 16% <small>respecto al mes anterior</small></span>
+        </div>
+      </div>
+
+      {/* Sección Central: Mapa de Inmuebles e Inmuebles Registrados */}
+      <div className="dashboard-grid-layout">
         
-        {/* Sección Izquierda: Mapa Municipal */}
-        <section className="tarjeta seccion-mapa">
-          <h2>Mapa Municipal de Neuquén</h2>
-          <p>Visualización interactiva de la ciudad para gestión de inspecciones urbanas.</p>
-          
-          <div className="mapa-contenedor">
-            <span className="mapa-texto">MAPA MUNICIPAL</span>
-            <img 
-              src="https://via.placeholder.com/800x400/1e1e2e/e3e5e?text=Visualizaci%C3%B3n+del+Mapa" 
-              alt="Placeholder Mapa" 
-              className="mapa-img"
-            />
-          </div>
-        </section>
-
-        {/* Sección Derecha: Panel de Control */}
-        <aside className="tarjeta panel-lateral">
-          <div className="panel-header">
-            <div className="panel-buscador">
-<Link to="/notificaciones" style={{ textDecoration: 'none' }}>
-  <button className="btn-campanita">
-    🔔
-  </button>
-</Link>
-              <input type="text" placeholder="Buscar..." className="input-buscar" />
-              <button type="button" className="btn-buscar">Q</button>
+        {/* Contenedor del Mapa (Con la palabra MAPA y dimensiones exactas) */}
+        <div className="map-section-card">
+          <div className="map-section-title">
+            <span className="map-icon-title">🗺️</span>
+            <div>
+              <h2>Mapa de mis inmuebles</h2>
+              <p>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
             </div>
           </div>
-          
-          <p>Accedé a los módulos técnicos de PRISCI.</p>
 
-          <div className="panel-botones">
-            <button type="button" className="btn-lateral btn-inspecciones">
-              Gestión de Inspecciones
+          <div className="search-filter-bar">
+            <div className="search-input-wrapper">
+              <span className="search-ico">🔍</span>
+              <input type="text" placeholder="Buscar por dirección, cliente o nombre de inmueble..." readOnly />
+            </div>
+            <button className="filter-btn">
+              <span>⚡</span> Filtros <span>▼</span>
             </button>
-            <button type="button" className="btn-lateral btn-herramientas">
-              Catálogo de Herramientas
-            </button>
-            <button type="button" className="btn-lateral btn-reportes">
-              Reportes Urbanos
-            </button>
-            
-            <div className="elementos-referencia">
-              <p className="elementos-titulo">Elementos:</p>
-              <p>- Conservadores</p>
-              <p>- Inmuebles</p>
+          </div>
+
+          <div className="map-placeholder-box">
+            <span className="map-text-indicator">MAPA</span>
+          </div>
+        </div>
+
+        {/* Columna Derecha: Últimos Inmuebles Registrados */}
+        <div className="properties-sidebar-card">
+          <div className="sidebar-card-header">
+            <div className="title-with-ico">
+              <span>🏢</span>
+              <h3>Últimos inmuebles registrados</h3>
+            </div>
+            <a href="#ver-todos" className="see-all-link">Ver todos</a>
+          </div>
+
+          <div className="properties-list">
+            <div className="property-item">
+              <div className="property-thumb"></div>
+              <div className="property-details">
+                <h4>Edificio Torres del Limay</h4>
+                <p>Av. Argentina 1234, Neuquén</p>
+                <small>Edificio residencial</small>
+              </div>
+              <span className="arrow-right">›</span>
+            </div>
+
+            <div className="property-item">
+              <div className="property-thumb"></div>
+              <div className="property-details">
+                <h4>Consorcio Los Teros</h4>
+                <p>Calle San Martín 567, Neuquén</p>
+                <small>Edificio residencial</small>
+              </div>
+              <span className="arrow-right">›</span>
+            </div>
+
+            <div className="property-item">
+              <div className="property-thumb"></div>
+              <div className="property-details">
+                <h4>Hotel del Comahue</h4>
+                <p>Av. Olascoaga 890, Neuquén</p>
+                <small>Hotel</small>
+              </div>
+              <span className="arrow-right">›</span>
+            </div>
+
+            <div className="property-item">
+              <div className="property-thumb"></div>
+              <div className="property-details">
+                <h4>Centro Médico Neuquén</h4>
+                <p>Calle Roca 345, Neuquén</p>
+                <small>Centro de salud</small>
+              </div>
+              <span className="arrow-right">›</span>
+            </div>
+
+            <div className="property-item">
+              <div className="property-thumb"></div>
+              <div className="property-details">
+                <h4>Supermercado La Anónima</h4>
+                <p>Av. Argentina 2200, Neuquén</p>
+                <small>Local comercial</small>
+              </div>
+              <span className="arrow-right">›</span>
             </div>
           </div>
-        </aside>
-      </main>
 
-     
+          <Link to="/agregar" className="add-property-main-btn">
+            + Agregar inmueble
+          </Link>
+        </div>
+
+      </div>
     </div>
   );
 }
-
-export default PaginaMunicipal;
