@@ -1,18 +1,123 @@
-.notificaciones-container {
-  min-height: 50vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 60px 20px;
-  box-sizing: border-box;
-  background-color: #12121e;
+.notif-conservador-container {
+  padding: 30px;
+  background-color: #0b0f19;
+  min-height: 100vh;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
 }
 
-.notificaciones-texto {
-  color: #ffffff;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
+.btn-marcar-todas {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.btn-marcar-todas:hover {
+  background: rgba(56, 189, 248, 0.2);
+}
+
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notif-item.leida {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.notif-item.no-leida {
+  background: rgba(56, 189, 248, 0.05);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.notif-item:hover {
+  border-color: #38bdf8;
+}
+
+.notif-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.notif-title-row strong {
+  font-size: 15px;
+  color: #f8fafc;
+}
+
+.badge-nuevo {
+  background: #38bdf8;
+  color: #0f172a;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.notif-emisor {
+  font-size: 12px;
+  color: #38bdf8;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.notif-mensaje {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.notif-fecha {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.notif-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.icon-btn-check {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #4ade80;
+  padding: 6px;
+}
+
+.icon-btn-trash {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ef4444;
+  padding: 6px;
+}
+
+.empty-text {
+  color: #94a3b8;
   text-align: center;
+  padding: 40px 0;
 }

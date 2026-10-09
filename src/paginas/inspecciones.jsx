@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { 
   FileText, Upload, Edit3, Save, X, CheckCircle2, AlertTriangle, ArrowLeft, Trash2 
 } from 'lucide-react';
+import { dispararNotificacionConservador } from '../utils/notificacionesHelper';
 import './inspecciones.css';
 
 function Inspecciones() {
@@ -55,7 +56,6 @@ function Inspecciones() {
     const idNum = Number(inmuebleIdParam);
     const oficial = DIRECCIONES_OFICIALES[idNum] || DIRECCIONES_OFICIALES[1];
 
-    // Si pasaron un índice de borrador por URL, cargamos esos datos guardados previamente
     if (borradorIndex !== null && borradorIndex !== undefined) {
       const borradores = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
       const borradorSeleccionado = borradores[parseInt(borradorIndex)];
@@ -148,7 +148,7 @@ function Inspecciones() {
     setFirmaData(null);
   };
 
-  // FUNCIÓN PARA GUARDAR (BORRADOR O INSPECCIÓN FINAL)
+  // --- FUNCIÓN PARA GUARDAR (BORRADOR O INSPECCIÓN FINAL) ---
   const guardarInspeccion = (esBorrador) => {
     const idNum = parseInt(inmuebleIdParam);
     const tieneObs = Object.values(relevamiento).some(item => item.estado === 'Con observaciones');
@@ -173,17 +173,24 @@ function Inspecciones() {
       const borradoresPrevios = JSON.parse(localStorage.getItem(`borradores_inmueble_${idNum}`) || '[]');
       
       if (borradorIndex !== null && borradorIndex !== undefined) {
-        // Si estábamos editando un borrador existente, lo actualizamos
         borradoresPrevios[parseInt(borradorIndex)] = objetoInspeccion;
       } else {
-        // Si es nuevo, lo agregamos al principio
         borradoresPrevios.unshift(objetoInspeccion);
       }
 
       localStorage.setItem(`borradores_inmueble_${idNum}`, JSON.stringify(borradoresPrevios));
+
+      // DISPARAR NOTIFICACIÓN AUTOMÁTICA DE BORRADOR
+      dispararNotificacionConservador(
+        'Borrador de Inspección Guardado',
+        `Se guardó un borrador técnico (Parte N°: ${parteNro}) para el inmueble ${establecimiento}.`,
+        'info',
+        idNum
+      );
+
       alert('¡Borrador guardado correctamente!');
     } else {
-      // Guardar como inspección definitiva en el historial de inspecciones
+      // Guardar como inspección definitiva en el historial
       const inspeccionesPrevias = JSON.parse(localStorage.getItem(`inspecciones_inmueble_${idNum}`) || '[]');
       localStorage.setItem(`inspecciones_inmueble_${idNum}`, JSON.stringify([objetoInspeccion, ...inspeccionesPrevias]));
 
@@ -193,6 +200,14 @@ function Inspecciones() {
         borradoresPrevios.splice(parseInt(borradorIndex), 1);
         localStorage.setItem(`borradores_inmueble_${idNum}`, JSON.stringify(borradoresPrevios));
       }
+
+      // DISPARAR NOTIFICACIÓN AUTOMÁTICA DE INSPECCIÓN REGISTRADA
+      dispararNotificacionConservador(
+        'Nueva Inspección Registrada',
+        `Se completó exitosamente el acta de inspección (Parte N°: ${parteNro}) para ${establecimiento}.`,
+        'exito',
+        idNum
+      );
 
       alert('¡Inspección guardada con éxito!');
     }
