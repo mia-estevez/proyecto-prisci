@@ -15,6 +15,7 @@ import Clientes from "./paginas/clientes";
 import Inspecciones from "./paginas/inspecciones";
 import NotificacionesConservadores from "./paginas/notificacionesConservadores";
 import ServiciosMes from './paginas/serviciosMes';
+import Vencimientos from './paginas/vencimientos';
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
             <Route path="/inspecciones" element={<Inspecciones />} />          
             <Route path="/notificacionesConservadores" element={<NotificacionesConservadores />} />
             <Route path="/servicios-mes" element={<ServiciosMes />} />
-            
+            <Router path="/vencimientos" element={<Vencimientos />} />
           </Routes>
         </main>
 
