@@ -236,6 +236,37 @@ function Conservadores() {
               </MapContainer>
             </div>
           </section>
+
+          {/* LISTA LATERAL DE INMUEBLES REGISTRADOS */}
+          <aside className="card-panel list-section">
+            <div className="panel-header flex-between">
+              <h3>Mis inmuebles</h3>
+              <span className="badge-count">{inmuebles.length} inmuebles</span>
+            </div>
+
+            <div className="inmuebles-list">
+              {inmueblesFiltrados.slice(0, 6).map((item) => (
+                <div key={item.id} className="inmueble-item" onClick={() => navigate(`/clientes/${item.id}`)}>
+                  <img src={item.imagenUrl || "/building-placeholder.jpg"} alt={item.nombre} className="inmueble-thumb-img" />
+                  <div className="inmueble-details">
+                    <strong>{item.nombre}</strong>
+                    <p>{item.direccion}</p>
+                    <span className="sub-tag">{item.tipoInmueble}</span>
+                  </div>
+                  <ChevronRight size={18} className="arrow" />
+                </div>
+              ))}
+            </div>
+
+            <button className="btn-link-all" onClick={() => navigate('/inmuebles')}>
+              Ver todos los inmuebles ›
+            </button>
+          </aside>
+
+        </div>
+
+      </main>
+    </div>
   );
 }
 
