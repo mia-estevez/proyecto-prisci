@@ -248,25 +248,56 @@ app.post('/api/login', async (req, res) => {
 
 // 8. REGISTRAR USUARIO DE PRUEBA
 app.post('/api/registro-prueba', async (req, res) => {
-  const { nombre, apellido, dni, email, contrasena, telefono } = req.body;
+  const {
+    nombre,
+    apellido,
+    dni,
+    email,
+    contrasena,
+    telefono,
+    idRol
+  } = req.body;
 
-  if (!nombre || !apellido || !dni || !email || !contrasena) {
-    return res.status(400).json({ mensaje: 'Completá todos los campos obligatorios' });
+  if (!nombre || !apellido || !dni || !email || !contrasena || !idRol) {
+    return res.status(400).json({
+      mensaje: 'Completá todos los campos obligatorios'
+    });
+  }
+
+  if (![1, 2, 3, 4].includes(Number(idRol))) {
+    return res.status(400).json({
+      mensaje: 'El rol indicado no es válido'
+    });
   }
 
   try {
-    const [existentes] = await db.query('SELECT IdUsu FROM Usuarios WHERE Email = ?', [email]);
+    const [existentes] = await db.query(
+      'SELECT IdUsu FROM Usuarios WHERE Email = ?',
+      [email]
+    );
 
     if (existentes.length > 0) {
-      return res.status(409).json({ mensaje: 'Ese correo ya está registrado' });
+      return res.status(409).json({
+        mensaje: 'Ese correo ya está registrado'
+      });
     }
 
     const hash = await bcrypt.hash(contrasena, 10);
 
-    const [resultado] = await db.query(`
-      INSERT INTO Usuarios (Nombre, Apellido, Dni, Email, Contrasena, Telefono, IdRol)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [nombre, apellido, dni, email, hash, telefono || null, 1]);
+    const [resultado] = await db.query(
+      `INSERT INTO Usuarios
+       (Nombre, Apellido, Dni, Email, Contrasena, Telefono, IdRol)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        nombre,
+        apellido,
+        dni,
+        email,
+        hash,
+        telefono || null,
+        Number(idRol)
+      ]
+    );
 
     res.status(201).json({
       mensaje: 'Usuario creado correctamente',
@@ -274,7 +305,9 @@ app.post('/api/registro-prueba', async (req, res) => {
     });
   } catch (error) {
     console.error('Error al registrar usuario:', error);
-    res.status(500).json({ mensaje: 'Error al registrar el usuario' });
+    res.status(500).json({
+      mensaje: 'Error al registrar el usuario'
+    });
   }
 });
 
