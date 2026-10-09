@@ -131,6 +131,53 @@ function Contenido() {
 function App() {
   return (
     <BrowserRouter>
+feature/modificandojsxdemunicipal
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          width: '100%'
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flex: '1',
+            minHeight: 0,
+            width: '100%',
+            alignItems: 'stretch'
+          }}
+        >
+          <Menu rol="municipal" />
+
+          <main
+            style={{
+              flex: '1',
+              minWidth: 0,
+              minHeight: '400px',
+              padding: 0,
+              margin: 0,
+              boxSizing: 'border-box'
+            }}
+          >
+            <Routes>
+              <Route path="/" element={<PaginaMunicipal />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/notificaciones" element={<Notificaciones />} />
+              <Route path="/conservadores" element={<Conservadores />} />
+              <Route path="/clientes" element={<Clientes />} />
+              <Route path="/inspecciones" element={<Inspecciones />} />
+              <Route
+                path="/notificacionesConservadores"
+                element={<NotificacionesConservadores />}
+              />
+              <Route path="/servicios-mes" element={<ServiciosMes />} />
+              <Route path="/vencimientos" element={<Vencimientos />} />
+            </Routes>
+          </main>
+        </div>
+
       <Contenido />
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
@@ -150,6 +197,7 @@ function App() {
             <Route path="/vencimientos" element={<Vencimientos />} />
           </Routes>
         </main>
+ main
 
         <Footer />
       </div>

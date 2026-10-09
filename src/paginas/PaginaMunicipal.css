@@ -1,305 +1,910 @@
-/* contenedor general aislado*/
-.prisci-municipal-content-only {
+/* =========================================
+   PÁGINA MUNICIPAL - PRISCI
+   No modifica header, menú, nav ni footer
+========================================= */
+
+.municipal-dashboard {
+  --municipal-bg: #081a2b;
+  --municipal-panel: #0b2034;
+  --municipal-panel-light: #102941;
+  --municipal-border: #1d405e;
+  --municipal-blue: #0797f5;
+  --municipal-blue-dark: #0860a6;
+  --municipal-text: #f4f7fc;
+  --municipal-muted: #c0d0e6;
+  --municipal-green: #00d7a0;
+
   width: 100%;
-  padding: 10px 0;
-  color: #ffffff;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 18px 16px 28px;
+  color: var(--municipal-text);
+  background: transparent;
+  font-family: inherit;
 }
 
-/*agregando estilos a cabecera y fecha*/
-.prisci-municipal-content-only .dashboard-header-row {
+.municipal-dashboard *,
+.municipal-dashboard *::before,
+.municipal-dashboard *::after {
+  box-sizing: border-box;
+}
+
+.municipal-dashboard button,
+.municipal-dashboard input,
+.municipal-dashboard select {
+  font: inherit;
+}
+
+.municipal-dashboard button {
+  color: inherit;
+}
+
+/* =========================================
+   BIENVENIDA Y FECHA
+========================================= */
+
+.municipal-welcome {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  gap: 20px;
+  margin: 0 7px 14px;
 }
 
-.prisci-municipal-content-only .welcome-box h1 {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: #fff;
+.municipal-welcome h1 {
+  margin: 0 0 5px;
+  font-size: clamp(23px, 1.8vw, 29px);
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
 }
 
-.prisci-municipal-content-only .welcome-box p {
-  color: #8d99ae;
-  font-size: 13px;
+.municipal-welcome p {
+  margin: 0;
+  color: var(--municipal-muted);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-.prisci-municipal-content-only .date-box {
-  color: #8d99ae;
-  font-size: 13px;
+.municipal-date {
+  flex-shrink: 0;
+  padding-top: 7px;
+  color: #d2dff0;
+  font-size: 12px;
+  text-align: right;
 }
 
-/*tarjetas metricas superiores*/
-.prisci-municipal-content-only .metrics-grid {
+/* =========================================
+   TARJETAS DE ESTADÍSTICAS
+========================================= */
+
+.municipal-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.prisci-municipal-content-only .metric-card {
-  background-color: #111c38;
-  border: 1px solid #1c2541;
-  border-radius: 12px;
-  padding: 16px;
+.municipal-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 98px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid var(--municipal-border);
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(14, 36, 57, 0.98),
+    rgba(8, 26, 43, 0.98)
+  );
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.municipal-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 60px;
+  width: 60px;
+  height: 70px;
+  border-radius: 9px;
+  color: var(--municipal-blue);
+  background: linear-gradient(145deg, #102d49, #0b2540);
+}
+
+.municipal-stat-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.municipal-stat-info strong {
+  font-size: clamp(22px, 1.8vw, 27px);
+  font-weight: 750;
+  line-height: 1.15;
+}
+
+.municipal-stat-info span {
+  color: #e4ecf7;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.municipal-stat-growth {
+  display: flex;
+  flex: 0 1 72px;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
+  min-width: 0;
+  text-align: right;
+}
+
+.municipal-stat-growth strong {
+  color: var(--municipal-green);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.municipal-stat-growth span {
+  color: var(--municipal-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   DISTRIBUCIÓN DEL MAPA Y PANEL DERECHO
+========================================= */
+
+.municipal-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.15fr) minmax(300px, 1fr);
+  align-items: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.municipal-map-panel,
+.municipal-recent-panel {
+  min-width: 0;
+  border: 1px solid rgba(25, 57, 84, 0.65);
+  border-radius: 11px;
+  background: rgba(11, 32, 52, 0.75);
+}
+
+.municipal-map-panel {
+  padding: 12px;
+}
+
+.municipal-panel-heading {
   display: flex;
   align-items: flex-start;
-  position: relative;
+  gap: 17px;
+  padding: 0 2px 12px;
 }
 
-.prisci-municipal-content-only .metric-icon-box {
-  width: 40px;
-  height: 40px;
-  background-color: #1d3557;
-  border-radius: 8px;
+.municipal-heading-icon {
   display: flex;
-  align-items: center;
+  flex: 0 0 32px;
   justify-content: center;
-  margin-right: 12px;
-  font-size: 18px;
+  padding-top: 1px;
+  color: var(--municipal-blue);
 }
 
-.prisci-municipal-content-only .metric-data {
-  display: flex;
-  flex-direction: column;
+.municipal-panel-heading h2 {
+  margin: 0 0 5px;
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.4;
 }
 
-.prisci-municipal-content-only .metric-number {
-  font-size: 22px;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 2px;
-}
-
-.prisci-municipal-content-only .metric-label {
+.municipal-panel-heading p {
+  margin: 0;
+  color: var(--municipal-muted);
   font-size: 12px;
-  color: #8d99ae;
+  line-height: 1.6;
 }
 
-.prisci-municipal-content-only .metric-trend {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  font-size: 12px;
-  font-weight: 600;
+/* =========================================
+   BUSCADOR Y FILTROS
+========================================= */
+
+.municipal-map-toolbar {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  color: #2a9d8f;
+  align-items: stretch;
+  gap: 11px;
+  margin-bottom: 12px;
 }
 
-.prisci-municipal-content-only .metric-trend small {
-  font-size: 9px;
-  color: #8d99ae;
-  font-weight: normal;
-}
-
-
-/* estilos grid principal (mapa + lista de inmuelbles)*/
-
-.prisci-municipal-content-only .dashboard-grid-layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
-
-
-/* Subsección: Tarjeta del Mapa y Buscador                  */
-
-.prisci-municipal-content-only .map-section-card {
-  background-color: #111c38;
-  border: 1px solid #1c2541;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.prisci-municipal-content-only .map-section-title {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.prisci-municipal-content-only .map-icon-title {
-  font-size: 22px;
-}
-
-.prisci-municipal-content-only .map-section-title h2 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
-}
-
-.prisci-municipal-content-only .map-section-title p {
-  font-size: 12px;
-  color: #8d99ae;
-}
-
-.prisci-municipal-content-only .search-filter-bar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.prisci-municipal-content-only .search-input-wrapper {
-  flex: 1;
-  background-color: #0b132b;
-  border: 1px solid #1c2541;
-  border-radius: 8px;
+.municipal-search {
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  flex: 1;
+  gap: 12px;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #234866;
+  border-radius: 8px;
+  background: #0c2238;
+  color: #e7f1ff;
 }
 
-.prisci-municipal-content-only .search-ico {
-  margin-right: 8px;
+.municipal-search > svg {
+  flex-shrink: 0;
+  color: #dbe9fb;
 }
 
-.prisci-municipal-content-only .search-input-wrapper input {
+.municipal-search input {
   width: 100%;
-  background: transparent;
-  border: none;
-  color: #fff;
-  padding: 10px 0;
+  min-width: 0;
+  padding: 0;
   outline: none;
-  font-size: 13px;
-}
-
-.prisci-municipal-content-only .filter-btn {
-  background-color: #0b132b;
-  border: 1px solid #1c2541;
-  color: #fff;
-  padding: 0 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Caja de marcador de posición del mapa (con la palabra MAPA) */
-.prisci-municipal-content-only .map-placeholder-box {
-  width: 100%;
-  height: 480px;
-  background-color: #070d1f;
-  border: 2px dashed #1c2541;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.prisci-municipal-content-only .map-text-indicator {
-  font-size: 42px;
-  font-weight: bold;
-  letter-spacing: 6px;
-  color: #8d99ae;
-  opacity: 0.5;
-}
-
-
-/* Subsección: Panel Lateral de Últimos Inmuebles*/
-
-.prisci-municipal-content-only .properties-sidebar-card {
-  background-color: #111c38;
-  border: 1px solid #1c2541;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.prisci-municipal-content-only .sidebar-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.prisci-municipal-content-only .title-with-ico {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.prisci-municipal-content-only .title-with-ico h3 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-}
-
-.prisci-municipal-content-only .see-all-link {
+  border: none;
+  background: transparent;
+  color: #f4f7fc;
   font-size: 12px;
-  color: #00b4d8;
-  text-decoration: none;
 }
 
-.prisci-municipal-content-only .properties-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
+.municipal-search input::placeholder {
+  color: #c2d1e5;
+  opacity: 1;
 }
 
-.prisci-municipal-content-only .property-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px;
-  border-radius: 8px;
-  background-color: #0b132b;
-  border: 1px solid #1c2541;
+.municipal-search:focus-within {
+  border-color: var(--municipal-blue);
+  box-shadow: 0 0 0 2px rgba(7, 151, 245, 0.12);
 }
 
-.prisci-municipal-content-only .property-thumb {
-  width: 48px;
-  height: 48px;
-  background-color: #1d3557;
-  border-radius: 6px;
+.municipal-filter-wrapper {
+  position: relative;
   flex-shrink: 0;
 }
 
-.prisci-municipal-content-only .property-details {
-  flex: 1;
-}
-
-.prisci-municipal-content-only .property-details h4 {
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 2px;
-}
-
-.prisci-municipal-content-only .property-details p {
-  font-size: 11px;
-  color: #8d99ae;
-  margin-bottom: 1px;
-}
-
-.prisci-municipal-content-only .property-details small {
-  font-size: 10px;
-  color: #6c757d;
-}
-
-.prisci-municipal-content-only .arrow-right {
-  color: #8d99ae;
-  font-size: 18px;
-  padding-right: 4px;
-}
-
-.prisci-municipal-content-only .add-property-main-btn {
-  background-color: #0096ff;
-  color: #fff;
-  text-align: center;
-  padding: 12px;
+.municipal-filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #2a5275;
   border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
+  background: #0c2238;
+  cursor: pointer;
+  font-size: 12px !important;
+  font-weight: 650;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.municipal-filter-button > svg:first-child {
+  color: var(--municipal-blue);
+}
+
+.municipal-filter-button:hover,
+.municipal-filter-button.is-active {
+  border-color: var(--municipal-blue);
+  background: #12314e;
+}
+
+.municipal-filter-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 230px;
+  padding: 15px;
+  border: 1px solid var(--municipal-border);
+  border-radius: 9px;
+  background: #0c2034;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.municipal-filter-menu label {
+  font-size: 12px;
+  color: var(--municipal-muted);
+}
+
+.municipal-filter-menu select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--municipal-border);
+  border-radius: 6px;
+  outline: none;
+  background: #102941;
+  color: white;
+  font-size: 12px;
+}
+
+.municipal-filter-menu button {
+  padding: 9px;
+  border: 1px solid var(--municipal-border);
+  border-radius: 6px;
+  background: #102941;
+  color: var(--municipal-blue);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.municipal-filter-menu button:hover {
+  background: #173955;
+}
+
+/* =========================================
+   MAPA
+========================================= */
+
+.municipal-map {
+  position: relative;
+  width: 100%;
+  height: clamp(390px, 42vw, 495px);
+  min-height: 350px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid #263f59;
+  border-radius: 9px;
+  background: #172d43;
+}
+
+.municipal-map-canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.municipal-map-iframe {
+  position: absolute;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  border: 0;
+  filter: brightness(0.62) invert(0.88) hue-rotate(180deg) saturate(0.7);
+}
+
+.municipal-map-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 30, 48, 0.2),
+    rgba(8, 26, 43, 0.25)
+  );
+}
+
+.municipal-map-label {
+  position: absolute;
+  z-index: 2;
+  color: #f1f6ff;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.4;
+  text-align: center;
+  text-shadow: 0 2px 4px #061321, 0 0 8px #061321;
+  pointer-events: none;
+}
+
+.label-parque {
+  top: 17%;
+  left: 22%;
+}
+
+.label-neuquen {
+  top: 47%;
+  left: 39%;
+  font-size: 19px;
+}
+
+.label-barrio {
+  top: 27%;
+  right: 6%;
+}
+
+.label-confluencia {
+  bottom: 39%;
+  left: 7%;
+}
+
+.municipal-rio-label {
+  position: absolute;
+  z-index: 2;
+  bottom: 16%;
+  left: 30%;
+  color: #e5f0ff;
   font-size: 13px;
-  margin-top: 16px;
-  display: block;
+  font-style: italic;
+  transform: rotate(28deg);
+  text-shadow: 0 1px 4px #071a2c;
+  pointer-events: none;
+}
+
+.municipal-map-marker {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: #f02d40;
+  color: white;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.municipal-map-marker:hover {
+  z-index: 6;
+  background: #ff4658;
+  box-shadow: 0 0 0 5px rgba(240, 45, 64, 0.2);
+}
+
+.municipal-map-controls {
+  position: absolute;
+  z-index: 7;
+  top: 13px;
+  left: 13px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(5, 21, 36, 0.94);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.municipal-map-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 36px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 26px !important;
+  font-weight: 650;
+}
+
+.municipal-map-controls button:hover {
+  background: #143550;
+}
+
+.municipal-map-legend {
+  position: absolute;
+  z-index: 7;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 195px;
+  padding: 12px;
+  border: 1px solid rgba(49, 76, 103, 0.55);
+  border-radius: 8px;
+  background: rgba(5, 21, 36, 0.94);
+  color: #eaf1fc;
+}
+
+.municipal-map-legend > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+}
+
+.municipal-legend-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  color: white;
+}
+
+.municipal-legend-dot.red {
+  background: #f02d40;
+}
+
+.municipal-legend-dot.blue {
+  background: #0797f5;
+}
+
+.municipal-map-selection {
+  position: absolute;
+  z-index: 10;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 65%;
+  padding: 13px 32px 13px 13px;
+  border: 1px solid var(--municipal-border);
+  border-radius: 8px;
+  background: rgba(5, 21, 36, 0.96);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.25);
+}
+
+.municipal-map-selection strong {
+  font-size: 12px;
+}
+
+.municipal-map-selection span {
+  color: var(--municipal-muted);
+  font-size: 11px;
+}
+
+.municipal-map-selection button {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 21px !important;
+}
+
+/* =========================================
+   PANEL DE ÚLTIMOS INMUEBLES
+========================================= */
+
+.municipal-recent-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.municipal-recent-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 43px;
+  padding: 0 2px 12px;
+  border-bottom: 1px solid var(--municipal-border);
+}
+
+.municipal-recent-heading > svg {
+  flex-shrink: 0;
+  color: var(--municipal-blue);
+}
+
+.municipal-recent-heading h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.municipal-recent-heading > button {
+  flex-shrink: 0;
+  padding: 4px 0 4px 4px;
+  border: none;
+  background: transparent;
+  color: var(--municipal-blue);
+  cursor: pointer;
+  font-size: 12px !important;
+}
+
+.municipal-recent-heading > button:hover {
+  color: #68c5ff;
+}
+
+.municipal-recent-list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.municipal-property {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-width: 0;
+  min-height: 82px;
+  padding: 8px 0;
+  border: none;
+  border-bottom: 1px solid var(--municipal-border);
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.municipal-property:hover,
+.municipal-property.is-selected {
+  background: rgba(15, 53, 82, 0.65);
+}
+
+.municipal-property-image {
+  flex: 0 0 88px;
+  width: 88px;
+  height: 70px;
+  border-radius: 7px;
+  background: #17334b;
+  object-fit: cover;
+}
+
+.municipal-property-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.municipal-property-info strong {
+  overflow: hidden;
+  color: #f5f7fc;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+}
+
+.municipal-property-info > span {
+  overflow-wrap: anywhere;
+  color: #c8d8ee;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.municipal-property-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #d8e6f8;
+}
+
+.municipal-empty {
+  margin: 20px 0;
+  color: var(--municipal-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* =========================================
+   BOTÓN AGREGAR INMUEBLE
+========================================= */
+
+.municipal-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border: 1px solid #159ff8;
+  border-radius: 8px;
+  background: linear-gradient(100deg, #0788e9, #079cf8);
+  color: white;
+  cursor: pointer;
+  font-size: 13px !important;
+  font-weight: 700;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.municipal-add-button:hover {
+  filter: brightness(1.12);
+}
+
+.municipal-add-button:active {
+  transform: scale(0.99);
+}
+
+/* =========================================
+   RESPONSIVE: NOTEBOOKS Y TABLETS
+========================================= */
+
+@media (max-width: 1250px) {
+  .municipal-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .municipal-main-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(270px, 1fr);
+  }
+
+  .municipal-stat-card {
+    min-height: 90px;
+  }
+}
+
+@media (max-width: 950px) {
+  .municipal-main-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .municipal-recent-panel {
+    width: 100%;
+  }
+
+  .municipal-map {
+    height: 440px;
+  }
+
+  .municipal-property-image {
+    flex-basis: 100px;
+    width: 100px;
+  }
+}
+
+/* =========================================
+   RESPONSIVE: CELULARES
+========================================= */
+
+@media (max-width: 600px) {
+  .municipal-dashboard {
+    padding: 14px 10px 22px;
+  }
+
+  .municipal-welcome {
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 2px 15px;
+  }
+
+  .municipal-welcome h1 {
+    font-size: 23px;
+  }
+
+  .municipal-welcome p {
+    font-size: 13px;
+  }
+
+  .municipal-date {
+    padding-top: 0;
+    font-size: 11px;
+    text-align: left;
+  }
+
+  .municipal-stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .municipal-stat-card {
+    min-height: 82px;
+    padding: 10px;
+  }
+
+  .municipal-stat-icon {
+    flex-basis: 52px;
+    width: 52px;
+    height: 58px;
+  }
+
+  .municipal-stat-info strong {
+    font-size: 23px;
+  }
+
+  .municipal-stat-info span {
+    font-size: 12px;
+  }
+
+  .municipal-stat-growth {
+    flex-basis: 78px;
+  }
+
+  .municipal-map-panel,
+  .municipal-recent-panel {
+    padding: 10px;
+  }
+
+  .municipal-panel-heading {
+    gap: 10px;
+  }
+
+  .municipal-panel-heading h2 {
+    font-size: 15px;
+  }
+
+  .municipal-panel-heading p {
+    font-size: 11px;
+  }
+
+  .municipal-map-toolbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .municipal-search,
+  .municipal-filter-button {
+    width: 100%;
+  }
+
+  .municipal-filter-button {
+    justify-content: flex-start;
+  }
+
+  .municipal-filter-button > svg:last-child {
+    margin-left: auto;
+  }
+
+  .municipal-filter-menu {
+    left: 0;
+    right: auto;
+    width: 100%;
+  }
+
+  .municipal-map {
+    height: 390px;
+    min-height: 320px;
+  }
+
+  .municipal-map-legend {
+    right: 7px;
+    bottom: 7px;
+    min-width: 170px;
+    padding: 9px;
+  }
+
+  .municipal-map-legend > div {
+    font-size: 10px;
+  }
+
+  .municipal-map-marker {
+    width: 29px;
+    height: 29px;
+  }
+
+  .municipal-map-marker svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .municipal-recent-heading {
+    flex-wrap: wrap;
+  }
+
+  .municipal-recent-heading h2 {
+    font-size: 13px;
+  }
+
+  .municipal-property {
+    gap: 9px;
+  }
+
+
+  .municipal-property-image {
+    flex-basis: 76px;
+    width: 76px;
+    height: 66px;
+  }
+
+  .municipal-property-info strong {
+    font-size: 11px;
+  }
+
+  .municipal-property-info > span {
+    font-size: 10px;
+  }
 }
