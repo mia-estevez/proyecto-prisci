@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { 
-  FileText, Calendar, Building, MapPin, Upload, 
-  Edit3, Save, X, CheckCircle2, AlertCircle, HelpCircle, ArrowLeft
+  FileText, Upload, Edit3, Save, X, CheckCircle2, AlertTriangle, ArrowLeft, Trash2 
 } from 'lucide-react';
 import './inspecciones.css';
 
@@ -11,14 +10,12 @@ function Inspecciones() {
   const { idInmueble } = useParams();
   const [searchParams] = useSearchParams();
   
-  // Obtener el ID del inmueble desde los parámetros de la URL
   const inmuebleIdParam = idInmueble || searchParams.get('inmuebleId') || 1;
 
-  // Estado del Inmueble desde la BD
   const [inmueble, setInmueble] = useState(null);
   const [cargando, setCargando] = useState(true);
 
-  // Estado Formulario General
+  // Campos principales
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
   const [parteNro, setParteNro] = useState(`PR-2026-${Math.floor(1000 + Math.random() * 9000)}`);
   const [empresaCliente, setEmpresaCliente] = useState('');
@@ -27,7 +24,7 @@ function Inspecciones() {
   const [localidad, setLocalidad] = useState('Neuquén');
   const [observacionesGenerales, setObservacionesGenerales] = useState('');
 
-  // Estado Relevamiento General (ítems organizados por categorías)
+  // Relevamiento
   const [relevamiento, setRelevamiento] = useState({
     viasEscape: { estado: 'Correcto', obs: '' },
     lucesEmergencia: { estado: 'Correcto', obs: '' },
@@ -40,10 +37,17 @@ function Inspecciones() {
     ordenLimpia: { estado: 'Correcto', obs: '' },
   });
 
-  // Archivos adjuntos
+  // Archivos
   const [archivos, setArchivos] = useState([]);
 
-  // Cargar datos del inmueble desde la API
+  // Firmas Canvas
+  const canvasClienteRef = useRef(null);
+  const canvasProfRef = useRef(null);
+  const [dibujandoCliente, setDibujandoCliente] = useState(false);
+  const [dibujandoProf, setDibujandoProf] = useState(false);
+  const [firmaClienteData, setFirmaClienteData] = useState(null);
+  const [firmaProfData, setFirmaProfData] = useState(null);
+
   useEffect(() => {
     if (inmuebleIdParam) {
       fetch(`http://localhost:3001/api/inmuebles/${inmuebleIdParam}`)
@@ -52,58 +56,75 @@ function Inspecciones() {
           setInmueble(data);
           setEstablecimiento(data.Nombre || '');
           setDomicilio(data.Domicilio || '');
-          setEmpresaCliente(
-            data.nombrePropietario 
-              ? `${data.nombrePropietario} ${data.apellidoPropietario || ''}`.trim() 
-              : 'Cliente Consorcio'
-          );
+          setEmpresaCliente(data.nombrePropietario ? `${data.nombrePropietario} ${data.apellidoPropietario || ''}`.trim() : 'Cliente Consorcio');
           setCargando(false);
         })
-        .catch(err => {
-          console.error("Error al cargar inmueble:", err);
-          setCargando(false);
-        });
+        .catch(err => setCargando(false));
     }
   }, [inmuebleIdParam]);
 
-  const handleEstadoChange = (itemKey, nuevoEstado) => {
-    setRelevamiento(prev => ({
-      ...prev,
-      [itemKey]: { ...prev[itemKey], estado: nuevoEstado }
-    }));
-  };
-
-  const handleObsChange = (itemKey, texto) => {
-    setRelevamiento(prev => ({
-      ...prev,
-      [itemKey]: { ...prev[itemKey], obs: texto }
-    }));
-  };
-
+  // Manejo de Archivos
   const handleFileChange = (e) => {
     if (e.target.files) {
-      setArchivos(Array.from(e.target.files));
+      const nuevos = Array.from(e.target.files);
+      setArchivos(prev => [...prev, ...nuevos]);
     }
+  };
+
+  const eliminarArchivo = (index) => {
+    setArchivos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Manejo de Dibujo en Canvas
+  const iniciarDibujo = (e, setDibujando, canvasRef) => {
+    setDibujando(true);
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+  };
+
+  const dibujar = (e, dibujando, canvasRef) => {
+    if (!dibujando) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
+  };
+
+  const detenerDibujo = (setDibujando, canvasRef, setFirmaData) => {
+    setDibujando(false);
+    if (canvasRef.current) {
+      setFirmaData(canvasRef.current.toDataURL());
+    }
+  };
+
+  const limpiarCanvas = (canvasRef, setFirmaData) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setFirmaData(null);
   };
 
   const handleSubmit = async (e, esBorrador = false) => {
     e.preventDefault();
-
-    // Determinar resultado global
-    const tieneObservaciones = Object.values(relevamiento).some(
-      item => item.estado === 'Con observaciones'
-    );
-    const resultadoFinal = esBorrador 
-      ? 'Pendiente' 
-      : (tieneObservaciones ? 'Con observaciones' : 'Aprobado');
+    const tieneObs = Object.values(relevamiento).some(item => item.estado === 'Con observaciones');
+    const resultadoFinal = esBorrador ? 'Pendiente' : (tieneObs ? 'Con observaciones' : 'Aprobado');
 
     const payload = {
       idInmueble: parseInt(inmuebleIdParam),
-      idConservador: 1, // ID por defecto del usuario logueado
+      idConservador: 1,
       fecha: fecha,
       resultado: resultadoFinal,
       observaciones: observacionesGenerales || `Parte N°: ${parteNro}. Relevamiento completado.`,
-      detalles: relevamiento
+      archivosNombres: archivos.map(f => f.name),
+      tieneFirmaCliente: !!firmaClienteData,
+      tieneFirmaProf: !!firmaProfData
     };
 
     try {
@@ -114,292 +135,169 @@ function Inspecciones() {
       });
 
       if (response.ok) {
-        alert(esBorrador ? 'Borrador guardado correctamente' : '¡Inspección guardada con éxito!');
+        alert(esBorrador ? 'Borrador guardado' : '¡Inspección guardada con éxito!');
         navigate(`/clientes/${inmuebleIdParam}`);
-      } else {
-        alert('Error al guardar la inspección');
       }
     } catch (error) {
-      console.error('Error al conectar con la API:', error);
-      alert('Error de conexión con el servidor');
+      alert('Error al conectar con la API');
     }
   };
 
-  if (cargando) {
-    return <div className="cargando-container">Cargando datos del inmueble...</div>;
-  }
+  if (cargando) return <div className="cargando-container">Cargando datos...</div>;
 
   return (
     <div className="cargar-inspeccion-container">
-      
-      {/* MIGA DE PAN */}
       <nav className="breadcrumb">
         <span onClick={() => navigate('/conservadores')}>Mapa de inmuebles</span> &gt; 
-        <span onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}> {inmueble?.Nombre || 'Inmueble'}</span> &gt; 
+        <span onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}> {inmueble?.Nombre}</span> &gt; 
         <span className="active"> Cargar inspección</span>
       </nav>
 
-      {/* ENCABEZADO */}
       <header className="page-title-header">
         <h1>Cargar inspección</h1>
         <p>Completá el relevamiento de las instalaciones de seguridad contra incendios.</p>
       </header>
 
-      {/* TARJETA DE RESUMEN DEL INMUEBLE */}
       <div className="inmueble-card-header">
-        <img 
-          src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80" 
-          alt="Inmueble" 
-          className="inmueble-thumb"
-        />
+        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80" alt="Inmueble" className="inmueble-thumb"/>
         <div className="inmueble-card-info">
-          <h2>{inmueble?.Nombre || 'Edificio Torres del Limay'}</h2>
-          <p className="inmueble-direccion">{inmueble?.Domicilio || 'Av. Argentina 1234'}, Neuquén</p>
-          <span className="inmueble-tag">{inmueble?.Actividad || 'Edificio residencial'}</span>
+          <h2>{inmueble?.Nombre}</h2>
+          <p className="inmueble-direccion">{inmueble?.Domicilio}, Neuquén</p>
+          <span className="inmueble-tag">{inmueble?.Actividad}</span>
         </div>
       </div>
 
       <form onSubmit={(e) => handleSubmit(e, false)}>
-        
-        {/* SECCIÓN 1: DATOS GENERALES */}
+        {/* DATOS GENERALES */}
         <section className="form-card-section">
-          <div className="section-header">
-            <FileText size={18} />
-            <h3>Datos generales</h3>
-          </div>
-
+          <div className="section-header"><FileText size={18} /><h3>Datos generales</h3></div>
           <div className="form-grid-2col">
-            <div className="form-group">
-              <label>Fecha <span className="req">*</span></label>
-              <div className="input-with-icon-right">
-                <input 
-                  type="date" 
-                  value={fecha} 
-                  onChange={(e) => setFecha(e.target.value)} 
-                  required 
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Parte N° <span className="req">*</span></label>
-              <input 
-                type="text" 
-                value={parteNro} 
-                onChange={(e) => setParteNro(e.target.value)} 
-                required 
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Empresa / Cliente <span className="req">*</span></label>
-              <input 
-                type="text" 
-                value={empresaCliente} 
-                onChange={(e) => setEmpresaCliente(e.target.value)} 
-                placeholder="Nombre de la empresa o cliente..." 
-                required 
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Establecimiento <span className="req">*</span></label>
-              <input 
-                type="text" 
-                value={establecimiento} 
-                onChange={(e) => setEstablecimiento(e.target.value)} 
-                placeholder="Nombre del establecimiento..." 
-                required 
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Domicilio <span className="req">*</span></label>
-              <input 
-                type="text" 
-                value={domicilio} 
-                onChange={(e) => setDomicilio(e.target.value)} 
-                placeholder="Dirección del inmueble..." 
-                required 
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Localidad <span className="req">*</span></label>
+            <div className="form-group"><label>Fecha *</label><input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required /></div>
+            <div className="form-group"><label>Parte N° *</label><input type="text" value={parteNro} onChange={(e) => setParteNro(e.target.value)} required /></div>
+            <div className="form-group"><label>Empresa / Cliente *</label><input type="text" value={empresaCliente} onChange={(e) => setEmpresaCliente(e.target.value)} required /></div>
+            <div className="form-group"><label>Establecimiento *</label><input type="text" value={establecimiento} onChange={(e) => setEstablecimiento(e.target.value)} required /></div>
+            <div className="form-group"><label>Domicilio *</label><input type="text" value={domicilio} onChange={(e) => setDomicilio(e.target.value)} required /></div>
+            <div className="form-group"><label>Localidad *</label>
               <select value={localidad} onChange={(e) => setLocalidad(e.target.value)}>
                 <option value="Neuquén">Neuquén</option>
                 <option value="Plottier">Plottier</option>
                 <option value="Cipolletti">Cipolletti</option>
-                <option value="Centenario">Centenario</option>
               </select>
             </div>
           </div>
         </section>
 
-        {/* SECCIÓN 2: RELEVAMIENTO GENERAL DEL ESTABLECIMIENTO */}
+        {/* RELEVAMIENTO */}
         <section className="form-card-section">
-          <div className="section-header">
-            <FileText size={18} />
-            <h3>Relevamiento general del establecimiento</h3>
-          </div>
-
-          {/* EVACUACIÓN */}
+          <div className="section-header"><FileText size={18} /><h3>Relevamiento general</h3></div>
+          
           <div className="relevamiento-block">
             <h4 className="block-category-title">EVACUACIÓN</h4>
-            
-            {renderRelevamientoRow("Vías de escape *", "viasEscape")}
-            {renderRelevamientoRow("Luces de emergencia *", "lucesEmergencia")}
+            {renderRow("Vías de escape *", "viasEscape")}
+            {renderRow("Luces de emergencia *", "lucesEmergencia")}
           </div>
 
-          {/* EXTINCIÓN Y DETECCIÓN */}
           <div className="relevamiento-block">
             <h4 className="block-category-title">EXTINCIÓN Y DETECCIÓN</h4>
-            
-            {renderRelevamientoRow("Detección de incendios *", "deteccionIncendios")}
-            {renderRelevamientoRow("Instalación fija de agua *", "instalacionFijaAgua")}
-            {renderRelevamientoRow("Matafuegos *", "matafuegos")}
-          </div>
-
-          {/* PREVENCIÓN */}
-          <div className="relevamiento-block">
-            <h4 className="block-category-title">PREVENCIÓN</h4>
-            
-            {renderRelevamientoRow("Instalación eléctrica *", "instalacionElectrica")}
-            {renderRelevamientoRow("Instalación de gas *", "instalacionGas")}
-            {renderRelevamientoRow("Productos químicos *", "productosQuimicos")}
-            {renderRelevamientoRow("Orden y limpieza *", "ordenLimpia")}
+            {renderRow("Detección de incendios *", "deteccionIncendios")}
+            {renderRow("Instalación fija de agua *", "instalacionFijaAgua")}
+            {renderRow("Matafuegos *", "matafuegos")}
           </div>
 
           {/* OBSERVACIONES GENERALES */}
           <div className="relevamiento-block">
             <h4 className="block-category-title">OBSERVACIONES GENERALES</h4>
             <div className="textarea-container">
-              <textarea 
-                rows="4" 
-                maxLength="1000"
-                placeholder="Escribí aquí las observaciones generales del establecimiento..."
-                value={observacionesGenerales}
-                onChange={(e) => setObservacionesGenerales(e.target.value)}
-              />
+              <textarea rows="4" maxLength="1000" placeholder="Escribí las observaciones generales..." value={observacionesGenerales} onChange={(e) => setObservacionesGenerales(e.target.value)}/>
               <span className="char-count">{observacionesGenerales.length}/1000</span>
             </div>
           </div>
 
-          {/* ADJUNTAR ARCHIVOS */}
+          {/* SUBIDA DE ARCHIVOS CON LISTADO VISUAL */}
           <div className="file-upload-box">
             <div className="upload-info">
-              <FileText size={28} />
+              <Upload size={24} />
               <div>
                 <strong>Adjuntar fotos o documentos (opcional)</strong>
                 <p>Arrastrá archivos aquí o seleccioná desde tu equipo</p>
-                <small>Formatos: PDF, JPG, PNG (máx. 10 MB por archivo)</small>
               </div>
             </div>
             <label className="btn-upload-trigger">
-              <Upload size={16} />
               <span>Seleccionar archivos</span>
               <input type="file" multiple onChange={handleFileChange} hidden />
             </label>
           </div>
 
-          {/* FIRMAS */}
+          {archivos.length > 0 && (
+            <div className="files-list-container">
+              {archivos.map((file, i) => (
+                <div key={i} className="file-item-pill">
+                  <span>📎 {file.name}</span>
+                  <button type="button" onClick={() => eliminarArchivo(i)}><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* CANVAS DE FIRMAS */}
           <div className="firmas-grid">
             <div className="firma-box">
               <div className="firma-header">
-                <Edit3 size={16} />
-                <span>Firma del cliente</span>
+                <Edit3 size={16} /><span>Firma del cliente</span>
+                <button type="button" className="btn-clear-sig" onClick={() => limpiarCanvas(canvasClienteRef, setFirmaClienteData)}>Limpiar</button>
               </div>
-              <div className="firma-placeholder">
-                Haz clic para me firmar o adjuntar firma...
-              </div>
+              <canvas 
+                ref={canvasClienteRef} 
+                width={350} 
+                height={100} 
+                className="canvas-pad"
+                onMouseDown={(e) => iniciarDibujo(e, setDibujandoCliente, canvasClienteRef)}
+                onMouseMove={(e) => dibujar(e, dibujandoCliente, canvasClienteRef)}
+                onMouseUp={() => detenerDibujo(setDibujandoCliente, canvasClienteRef, setFirmaClienteData)}
+              />
             </div>
 
             <div className="firma-box">
               <div className="firma-header">
-                <Edit3 size={16} />
-                <span>Firma del profesional</span>
+                <Edit3 size={16} /><span>Firma del profesional</span>
+                <button type="button" className="btn-clear-sig" onClick={() => limpiarCanvas(canvasProfRef, setFirmaProfData)}>Limpiar</button>
               </div>
-              <div className="firma-placeholder">
-                Haz clic para me firmar o adjuntar firma...
-              </div>
+              <canvas 
+                ref={canvasProfRef} 
+                width={350} 
+                height={100} 
+                className="canvas-pad"
+                onMouseDown={(e) => iniciarDibujo(e, setDibujandoProf, canvasProfRef)}
+                onMouseMove={(e) => dibujar(e, dibujandoProf, canvasProfRef)}
+                onMouseUp={() => detenerDibujo(setDibujandoProf, canvasProfRef, setFirmaProfData)}
+              />
             </div>
           </div>
         </section>
 
-        {/* BOTONES DE ACCIÓN BOTTOM */}
         <div className="form-actions-footer">
-          <button 
-            type="button" 
-            className="btn-secondary"
-            onClick={(e) => handleSubmit(e, true)}
-          >
-            <Save size={16} /> Guardar borrador
-          </button>
-
-          <button 
-            type="button" 
-            className="btn-secondary" 
-            onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}
-          >
-            Cancelar
-          </button>
-
-          <button type="submit" className="btn-primary-cyan">
-            <CheckCircle2 size={16} /> Guardar inspección
-          </button>
+          <button type="button" className="btn-secondary" onClick={(e) => handleSubmit(e, true)}>Guardar borrador</button>
+          <button type="button" className="btn-secondary" onClick={() => navigate(`/clientes/${inmuebleIdParam}`)}>Cancelar</button>
+          <button type="submit" className="btn-primary-cyan">Guardar inspección</button>
         </div>
-
       </form>
     </div>
   );
 
-  // Helper para renderizar las filas de radio buttons
-  function renderRelevamientoRow(label, key) {
-    const itemData = relevamiento[key];
-
+  function renderRow(label, key) {
+    const data = relevamiento[key];
     return (
       <div className="relevamiento-row">
         <span className="item-label">{label}</span>
-        
         <div className="radio-options-group">
-          <label className={`radio-pill ${itemData.estado === 'Correcto' ? 'active-correct' : ''}`}>
-            <input 
-              type="radio" 
-              name={`radio-${key}`} 
-              checked={itemData.estado === 'Correcto'} 
-              onChange={() => handleEstadoChange(key, 'Correcto')} 
-            />
-            <span>Correcto</span>
-          </label>
-
-          <label className={`radio-pill ${itemData.estado === 'Con observaciones' ? 'active-warning' : ''}`}>
-            <input 
-              type="radio" 
-              name={`radio-${key}`} 
-              checked={itemData.estado === 'Con observaciones'} 
-              onChange={() => handleEstadoChange(key, 'Con observaciones')} 
-            />
-            <span>Con observaciones</span>
-          </label>
-
-          <label className={`radio-pill ${itemData.estado === 'No aplica' ? 'active-na' : ''}`}>
-            <input 
-              type="radio" 
-              name={`radio-${key}`} 
-              checked={itemData.estado === 'No aplica'} 
-              onChange={() => handleEstadoChange(key, 'No aplica')} 
-            />
-            <span>No aplica</span>
-          </label>
+          {['Correcto', 'Con observaciones', 'No aplica'].map(st => (
+            <label key={st} className={`radio-pill ${data.estado === st ? 'active-pill' : ''}`}>
+              <input type="radio" name={key} checked={data.estado === st} onChange={() => setRelevamiento(p => ({...p, [key]: {...p[key], estado: st}}))} />
+              <span>{st}</span>
+            </label>
+          ))}
         </div>
-
-        <input 
-          type="text" 
-          className="row-obs-input"
-          placeholder="Observaciones..." 
-          value={itemData.obs}
-          onChange={(e) => handleObsChange(key, e.target.value)}
-        />
+        <input type="text" className="row-obs-input" placeholder="Observaciones..." value={data.obs} onChange={(e) => setRelevamiento(p => ({...p, [key]: {...p[key], obs: e.target.value}}))} />
       </div>
     );
   }

@@ -335,3 +335,50 @@
 .btn-primary-cyan:hover {
   background-color: #0369a1;
 }
+
+/* Archivos seleccionados listado */
+.files-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.file-item-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #0b1329;
+  border: 1px solid #334155;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: #38bdf8;
+}
+.file-item-pill button {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Canvas firmas */
+.canvas-pad {
+  background-color: #0b1329;
+  border: 1px dashed #334155;
+  border-radius: 6px;
+  width: 100%;
+  cursor: crosshair;
+}
+.btn-clear-sig {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-left: auto;
+}
+.btn-clear-sig:hover {
+  color: #ef4444;
+}

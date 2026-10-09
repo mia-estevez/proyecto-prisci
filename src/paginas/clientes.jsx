@@ -20,6 +20,14 @@ function Clientes() {
   const { id } = useParams(); // Obtiene el ID del inmueble desde la URL
   const navigate = useNavigate();
 
+  // Estado para inspección seleccionada y ver modal
+  const [inspeccionSeleccionada, setInspeccionSeleccionada] = useState(null);
+
+  // Función al hacer clic en "Ver"
+  const abrirInspeccion = (inspeccion) => {
+    setInspeccionSeleccionada(inspeccion);
+  };
+
   // ESTADO: Datos del inmueble obtenidos del Backend
   const [inmueble, setInmueble] = useState(null);
   const [cargando, setCargando] = useState(true);
