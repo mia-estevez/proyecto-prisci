@@ -1,11 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+// Importamos componentes de React-Leaflet para el mapa gratuito de OpenStreetMap
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
 import { Home, Users, ClipboardList, Clock, Bell, Search, Filter, ChevronRight, LogOut, Flame, ShieldCheck } from 'lucide-react';
 import './conservadores.css';
+// Importamos los íconos profesionales de Lucide React (vectoriales, sin emojis)
+import { 
+  Home, 
+  Users, 
+  ClipboardList, 
+  Clock, 
+  Bell, 
+  Search, 
+  Filter, 
+  ChevronRight, 
+  LogOut, 
+  Flame, 
+  ShieldCheck 
+} from 'lucide-react';
+// Estilos necesarios para que Leaflet renderice el mapa correctamente
+import 'leaflet/dist/leaflet.css';
+import './conservadores.css';
 
-const mapContainerStyle = { width: '100%', height: '100%' };
-const centerNeuquen = { lat: -38.9516, lng: -68.0591 }; // Coordenadas Neuquén Capital
+
+
+// Coordenadas geográficas centradas en Neuquén Capital
+const CENTRO_NEUQUEN = [-38.9516, -68.0591];
+
+// Definición de íconos personalizados para el mapa (Rojo = Registrado, Azul = Seleccionado)
+const iconoRojo = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const iconoAzul = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 
 function Conservadores() {
   return (
