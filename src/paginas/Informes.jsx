@@ -1,5 +1,5 @@
-
 import React from "react";
+import "./Informes.css";
 
 const tipos = [
   ["Inspecciones", "Listado y detalle de inspecciones realizadas."],
