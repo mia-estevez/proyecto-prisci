@@ -26,6 +26,7 @@ import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
 import Informes from './paginas/Informes';
 import Usuarios from './paginas/Usuarios';
+import Historial from './paginas/Historial';
 
 function Contenido() {
   const location = useLocation();
@@ -145,6 +146,7 @@ function Contenido() {
             <Route path='/profesionales' element={<AgregarProfesionales />} />
             <Route path='/reportes' element={<Informes />} />
             <Route path="/usuarios" element={<Usuarios />} />
+            <Route path="/historial" element={<Historial />} />
           </Routes>
         </main>
       </div>

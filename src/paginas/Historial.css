@@ -1,0 +1,177 @@
+
+/* CONTENIDO: HISTORIAL */
+.prisci-page {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  color: #e8f0fb;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+.prisci-page * {
+  box-sizing: border-box;
+}
+
+.prisci-page h1 {
+  color: #f3f7ff;
+  font-size: 22px;
+  margin: 0 0 5px;
+}
+
+.breadcrumb {
+  color: #92a9c4;
+  font-size: 10px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #b6c6d9;
+  font-size: 12px;
+  margin: 0 0 16px;
+}
+
+.panel {
+  background: #0a1c30;
+  border: 1px solid #1e344c;
+  border-radius: 5px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.control {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 7px 9px;
+  background: #10263d;
+  border: 1px solid #2a4058;
+  border-radius: 4px;
+  color: #eaf2fd;
+  outline: none;
+}
+
+.control::placeholder {
+  color: #728aa5;
+}
+
+.control:focus {
+  border-color: #269df3;
+}
+
+.search {
+  flex: 1 1 180px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  color: #d6e3f2;
+  font-size: 10px;
+}
+
+.compact-field {
+  flex: 0 1 115px;
+}
+
+.btn {
+  border-radius: 4px;
+  padding: 9px 12px;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.secondary {
+  background: #0a1b2e;
+  border: 1px solid #38506a;
+  color: #d9e5f2;
+}
+
+.outline {
+  background: #0c2137;
+  border: 1px solid #1769a4;
+  color: #6ec2ff;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+  font-size: 9px;
+}
+
+.data-table thead {
+  background: #10263d;
+}
+
+.data-table th {
+  text-align: left;
+  color: #dbe8f6;
+  font-weight: 600;
+  padding: 11px 8px;
+  border-bottom: 1px solid #294057;
+}
+
+.data-table td {
+  padding: 11px 8px;
+  color: #c6d4e4;
+  border-bottom: 1px solid #1a3047;
+}
+
+.data-table tbody tr:hover {
+  background: #0e2339;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  color: #91a8c0;
+  font-size: 10px;
+}
+
+.pagination {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination button {
+  min-width: 27px;
+  height: 27px;
+  background: #0d2238;
+  border: 1px solid #29435c;
+  color: #c9d9eb;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.pagination button.current {
+  background: #168fe4;
+  border-color: #168fe4;
+  color: white;
+}
+
+@media (max-width: 650px) {
+  .table-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
