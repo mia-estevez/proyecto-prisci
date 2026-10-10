@@ -17,11 +17,11 @@ import Vencimientos from './paginas/vencimientos';
 import HistorialInmueble from './paginas/historialInmueble';
 import TodosInmuebles from './paginas/todosInmuebles';
 import Bomberos from './paginas/bomberos';
+import AgregarInmueble from './paginas/AgregarInmueble';
 
 function Contenido() {
   const location = useLocation();
   const navigate = useNavigate();
-
 
   const [usuario, setUsuario] = useState(() => {
     const usuarioGuardado = sessionStorage.getItem("usuario");
@@ -48,7 +48,6 @@ function Contenido() {
   if (usuario && esLogin) {
     return <Navigate to="/" replace />;
   }
-
 
   const roles = {
     1: "municipal",
@@ -123,6 +122,7 @@ function Contenido() {
             <Route path="/vencimientos" element={<Vencimientos />} />
             <Route path='/historial-inmueble/:id' element={<HistorialInmueble />} />
             <Route path='/todos-inmuebles' element={<TodosInmuebles />} />
+            <Route path='/agregar-inmueble' element={<AgregarInmueble />} />
           </Routes>
         </main>
       </div>
