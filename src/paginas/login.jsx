@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import "./login.css";
 import "./solicitudRegistro.css";
@@ -10,7 +9,6 @@ function Login({ onLogin }) {
   const [cargando, setCargando] = useState(false);
   const [mostrarSolicitud, setMostrarSolicitud] = useState(false);
 
-  // Datos del formulario de solicitud
   const [solicitud, setSolicitud] = useState({
     nombre: "",
     apellido: "",
@@ -20,17 +18,14 @@ function Login({ onLogin }) {
     rol: ""
   });
 
-  // Actualizar los campos del formulario
   function actualizarSolicitud(evento) {
     const { name, value } = evento.target;
-
     setSolicitud((anterior) => ({
       ...anterior,
       [name]: value
     }));
   }
 
-  // Iniciar sesión
   async function iniciarSesion(evento) {
     evento.preventDefault();
     setMensaje("");
@@ -71,44 +66,34 @@ function Login({ onLogin }) {
     }
   }
 
-  // Enviar solicitud (provisional, todavía sin backend)
   function enviarSolicitud(evento) {
     evento.preventDefault();
-
-    alert(
-      "El formulario todavía no está conectado al sistema."
-    );
+    alert("El formulario todavía no está conectado al sistema.");
   }
 
   return (
     <div className="login-container">
       <div className="login-box">
-        {/* Encabezado */}
         <div className="login-header">
           <h1>
             PRI<span>SCI</span>
           </h1>
-
           <p>Plataforma de Registro de Instalaciones</p>
           <p>de Seguridad Contra Incendios</p>
         </div>
 
         <hr />
 
-        {/* Título del login */}
         <div className="login-title">
           <h2>Iniciar sesión</h2>
           <p>Ingresá tus credenciales para continuar.</p>
         </div>
 
-        {/* Formulario de inicio de sesión */}
         <form onSubmit={iniciarSesion}>
           <div className="login-field">
             <label htmlFor="email">Correo electrónico</label>
-
             <div className="login-input">
               <i className="bi bi-envelope"></i>
-
               <input
                 id="email"
                 type="email"
@@ -122,18 +107,14 @@ function Login({ onLogin }) {
 
           <div className="login-field">
             <label htmlFor="contrasena">Contraseña</label>
-
             <div className="login-input">
               <i className="bi bi-lock"></i>
-
               <input
                 id="contrasena"
                 type="password"
                 placeholder="Tu contraseña"
                 value={contrasena}
-                onChange={(evento) =>
-                  setContrasena(evento.target.value)
-                }
+                onChange={(evento) => setContrasena(evento.target.value)}
                 required
               />
             </div>
@@ -144,19 +125,17 @@ function Login({ onLogin }) {
           </button>
 
           {mensaje && (
-            <p role="status" aria-live="polite">
+            <p role="status" aria-live="polite" style={{ marginTop: '10px', color: '#f87171', fontSize: '13px' }}>
               {mensaje}
             </p>
           )}
 
-          {/* Separador */}
           <div className="login-divider">
             <span></span>
             <p>o</p>
             <span></span>
           </div>
 
-          {/* Abrir modal de solicitud */}
           <p className="login-register">
             ¿No tenés una cuenta?
             <a
@@ -172,7 +151,6 @@ function Login({ onLogin }) {
         </form>
       </div>
 
-      {/* Modal de solicitud de registro */}
       {mostrarSolicitud && (
         <div
           className="solicitud-modal-overlay"
@@ -182,24 +160,12 @@ function Login({ onLogin }) {
             }
           }}
         >
-          <div
-            className="solicitud-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="solicitud-titulo"
-          >
-            {/* Encabezado del modal */}
+          <div className="solicitud-modal" role="dialog" aria-modal="true" aria-labelledby="solicitud-titulo">
             <div className="solicitud-modal-header">
               <div>
-                <h2 id="solicitud-titulo">
-                  Solicitar registro
-                </h2>
-
-                <p>
-                  Completá tus datos para solicitar el alta en PRISCI.
-                </p>
+                <h2 id="solicitud-titulo">Solicitar registro</h2>
+                <p>Completá tus datos para solicitar el alta en PRISCI.</p>
               </div>
-
               <button
                 type="button"
                 className="solicitud-cerrar"
@@ -210,13 +176,11 @@ function Login({ onLogin }) {
               </button>
             </div>
 
-            {/* Formulario de solicitud */}
             <form onSubmit={enviarSolicitud}>
               <div className="solicitud-modal-body">
                 <div className="solicitud-campos-grid">
                   <div className="solicitud-field">
                     <label htmlFor="sol-nombre">Nombre</label>
-
                     <input
                       id="sol-nombre"
                       name="nombre"
@@ -230,7 +194,6 @@ function Login({ onLogin }) {
 
                   <div className="solicitud-field">
                     <label htmlFor="sol-apellido">Apellido</label>
-
                     <input
                       id="sol-apellido"
                       name="apellido"
@@ -244,7 +207,6 @@ function Login({ onLogin }) {
 
                   <div className="solicitud-field">
                     <label htmlFor="sol-telefono">Teléfono</label>
-
                     <input
                       id="sol-telefono"
                       name="telefono"
@@ -257,10 +219,7 @@ function Login({ onLogin }) {
                   </div>
 
                   <div className="solicitud-field">
-                    <label htmlFor="sol-email">
-                      Correo electrónico
-                    </label>
-
+                    <label htmlFor="sol-email">Correo electrónico</label>
                     <input
                       id="sol-email"
                       name="email"
@@ -274,10 +233,7 @@ function Login({ onLogin }) {
                 </div>
 
                 <div className="solicitud-field">
-                  <label htmlFor="sol-motivo">
-                    Motivo de la solicitud
-                  </label>
-
+                  <label htmlFor="sol-motivo">Motivo de la solicitud</label>
                   <textarea
                     id="sol-motivo"
                     name="motivo"
@@ -291,7 +247,6 @@ function Login({ onLogin }) {
 
                 <div className="solicitud-field">
                   <label htmlFor="sol-rol">Rol solicitado</label>
-
                   <select
                     id="sol-rol"
                     name="rol"
@@ -300,29 +255,18 @@ function Login({ onLogin }) {
                     required
                   >
                     <option value="">Seleccioná un rol</option>
-                    <option value="profesional">
-                      Profesional / Conservador
-                    </option>
-                    <option value="propietario">
-                      Propietario
-                    </option>
+                    <option value="profesional">Profesional / Conservador</option>
+                    <option value="propietario">Propietario</option>
                     <option value="bomberos">Bomberos</option>
                   </select>
                 </div>
 
-                {/* Información para el solicitante */}
                 <div className="solicitud-modal-aviso">
                   <i className="bi bi-info-circle"></i>
-
-                  <p>
-                    Municipalidad revisará tu solicitud y se
-                    comunicará con vos por fuera del sistema.
-                    Enviar el formulario no crea una cuenta.
-                  </p>
+                  <p>Municipalidad revisará tu solicitud y se comunicará con vos por fuera del sistema. Enviar el formulario no crea una cuenta.</p>
                 </div>
               </div>
 
-              {/* Botones del modal */}
               <div className="solicitud-modal-footer">
                 <button
                   type="button"
@@ -331,11 +275,7 @@ function Login({ onLogin }) {
                 >
                   Cancelar
                 </button>
-
-                <button
-                  type="submit"
-                  className="solicitud-btn-enviar"
-                >
+                <button type="submit" className="solicitud-btn-enviar">
                   Enviar solicitud
                 </button>
               </div>
