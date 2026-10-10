@@ -113,6 +113,11 @@ function Menu({ rol, onCerrarSesion }) {
                     Mapa de inmuebles
                 </Link>
 
+                <Link to="/propietario" className={location.pathname === "/propietario" ? "menu-link active": "menu-link"}>
+                    <i className="bi bi-building"></i>
+                    Mis inmuebles
+                </Link>
+
                 <Link to="/inspecciones" className={location.pathname === "/inspecciones" ? "menu-link active" : "menu-link"}>
                     <i className="bi bi-clipboard-check"></i>
                     Ver inspecciones
