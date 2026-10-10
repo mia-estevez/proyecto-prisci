@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import PaginaMunicipal from './paginas/PaginaMunicipal';
@@ -24,18 +24,31 @@ function Contenido() {
 
   const [usuario, setUsuario] = useState(() => {
     const usuarioGuardado = sessionStorage.getItem("usuario");
+
     if (usuarioGuardado) {
       try {
         return JSON.parse(usuarioGuardado);
       } catch (e) {
         console.error("Error al parsear usuario:", e);
+        sessionStorage.removeItem("usuario");
       }
     }
-    // Usuario por defecto para pruebas de desarrollo
-    return { id: 1, nombre: "Juan", apellido: "Pérez", idRol: 1 };
+
+    // Si no hay una sesión guardada, no hay usuario autenticado.
+    return null;
   });
 
+
   const esLogin = location.pathname === "/login";
+  
+  if (!usuario && !esLogin) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (usuario && esLogin) {
+    return <Navigate to="/" replace />;
+  }
+
 
   const roles = {
     1: "municipal",
