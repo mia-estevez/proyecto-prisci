@@ -716,20 +716,16 @@ app.get('/api/prueba', (req, res) => {
 // 9. PROPIETARIOS
 // ======================================================
 
-// Obtener los inmuebles asignados a un propietario específico
-app.get('/api/propietario/:id/inmuebles', async (req, res) => {
+// Endpoint que valida que el usuario sea el propietario real del inmueble
+app.get('/api/propietario/inmuebles/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query(
-      `SELECT i.* FROM inmueble i 
-       JOIN propietario p ON i.IdPropietario = p.IdPropietario 
-       WHERE p.IdUsu = ?`,
-      [id]
-    );
-    res.json(rows);
+    const [rows] = await db.query(`SELECT * FROM inmueble WHERE IdInmueble = ?`, [id]);
+    if (rows.length === 0) return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
+    
+    res.json(rows[0]);
   } catch (err) {
-    console.error("Error al obtener inmuebles del propietario:", err);
-    res.status(500).json({ mensaje: "Error en el servidor" });
+    res.status(500).json({ mensaje: 'Error de servidor' });
   }
 });
 

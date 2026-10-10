@@ -8,7 +8,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "./agregarinmueble.css";
+//import "./agregarinmueble.css";
 
 const CENTRO_NEUQUEN = [-38.9516, -68.0591];
 
