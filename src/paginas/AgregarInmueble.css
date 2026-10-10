@@ -1,0 +1,190 @@
+
+/* CONTENIDO: AGREGAR INMUEBLE */
+.prisci-page {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  color: #e8f0fb;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+.prisci-page * {
+  box-sizing: border-box;
+}
+
+.prisci-page h1 {
+  color: #f3f7ff;
+  font-size: 22px;
+  margin: 0 0 5px;
+}
+
+.breadcrumb {
+  color: #92a9c4;
+  font-size: 10px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #b6c6d9;
+  font-size: 12px;
+  margin: 0 0 16px;
+}
+
+.form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(220px, .85fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.panel {
+  background: #0a1c30;
+  border: 1px solid #1e344c;
+  border-radius: 5px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.panel h3 {
+  font-size: 12px;
+  color: #e6effa;
+  margin: 0 0 12px;
+}
+
+.section-heading {
+  border-top: 1px solid #1b3047;
+  padding-top: 13px;
+  margin-top: 16px !important;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  color: #d6e3f2;
+  font-size: 10px;
+}
+
+.control {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 7px 9px;
+  background: #10263d;
+  border: 1px solid #2a4058;
+  border-radius: 4px;
+  color: #eaf2fd;
+  outline: none;
+}
+
+.control::placeholder {
+  color: #728aa5;
+}
+
+.control:focus {
+  border-color: #269df3;
+}
+
+.side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.map-placeholder {
+  height: 180px;
+  margin-top: 9px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  background-color: #dce7e6;
+  background-image:
+    linear-gradient(25deg, transparent 43%, white 44%, white 48%, transparent 49%),
+    linear-gradient(115deg, transparent 28%, white 29%, white 32%, transparent 33%),
+    repeating-linear-gradient(0deg, transparent 0 22px, #c4d2d2 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 25px, #c4d2d2 26px 27px);
+}
+
+.map-pin {
+  position: absolute;
+  top: 28%;
+  left: 48%;
+  font-size: 27px;
+}
+
+.btn {
+  border-radius: 4px;
+  padding: 9px 12px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.primary {
+  background: #168fe4;
+  border: 1px solid #168fe4;
+  color: white;
+}
+
+.secondary {
+  background: #0a1b2e;
+  border: 1px solid #38506a;
+  color: #d9e5f2;
+}
+
+.map-button {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 110px;
+  padding: 12px;
+  border: 1px dashed #315270;
+  border-radius: 4px;
+  color: #b9cce0;
+  text-align: center;
+}
+
+.upload-box strong {
+  font-size: 10px;
+}
+
+.upload-box small {
+  font-size: 9px;
+  color: #91a8c2;
+}
+
+.upload-box input {
+  max-width: 100%;
+  font-size: 9px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+@media (max-width: 700px) {
+  .form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
