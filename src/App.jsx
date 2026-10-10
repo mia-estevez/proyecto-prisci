@@ -130,6 +130,7 @@ function Contenido() {
             <Route path='/profesionales' element={<AgregarProfesionales />} />
             <Route path='/reportes' element={<Informes />} />
             <Route path="/usuarios" element={<Usuarios />} />
+            <Route path="/historial" element={<Historial />} />
           </Routes>
         </main>
       </div>
