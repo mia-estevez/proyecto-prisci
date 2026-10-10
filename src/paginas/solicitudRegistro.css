@@ -1,0 +1,275 @@
+
+/* ========================================
+   FONDO OSCURO DETRÁS DEL MODAL
+======================================== */
+
+.solicitud-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(3px);
+}
+
+/* ========================================
+   CONTENEDOR PRINCIPAL DEL MODAL
+======================================== */
+
+.solicitud-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: var(--bg-tarjeta);
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 18px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+/* ========================================
+   ENCABEZADO DEL MODAL
+======================================== */
+
+.solicitud-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--borde-tarjeta);
+}
+
+.solicitud-modal-header h2 {
+  margin: 0 0 8px;
+  color: var(--texto-principal);
+  font-size: 23px;
+}
+
+.solicitud-modal-header p {
+  margin: 0;
+  color: var(--texto-secundario);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Botón para cerrar el modal */
+
+.solicitud-cerrar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 8px;
+  background-color: var(--bg-input);
+  color: var(--texto-principal);
+  cursor: pointer;
+}
+
+.solicitud-cerrar:hover {
+  background-color: var(--acento-hover);
+}
+
+/* ========================================
+   CUERPO DEL FORMULARIO
+======================================== */
+
+.solicitud-modal-body {
+  padding: 24px 28px 10px;
+}
+
+/* Distribución de los campos en dos columnas */
+
+.solicitud-campos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
+
+/* ========================================
+   CAMPOS DEL FORMULARIO
+======================================== */
+
+.solicitud-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  margin-bottom: 18px;
+}
+
+.solicitud-field label {
+  color: var(--texto-principal);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Estilos compartidos de los campos */
+
+.solicitud-field input,
+.solicitud-field textarea,
+.solicitud-field select {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 13px;
+  box-sizing: border-box;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 10px;
+  outline: none;
+  background-color: var(--bg-input);
+  color: var(--texto-principal);
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Texto de ayuda dentro de los campos */
+
+.solicitud-field input::placeholder,
+.solicitud-field textarea::placeholder {
+  color: var(--texto-secundario);
+}
+
+/* Efecto al seleccionar un campo */
+
+.solicitud-field input:focus,
+.solicitud-field textarea:focus,
+.solicitud-field select:focus {
+  border-color: var(--acento-azul);
+  box-shadow: 0 0 0 2px var(--acento-hover);
+}
+
+/* Área para escribir el motivo */
+
+.solicitud-field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* ========================================
+   AVISO INFORMATIVO
+======================================== */
+
+.solicitud-modal-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 15px;
+  margin-bottom: 10px;
+  border: 1px solid var(--borde-tarjeta);
+  border-radius: 10px;
+  background-color: var(--bg-input);
+  color: var(--texto-secundario);
+}
+
+.solicitud-modal-aviso i {
+  margin-top: 2px;
+  color: var(--acento-azul);
+  font-size: 18px;
+}
+
+.solicitud-modal-aviso p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ========================================
+   PIE Y BOTONES DEL MODAL
+======================================== */
+
+.solicitud-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 18px 28px 24px;
+  border-top: 1px solid var(--borde-tarjeta);
+}
+
+/* Estilos compartidos de los botones */
+
+.solicitud-modal-footer button {
+  width: auto;
+  min-width: 130px;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Botón para cancelar */
+
+.solicitud-btn-cancelar {
+  border: 1px solid var(--borde-tarjeta);
+  background-color: var(--bg-input);
+  color: var(--texto-principal);
+}
+
+.solicitud-btn-cancelar:hover {
+  border-color: var(--acento-azul);
+}
+
+/* Botón para enviar */
+
+.solicitud-modal-footer .solicitud-btn-enviar {
+  border: none;
+  background-color: var(--acento-azul);
+  color: var(--texto-principal);
+}
+
+.solicitud-modal-footer .solicitud-btn-enviar:hover {
+  background-color: var(--acento-hover);
+}
+
+/* ADAPTACIÓN A CELULARES */
+
+@media (max-width: 600px) {
+  .solicitud-modal-overlay {
+    align-items: center;
+    padding: 12px;
+  }
+
+  .solicitud-modal {
+    max-height: 94vh;
+    border-radius: 14px;
+  }
+
+  .solicitud-modal-header {
+    padding: 20px;
+  }
+
+  .solicitud-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .solicitud-modal-body {
+    padding: 20px 20px 8px;
+  }
+
+  /* Los campos pasan a una sola columna */
+  .solicitud-campos-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .solicitud-modal-footer {
+    flex-direction: column-reverse;
+    padding: 16px 20px 20px;
+  }
+
+  .solicitud-modal-footer button {
+    width: 100%;
+  }
+}
