@@ -711,6 +711,47 @@ app.get('/api/prueba', (req, res) => {
   res.json({ mensaje: 'El servidor actualizado funciona' });
 });
 
+
+// ======================================================
+// 9. PROPIETARIOS
+// ======================================================
+
+// Obtener los inmuebles asignados a un propietario específico
+app.get('/api/propietario/:id/inmuebles', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT i.* FROM inmueble i 
+       JOIN propietario p ON i.IdPropietario = p.IdPropietario 
+       WHERE p.IdUsu = ?`,
+      [id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Error al obtener inmuebles del propietario:", err);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+// Obtener resumen de métricas para el propietario
+app.get('/api/propietario/:id/resumen', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [inmuebles] = await db.query(
+      `SELECT COUNT(*) as total FROM inmueble i JOIN propietario p ON i.IdPropietario = p.IdPropietario WHERE p.IdUsu = ?`,
+      [id]
+    );
+    res.json({
+      inmuebles: inmuebles[0].total || 0,
+      servicios: 5,
+      vencimientos: 2
+    });
+  } catch (err) {
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
+
 // ======================================================
 // INICIAR SERVIDOR
 // ======================================================
