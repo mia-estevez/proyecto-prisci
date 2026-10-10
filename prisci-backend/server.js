@@ -621,54 +621,48 @@ app.post('/api/inspecciones', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { email, contrasena } = req.body;
 
-  if (!email || !contrasena) {
-    return res.status(400).json({
-      mensaje: 'Ingresá tu correo y contraseña'
-    });
-  }
-
   try {
-    const [usuarios] = await db.query(
-      `SELECT IdUsu, Nombre, Apellido, Email, Contrasena, IdRol
-       FROM Usuarios
-       WHERE Email = ?`,
+    // Consulta utilizando el pool de promesas configurado en db.js
+    const [results] = await db.query(
+      `SELECT u.*, r.Nombre as RolNombre 
+       FROM usuarios u 
+       JOIN rol r ON u.IdRol = r.IdRol 
+       WHERE u.Email = ?`,
       [email]
     );
 
-    if (usuarios.length === 0) {
-      return res.status(401).json({
-        mensaje: 'Correo o contraseña incorrectos'
-      });
+    if (results.length === 0) {
+      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
     }
 
-    const usuario = usuarios[0];
+    const usuario = results[0];
 
-    const contrasenaValida = await bcrypt.compare(
-      contrasena,
-      usuario.Contrasena
-    );
+    // Validación flexible (texto plano o hash bcrypt)
+    let passwordMatch = false;
+    if (usuario.Contrasena && usuario.Contrasena.startsWith('$2b$')) {
+      passwordMatch = await bcrypt.compare(contrasena, usuario.Contrasena);
+    } else {
+      passwordMatch = (usuario.Contrasena === contrasena);
+    }
 
-    if (!contrasenaValida) {
-      return res.status(401).json({
-        mensaje: 'Correo o contraseña incorrectos'
-      });
+    if (!passwordMatch) {
+      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
     }
 
     res.json({
-      mensaje: 'Inicio de sesión exitoso',
+      mensaje: 'Login exitoso',
       usuario: {
         id: usuario.IdUsu,
         nombre: usuario.Nombre,
         apellido: usuario.Apellido,
         email: usuario.Email,
-        idRol: usuario.IdRol
+        rol: usuario.RolNombre
       }
     });
-  } catch (error) {
-    console.error('Error en el login:', error);
-    res.status(500).json({
-      mensaje: 'Error al iniciar sesión'
-    });
+
+  } catch (err) {
+    console.error("Error en el servidor:", err);
+    res.status(500).json({ mensaje: 'Error en el servidor' });
   }
 });
 
@@ -739,6 +733,179 @@ app.post('/api/registro-prueba', async (req, res) => {
     });
   }
 });
+
+
+/* ======================================================
+  SOLICITUDES DE REGISTRO
+====================================================== */
+// ------------------------------------------------------
+// ENVIAR UNA SOLICITUD DE REGISTRO
+// ------------------------------------------------------
+
+app.post('/api/solicitudes-registro', async (req, res) => {
+  const {
+    nombre,
+    apellido,
+    telefono,
+    email,
+    motivo,
+    rol
+  } = req.body;
+
+  // Validar que todos los campos estén completos.
+  if (
+    !nombre?.trim() ||
+    !apellido?.trim() ||
+    !telefono?.trim() ||
+    !email?.trim() ||
+    !motivo?.trim() ||
+    !rol
+  ) {
+    return res.status(400).json({
+      mensaje: 'Completá todos los campos obligatorios'
+    });
+  }
+
+  // Validar los roles permitidos para solicitar el registro.
+  const rolesPermitidos = [
+    'profesional',
+    'propietario',
+    'bomberos'
+  ];
+
+  if (!rolesPermitidos.includes(rol)) {
+    return res.status(400).json({
+      mensaje: 'El rol solicitado no es válido'
+    });
+  }
+
+  // Validar el formato básico del correo.
+  const emailNormalizado = email.trim().toLowerCase();
+  const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!formatoEmail.test(emailNormalizado)) {
+    return res.status(400).json({
+      mensaje: 'Ingresá un correo electrónico válido'
+    });
+  }
+
+  try {
+    const [resultado] = await db.query(
+      `INSERT INTO solicitudregistro
+       (Nombre, Apellido, Telefono, Email, Motivo, RolSolicitado)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        nombre.trim(),
+        apellido.trim(),
+        telefono.trim(),
+        emailNormalizado,
+        motivo.trim(),
+        rol
+      ]
+    );
+
+    return res.status(201).json({
+      mensaje: 'Solicitud enviada correctamente',
+      idSolicitud: resultado.insertId
+    });
+
+  } catch (error) {
+    console.error('Error al guardar la solicitud:', error);
+
+    return res.status(500).json({
+      mensaje: 'No se pudo enviar la solicitud. Intentá nuevamente.'
+    });
+  }
+});
+
+
+// ------------------------------------------------------
+// CONSULTAR LAS SOLICITUDES DE REGISTRO
+// ------------------------------------------------------
+
+app.get('/api/solicitudes-registro', async (req, res) => {
+  try {
+    const [solicitudes] = await db.query(
+      `SELECT
+         IdSolicitudRegistro,
+         Nombre,
+         Apellido,
+         Telefono,
+         Email,
+         Motivo,
+         RolSolicitado,
+         Estado,
+         DATE_FORMAT(FechaSolicitud, '%d/%m/%Y %H:%i')
+           AS FechaSolicitud
+       FROM solicitudregistro
+       ORDER BY FechaSolicitud DESC`
+    );
+
+    return res.json(solicitudes);
+
+  } catch (error) {
+    console.error('Error al consultar las solicitudes:', error);
+
+    return res.status(500).json({
+      mensaje: 'No se pudieron obtener las solicitudes'
+    });
+  }
+});
+
+
+// ------------------------------------------------------
+//  ACTUALIZAR EL ESTADO DE UNA SOLICITUD
+// ------------------------------------------------------
+
+app.patch('/api/solicitudes-registro/:id/estado', async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  const estadosPermitidos = [
+    'Pendiente',
+    'Aceptada',
+    'Rechazada'
+  ];
+
+  if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
+    return res.status(400).json({
+      mensaje: 'El identificador de la solicitud no es válido'
+    });
+  }
+
+  if (!estadosPermitidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: 'El estado indicado no es válido'
+    });
+  }
+
+  try {
+    const [resultado] = await db.query(
+      `UPDATE solicitudregistro
+       SET Estado = ?
+       WHERE IdSolicitudRegistro = ?`,
+      [estado, Number(id)]
+    );
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: 'No se encontró la solicitud'
+      });
+    }
+
+    return res.json({
+      mensaje: 'Estado de la solicitud actualizado correctamente'
+    });
+
+  } catch (error) {
+    console.error('Error al actualizar la solicitud:', error);
+
+    return res.status(500).json({
+      mensaje: 'No se pudo actualizar el estado de la solicitud'
+    });
+  }
+});
+
 
 app.get('/api/prueba', (req, res) => {
   res.json({ mensaje: 'El servidor actualizado funciona' });

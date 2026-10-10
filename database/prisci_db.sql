@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-10-2026 a las 00:24:21
+-- Tiempo de generación: 10-10-2026 a las 05:06:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -231,6 +231,31 @@ CREATE TABLE `solicitud` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `solicitudregistro`
+--
+
+CREATE TABLE `solicitudregistro` (
+  `IdSolicitudRegistro` int(11) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
+  `Apellido` varchar(100) NOT NULL,
+  `Telefono` varchar(20) NOT NULL,
+  `Email` varchar(100) NOT NULL,
+  `Motivo` text NOT NULL,
+  `RolSolicitado` enum('profesional','propietario','bomberos') NOT NULL,
+  `Estado` enum('Pendiente','Aceptada','Rechazada') NOT NULL DEFAULT 'Pendiente',
+  `FechaSolicitud` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitudregistro`
+--
+
+INSERT INTO `solicitudregistro` (`IdSolicitudRegistro`, `Nombre`, `Apellido`, `Telefono`, `Email`, `Motivo`, `RolSolicitado`, `Estado`, `FechaSolicitud`) VALUES
+(1, 'aa', 'aaa', '2998760546', 'jdhdhs@gmail.com', 'dnhhch', 'profesional', 'Pendiente', '2026-10-10 03:04:41');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -341,6 +366,12 @@ ALTER TABLE `solicitud`
   ADD KEY `IdConservador` (`IdConservador`);
 
 --
+-- Indices de la tabla `solicitudregistro`
+--
+ALTER TABLE `solicitudregistro`
+  ADD PRIMARY KEY (`IdSolicitudRegistro`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -418,6 +449,12 @@ ALTER TABLE `rol`
 --
 ALTER TABLE `solicitud`
   MODIFY `IdSolicitud` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitudregistro`
+--
+ALTER TABLE `solicitudregistro`
+  MODIFY `IdSolicitudRegistro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

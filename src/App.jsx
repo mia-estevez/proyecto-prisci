@@ -23,6 +23,9 @@ import FichaPropietarios from './paginas/fichaPropietarios';
 import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
 import PropietariosHistorial from './paginas/propietariosHistorial';
 import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
+import AgregarInmueble from './paginas/AgregarInmueble';
+import AgregarProfesionales from './paginas/AgregarProfesionales';
+import Informes from './paginas/Informes';
 
 function Contenido() {
   const location = useLocation();
@@ -40,7 +43,8 @@ function Contenido() {
       }
     }
 
-    return null;
+    // Forzamos un usuario municipal predeterminado temporalmente
+    return { id: 1, name: "María González", email: "municipal@prisci.com", idRol: 1 };
   });
 
   const esLogin = location.pathname === "/login";
@@ -53,7 +57,6 @@ function Contenido() {
     return <Navigate to="/" replace />;
   }
 
-  // Mapeo según la Base de Datos: 1: Municipal, 2: Profesional/Conservador, 3: Propietario, 4: Bomberos
   const roles = {
     1: "municipal",
     2: "profesional",
@@ -136,6 +139,11 @@ function Contenido() {
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
             <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
             <Route path="/propietario/notificaciones" element={<PropietarioNotificaciones />} />
+            <Route path='/historial-inmueble/:id' element={<HistorialInmueble />} />
+            <Route path='/todos-inmuebles' element={<TodosInmuebles />} />
+            <Route path='/agregar-inmueble' element={<AgregarInmueble />} />
+            <Route path='/profesionales' element={<AgregarProfesionales />} />
+            <Route path='/reportes' element={<Informes />} />
           </Routes>
         </main>
       </div>
