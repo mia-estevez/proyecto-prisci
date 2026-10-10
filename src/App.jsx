@@ -22,7 +22,7 @@ function Contenido() {
   const location = useLocation();
   const navigate = useNavigate();
 
-JavaScript
+
   const [usuario, setUsuario] = useState(() => {
     const usuarioGuardado = sessionStorage.getItem("usuario");
 
