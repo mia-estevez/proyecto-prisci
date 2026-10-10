@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import PaginaMunicipal from './paginas/PaginaMunicipal';
@@ -17,6 +17,11 @@ import Vencimientos from './paginas/vencimientos';
 import HistorialInmueble from './paginas/historialInmueble';
 import TodosInmuebles from './paginas/todosInmuebles';
 import Bomberos from './paginas/bomberos';
+import Propietarios from './paginas/propietarios';
+import FichaPropietario from './paginas/fichaPropietarios';
+import PropietariosHistorial from './paginas/propietariosHistorial';
+import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
+import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
 
 function Contenido() {
   const location = useLocation();
@@ -24,7 +29,6 @@ function Contenido() {
 
   const [usuario, setUsuario] = useState(() => {
     const usuarioGuardado = sessionStorage.getItem("usuario");
-
     if (usuarioGuardado) {
       try {
         return JSON.parse(usuarioGuardado);
@@ -33,7 +37,6 @@ function Contenido() {
         sessionStorage.removeItem("usuario");
       }
     }
-
     return null;
   });
 
@@ -105,7 +108,7 @@ function Contenido() {
                 ) : rol === "profesional" ? (
                   <Conservadores />
                 ) : rol === "propietario" ? (
-                  <Inspecciones />
+                  <Propietarios />
                 ) : (
                   <PaginaMunicipal />
                 )
@@ -126,6 +129,11 @@ function Contenido() {
             <Route path="/vencimientos" element={<Vencimientos />} />
             <Route path='/historial-inmueble/:id' element={<HistorialInmueble />} />
             <Route path='/todos-inmuebles' element={<TodosInmuebles />} />
+            <Route path="/propietario" element={<Propietarios />} />
+            <Route path="/propietario/inmuebles/:id" element={<FichaPropietario />} />
+            <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
+            <Route path="/propietario/notificaciones" element={<PropietarioNotificaciones />} />
+            <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
           </Routes>
         </main>
       </div>
