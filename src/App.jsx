@@ -20,6 +20,8 @@ import Bomberos from './paginas/bomberos';
 import Propietarios from './paginas/propietarios';
 import AgregarInmueble from './paginas/AgregarInmueble';
 import FichaPropietarios from './paginas/fichaPropietarios';
+import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
+import PropietariosHistorial from './paginas/propietariosHistorial';
 
 function Contenido() {
   const location = useLocation();
@@ -130,7 +132,8 @@ function Contenido() {
             <Route path="/agregar-inmueble" element={<AgregarInmueble />} />
             <Route path="/propietario" element={<Propietarios />} />
             <Route path="/propietario/inmuebles/:id" element={<FichaPropietarios />} />
-            <Route path="/propietario/inmuebles/:id/historial" element={<HistorialInmueble />} />
+            <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
+            <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
           </Routes>
         </main>
       </div>

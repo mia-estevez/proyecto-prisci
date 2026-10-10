@@ -90,22 +90,6 @@ function Propietarios() {
         <p style={{ color: '#94a3b8', fontSize: '14px' }}>Gestioná y consultá la información de los inmuebles asignados.</p>
       </div>
 
-      {/* TARJETA ÚNICA KPI */}
-      <div style={{ marginBottom: '25px', display: 'flex', gap: '15px' }}>
-        <div 
-          onClick={() => navigate('/todos-inmuebles')}
-          style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer', minWidth: '220px' }}
-        >
-          <div style={{ background: 'rgba(56, 189, 248, 0.15)', padding: '12px', borderRadius: '10px' }}>
-            <Home size={24} color="#38bdf8" />
-          </div>
-          <div>
-            <h3 style={{ fontSize: '22px', color: '#f8fafc', margin: 0, fontWeight: '700' }}>{inmuebles.length}</h3>
-            <span style={{ fontSize: '13px', color: '#94a3b8' }}>Inmuebles Asignados</span>
-          </div>
-        </div>
-      </div>
-
       {/* MAPA Y LISTA LATERAL */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
         {/* PANEL MAPA */}
@@ -141,10 +125,10 @@ function Propietarios() {
                       <strong style={{ fontSize: '13px', color: '#0f172a' }}>{item.nombre}</strong>
                       <p style={{ fontSize: '11px', margin: '3px 0', color: '#475569' }}>{item.direccion}</p>
                       <button 
-                        onClick={() => navigate(`/clientes/${item.id}`)}
+                        onClick={() => navigate(`/propietario/inmuebles/${item.id}`)}
                         style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', marginTop: '4px' }}
                       >
-                        Ver Expediente
+                        Ver expediente
                       </button>
                     </div>
                   </Popup>
@@ -170,7 +154,7 @@ function Propietarios() {
               ) : inmueblesFiltrados.map((item) => (
                 <div 
                   key={`item-${item.id}`} 
-                  onClick={() => navigate(`/clientes/${item.id}`)}
+                  onClick={() => navigate(`/propietario/inmuebles/${item.id}`)}
                   style={{ padding: '14px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -190,7 +174,7 @@ function Propietarios() {
 
           <div style={{ marginTop: '20px', textAlign: 'right', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '15px' }}>
             <span 
-              onClick={() => navigate('/todos-inmuebles')} 
+              onClick={() => navigate('/propietario/todos-inmuebles')} 
               style={{ cursor: 'pointer', color: '#38bdf8', fontSize: '13px', fontWeight: '500' }}
             >
               Ver todos los inmuebles ›

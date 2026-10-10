@@ -304,6 +304,39 @@ app.get('/api/inmuebles/:id/inspecciones', async (req, res) => {
   }
 });
 
+// Obtener información general de un inmueble para la ficha del propietario
+app.get('/api/propietario/inmuebles/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM inmueble WHERE IdInmueble = ?`,
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("Error al obtener inmueble:", err);
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
+
+// Obtener las inspecciones reales de un inmueble para el propietario o conservador
+app.get('/api/inmuebles/:id/inspecciones', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM inspeccion WHERE IdInmueble = ? ORDER BY Fecha DESC`,
+      [id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Error al obtener inspecciones del inmueble:", err);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
 
 // ======================================================
 // 5.1. OBTENER INSTALACIONES TÉCNICAS
