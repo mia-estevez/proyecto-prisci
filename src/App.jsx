@@ -23,7 +23,6 @@ import FichaPropietarios from './paginas/fichaPropietarios';
 import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
 import PropietariosHistorial from './paginas/propietariosHistorial';
 import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
-import AgregarInmueble from './paginas/AgregarInmueble';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
 import Informes from './paginas/Informes';
 import Usuarios from './paginas/Usuarios';
