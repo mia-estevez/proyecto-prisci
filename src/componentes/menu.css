@@ -1,16 +1,23 @@
+
+/* ======================================================
+   MENÚ LATERAL
+====================================================== */
+
 .menu {
   width: 260px;
-  height: calc(100vh - 80px);
+  flex: 0 0 260px;
+  align-self: stretch;
+  min-height: 100%;
   background-color: var(--bg-oscuro);
-  padding: 25px 15px;
-  padding-bottom: 8px;
+  padding: 25px 15px 8px;
   box-sizing: border-box;
   border-right: 1px solid var(--borde-tarjeta);
   display: flex;
   flex-direction: column;
 }
 
-/*CSS A LOS ENLACES*/
+/* ENLACES DEL MENÚ */
+
 .menu a {
   display: block;
   padding: 12px 15px;
@@ -20,34 +27,45 @@
   border-radius: 8px;
 }
 
+/* Efecto al pasar el mouse */
+
 .menu a:hover {
   background-color: var(--bg-tarjeta);
   color: var(--texto-principal);
 }
 
-/*ICONOS*/
+/* ICONOS */
+
 .menu i {
   margin-right: 12px;
 }
 
-/*CSS AL CERRAR SESION*/
+/* CERRAR SESIÓN */
+
 .menu-logout {
   display: block;
+  width: 100%;
   margin-top: auto;
   padding: 12px 15px;
+  background: transparent;
+  border: none;
+  font: inherit;
+  text-align: left;
   color: var(--texto-secundario);
-  text-decoration: none;
+  cursor: pointer;
   border-radius: 8px;
 }
+
+/* Efecto al pasar el mouse */
 
 .menu-logout:hover {
   background-color: var(--bg-tarjeta);
   color: var(--texto-principal);
 }
 
-/*PÁGINA ACTIVA*/
+/* PÁGINA ACTIVA */
+
 .menu-link.active {
   background-color: var(--acento-azul);
   color: var(--texto-principal);
 }
-
