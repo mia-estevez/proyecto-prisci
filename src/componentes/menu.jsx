@@ -108,19 +108,24 @@ function Menu({ rol, onCerrarSesion }) {
         return (
             <aside className="menu">
 
-                <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
+                <Link to="/" className={location.pathname === "/" ? "menu-link active": "menu-link"}>
                     <i className="bi bi-map"></i>
                     Mapa de inmuebles
                 </Link>
 
+                <Link to="/propietario/todos-inmuebles" className={location.pathname === "/propietario/todos-inmuebles" || location.pathname.startsWith("/propietario/inmuebles") ? "menu-link active": "menu-link"}>
+                    <i className="bi bi-building"></i>
+                    Mis inmuebles
+                </Link>
+
                 <Link to="/inspecciones" className={location.pathname === "/inspecciones" ? "menu-link active" : "menu-link"}>
-                    <i className="bi bi-clipboard-check"></i>
-                    Ver inspecciones
+                    <i className="bi bi-clock-history"></i>
+                    Historial
                 </Link>
 
                 <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                     <i className="bi bi-box-arrow-right"></i>
-                    Cerrar sesión
+                    Cerrar sesión 
                 </button>
 
             </aside>
