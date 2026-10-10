@@ -22,7 +22,8 @@ function Contenido() {
   const location = useLocation();
   const navigate = useNavigate();
 
-const [usuario, setUsuario] = useState(() => {
+JavaScript
+  const [usuario, setUsuario] = useState(() => {
     const usuarioGuardado = sessionStorage.getItem("usuario");
 
     if (usuarioGuardado) {
@@ -37,20 +38,6 @@ const [usuario, setUsuario] = useState(() => {
     // Forzamos un usuario municipal predeterminado temporalmente
     return { id: 1, name: "María González", email: "municipal@prisci.com", idRol: 1 };
   });
-
-    if (usuarioGuardado) {
-      try {
-        return JSON.parse(usuarioGuardado);
-      } catch (e) {
-        console.error("Error al parsear usuario:", e);
-        sessionStorage.removeItem("usuario");
-      }
-    }
-
-    // Si no hay una sesión guardada, no hay usuario autenticado.
-    return null;
-  });
-
 
   const esLogin = location.pathname === "/login";
   
