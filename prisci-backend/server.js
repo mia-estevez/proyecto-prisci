@@ -588,54 +588,48 @@ app.post('/api/inspecciones', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { email, contrasena } = req.body;
 
-  if (!email || !contrasena) {
-    return res.status(400).json({
-      mensaje: 'Ingresá tu correo y contraseña'
-    });
-  }
-
   try {
-    const [usuarios] = await db.query(
-      `SELECT IdUsu, Nombre, Apellido, Email, Contrasena, IdRol
-       FROM Usuarios
-       WHERE Email = ?`,
+    // Consulta utilizando el pool de promesas configurado en db.js
+    const [results] = await db.query(
+      `SELECT u.*, r.Nombre as RolNombre 
+       FROM usuarios u 
+       JOIN rol r ON u.IdRol = r.IdRol 
+       WHERE u.Email = ?`,
       [email]
     );
 
-    if (usuarios.length === 0) {
-      return res.status(401).json({
-        mensaje: 'Correo o contraseña incorrectos'
-      });
+    if (results.length === 0) {
+      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
     }
 
-    const usuario = usuarios[0];
+    const usuario = results[0];
 
-    const contrasenaValida = await bcrypt.compare(
-      contrasena,
-      usuario.Contrasena
-    );
+    // Validación flexible (texto plano o hash bcrypt)
+    let passwordMatch = false;
+    if (usuario.Contrasena && usuario.Contrasena.startsWith('$2b$')) {
+      passwordMatch = await bcrypt.compare(contrasena, usuario.Contrasena);
+    } else {
+      passwordMatch = (usuario.Contrasena === contrasena);
+    }
 
-    if (!contrasenaValida) {
-      return res.status(401).json({
-        mensaje: 'Correo o contraseña incorrectos'
-      });
+    if (!passwordMatch) {
+      return res.status(401).json({ mensaje: 'Correo o contraseña incorrectos' });
     }
 
     res.json({
-      mensaje: 'Inicio de sesión exitoso',
+      mensaje: 'Login exitoso',
       usuario: {
         id: usuario.IdUsu,
         nombre: usuario.Nombre,
         apellido: usuario.Apellido,
         email: usuario.Email,
-        idRol: usuario.IdRol
+        rol: usuario.RolNombre
       }
     });
-  } catch (error) {
-    console.error('Error en el login:', error);
-    res.status(500).json({
-      mensaje: 'Error al iniciar sesión'
-    });
+
+  } catch (err) {
+    console.error("Error en el servidor:", err);
+    res.status(500).json({ mensaje: 'Error en el servidor' });
   }
 });
 
