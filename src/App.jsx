@@ -22,6 +22,7 @@ import AgregarInmueble from './paginas/AgregarInmueble';
 import FichaPropietarios from './paginas/fichaPropietarios';
 import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
 import PropietariosHistorial from './paginas/propietariosHistorial';
+import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
 
 function Contenido() {
   const location = useLocation();
@@ -134,6 +135,7 @@ function Contenido() {
             <Route path="/propietario/inmuebles/:id" element={<FichaPropietarios />} />
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
             <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
+            <Route path="/propietario/notificaciones" element={<PropietarioNotificaciones />} />
           </Routes>
         </main>
       </div>
