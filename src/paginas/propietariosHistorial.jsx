@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, Download } from 'lucide-react';
 import './clientes.css';
 
-function HistorialInmueble() {
+function PropietariosHistorial() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [inspecciones, setInspecciones] = useState([]);
@@ -11,25 +11,27 @@ function HistorialInmueble() {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const obtenerHistorial = async () => {
+    const obtenerDatos = async () => {
       try {
         setCargando(true);
+        // Obtener datos del inmueble
         const resInm = await fetch(`http://localhost:3001/api/propietario/inmuebles/${id}`);
         if (resInm.ok) {
           setInmueble(await resInm.json());
         }
 
+        // Obtener historial de inspecciones
         const resInsp = await fetch(`http://localhost:3001/api/inmuebles/${id}/inspecciones`);
         if (resInsp.ok) {
           setInspecciones(await resInsp.json());
         }
       } catch (err) {
-        console.error("Error al obtener historial del conservador:", err);
+        console.error("Error al cargar historial:", err);
       } finally {
         setCargando(false);
       }
     };
-    obtenerHistorial();
+    obtenerDatos();
   }, [id]);
 
   const obtenerObjetoInspeccion = (item) => {
@@ -158,15 +160,15 @@ function HistorialInmueble() {
   return (
     <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
       <button 
-        onClick={() => navigate(`/clientes/${id}`)}
+        onClick={() => navigate(`/propietario/inmuebles/${id}`)}
         style={{ background: 'transparent', border: 'none', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '20px' }}
       >
         <ArrowLeft size={18} /> Volver a la ficha del inmueble
       </button>
 
       <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '20px', color: '#f8fafc', margin: '0 0 4px 0' }}>Historial Técnico de Inspecciones</h1>
-        <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Registro de partes y actas de inspección para este inmueble.</p>
+        <h1 style={{ fontSize: '20px', color: '#f8fafc', margin: '0 0 4px 0' }}>Historial completo de inspecciones</h1>
+        <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Registro detallado y actas emitidas para este inmueble.</p>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -202,4 +204,4 @@ function HistorialInmueble() {
   );
 }
 
-export default HistorialInmueble;
+export default PropietariosHistorial;

@@ -17,6 +17,12 @@ import Vencimientos from './paginas/vencimientos';
 import HistorialInmueble from './paginas/historialInmueble';
 import TodosInmuebles from './paginas/todosInmuebles';
 import Bomberos from './paginas/bomberos';
+import Propietarios from './paginas/propietarios';
+import AgregarInmueble from './paginas/AgregarInmueble';
+import FichaPropietarios from './paginas/fichaPropietarios';
+import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
+import PropietariosHistorial from './paginas/propietariosHistorial';
+import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
 import AgregarInmueble from './paginas/AgregarInmueble';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
 import Informes from './paginas/Informes';
@@ -54,12 +60,13 @@ function Contenido() {
 
   const roles = {
     1: "municipal",
-    2: "bomberos",
-    3: "profesional",
-    4: "propietario"
+    2: "profesional",
+    3: "propietario",
+    4: "bomberos"
   };
 
-  const rol = usuario ? (roles[usuario.idRol] || "municipal") : "municipal";
+  const idRolUsuario = usuario?.idRol || usuario?.IdRol || 1;
+  const rol = roles[idRolUsuario] || "municipal";
 
   function iniciarSesion(datosUsuario) {
     sessionStorage.setItem("usuario", JSON.stringify(datosUsuario));
@@ -94,6 +101,7 @@ function Contenido() {
           overflowY: "auto"
         }}>
           <Routes>
+            {/* RUTA INICIAL DINÁMICA SEGÚN ROL */}
             <Route
               path="/"
               element={
@@ -104,17 +112,18 @@ function Contenido() {
                 ) : rol === "profesional" ? (
                   <Conservadores />
                 ) : rol === "propietario" ? (
-                  <Inspecciones />
+                  <Propietarios />
                 ) : (
                   <PaginaMunicipal />
                 )
               }
             />
-            <Route
-              path="/login"
-              element={<Login onLogin={iniciarSesion} />}
-            />
+
+            {/* LOGIN */}
+            <Route path="/login" element={<Login onLogin={iniciarSesion} />} />
             <Route path="/notificaciones" element={<Notificaciones />} />
+            <Route path="/bomberos" element={<Bomberos />} />
+            <Route path="/pagina-municipal" element={<PaginaMunicipal />} />
             <Route path="/conservadores" element={<Conservadores />} />
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/clientes/:id" element={<Clientes />} />
@@ -123,6 +132,14 @@ function Contenido() {
             <Route path="/notificacionesConservadores" element={<NotificacionesConservadores />} />
             <Route path="/servicios-mes" element={<ServiciosMes />} />
             <Route path="/vencimientos" element={<Vencimientos />} />
+            <Route path="/historial-inmueble/:id" element={<HistorialInmueble />} />
+            <Route path="/todos-inmuebles" element={<TodosInmuebles />} />
+            <Route path="/agregar-inmueble" element={<AgregarInmueble />} />
+            <Route path="/propietario" element={<Propietarios />} />
+            <Route path="/propietario/inmuebles/:id" element={<FichaPropietarios />} />
+            <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
+            <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
+            <Route path="/propietario/notificaciones" element={<PropietarioNotificaciones />} />
             <Route path='/historial-inmueble/:id' element={<HistorialInmueble />} />
             <Route path='/todos-inmuebles' element={<TodosInmuebles />} />
             <Route path='/agregar-inmueble' element={<AgregarInmueble />} />

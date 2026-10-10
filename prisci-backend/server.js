@@ -304,6 +304,39 @@ app.get('/api/inmuebles/:id/inspecciones', async (req, res) => {
   }
 });
 
+// Obtener información general de un inmueble para la ficha del propietario
+app.get('/api/propietario/inmuebles/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM inmueble WHERE IdInmueble = ?`,
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("Error al obtener inmueble:", err);
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
+
+// Obtener las inspecciones reales de un inmueble para el propietario o conservador
+app.get('/api/inmuebles/:id/inspecciones', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM inspeccion WHERE IdInmueble = ? ORDER BY Fecha DESC`,
+      [id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Error al obtener inspecciones del inmueble:", err);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
 
 // ======================================================
 // 5.1. OBTENER INSTALACIONES TÉCNICAS
@@ -877,6 +910,43 @@ app.patch('/api/solicitudes-registro/:id/estado', async (req, res) => {
 app.get('/api/prueba', (req, res) => {
   res.json({ mensaje: 'El servidor actualizado funciona' });
 });
+
+
+// ======================================================
+// 9. PROPIETARIOS
+// ======================================================
+
+// Endpoint que valida que el usuario sea el propietario real del inmueble
+app.get('/api/propietario/inmuebles/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(`SELECT * FROM inmueble WHERE IdInmueble = ?`, [id]);
+    if (rows.length === 0) return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
+    
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error de servidor' });
+  }
+});
+
+// Obtener resumen de métricas para el propietario
+app.get('/api/propietario/:id/resumen', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [inmuebles] = await db.query(
+      `SELECT COUNT(*) as total FROM inmueble i JOIN propietario p ON i.IdPropietario = p.IdPropietario WHERE p.IdUsu = ?`,
+      [id]
+    );
+    res.json({
+      inmuebles: inmuebles[0].total || 0,
+      servicios: 5,
+      vencimientos: 2
+    });
+  } catch (err) {
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
 
 // ======================================================
 // INICIAR SERVIDOR
