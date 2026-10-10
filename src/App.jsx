@@ -22,6 +22,7 @@ function Contenido() {
   const location = useLocation();
   const navigate = useNavigate();
 
+
   const [usuario, setUsuario] = useState(() => {
     const usuarioGuardado = sessionStorage.getItem("usuario");
 
@@ -34,10 +35,9 @@ function Contenido() {
       }
     }
 
-    // Si no hay una sesión guardada, no hay usuario autenticado.
-    return null;
+    // Forzamos un usuario municipal predeterminado temporalmente
+    return { id: 1, name: "María González", email: "municipal@prisci.com", idRol: 1 };
   });
-
 
   const esLogin = location.pathname === "/login";
   
