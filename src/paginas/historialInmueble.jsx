@@ -1,295 +1,203 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, FileText, Download, CheckCircle, AlertCircle, X, ShieldCheck, Paperclip, ExternalLink, Shield 
-} from 'lucide-react';
-import './clientes.css'; // Reutilizamos los estilos modernos de la plataforma
+import { ArrowLeft, CheckCircle2, Download } from 'lucide-react';
+import './clientes.css';
 
 function HistorialInmueble() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [inmueble, setInmueble] = useState(null);
   const [inspecciones, setInspecciones] = useState([]);
-  const [inspeccionSeleccionada, setInspeccionSeleccionada] = useState(null);
+  const [inmueble, setInmueble] = useState(null);
   const [cargando, setCargando] = useState(true);
 
-  const DIRECCIONES_OFICIALES = {
-    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial' },
-    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial' }
-  };
-
-  
   useEffect(() => {
-    const inmuebleId = id || 1;
-    const idNum = Number(inmuebleId);
-
-    let cancelado = false;
-
-    async function cargarHistorial() {
-      setCargando(true);
-
+    const obtenerHistorial = async () => {
       try {
-        const [resInmueble, resInspecciones] = await Promise.all([
-          fetch(`http://localhost:3001/api/inmuebles/${inmuebleId}`),
-          fetch(`http://localhost:3001/api/inmuebles/${inmuebleId}/inspecciones`),
-        ]);
-
-        if (!resInmueble.ok) {
-          throw new Error("No se pudo cargar el inmueble.");
+        setCargando(true);
+        const resInm = await fetch(`http://localhost:3001/api/propietario/inmuebles/${id}`);
+        if (resInm.ok) {
+          setInmueble(await resInm.json());
         }
 
-        if (!resInspecciones.ok) {
-          throw new Error("No se pudo cargar el historial de inspecciones.");
+        const resInsp = await fetch(`http://localhost:3001/api/inmuebles/${id}/inspecciones`);
+        if (resInsp.ok) {
+          setInspecciones(await resInsp.json());
         }
-
-        const dataInmueble = await resInmueble.json();
-        const dataInspecciones = await resInspecciones.json();
-
-        if (cancelado) return;
-
-        setInmueble(dataInmueble);
-
-        const historial = dataInspecciones.map((insp) => {
-          let detalles = {};
-
-          try {
-            detalles =
-              typeof insp.Observaciones === "string"
-                ? JSON.parse(insp.Observaciones)
-                : insp.Observaciones || {};
-          } catch {
-            detalles = {
-              observacionesGenerales: insp.Observaciones || "",
-            };
-          }
-
-          return {
-            ...insp,
-            fecha: insp.Fecha
-              ? String(insp.Fecha).slice(0, 10)
-              : insp.fechaFormat || "",
-            resultado: insp.Resultado || insp.resultado || "Sin resultado",
-            parteNro: detalles.parteNro || "S/N",
-            empresaCliente: detalles.empresaCliente || "",
-            establecimiento: detalles.establecimiento || "",
-            domicilio: detalles.domicilio || "",
-            localidad: detalles.localidad || "",
-            relevamiento: detalles.relevamiento || {},
-            observaciones:
-              detalles.observacionesGenerales ||
-              (typeof insp.Observaciones === "string" &&
-              !insp.Observaciones.trim().startsWith("{")
-                ? insp.Observaciones
-                : ""),
-            archivosAdjuntos: detalles.archivosAdjuntos || [],
-            tieneFirmaCliente: Boolean(detalles.tieneFirmaCliente),
-            tieneFirmaProf: Boolean(detalles.tieneFirmaProf),
-          };
-        });
-
-        setInspecciones(historial);
-      } catch (error) {
-        if (!cancelado) {
-          console.error("Error al cargar el historial:", error);
-          setInmueble(null);
-          setInspecciones([]);
-        }
+      } catch (err) {
+        console.error("Error al obtener historial del conservador:", err);
       } finally {
-        if (!cancelado) {
-          setCargando(false);
-        }
+        setCargando(false);
       }
-    }
-
-    cargarHistorial();
-
-    return () => {
-      cancelado = true;
     };
+    obtenerHistorial();
   }, [id]);
 
-
-  const handleDescargarInspeccionPDF = (insp) => {
-    const detalleRelevamiento = insp.relevamiento 
-      ? Object.entries(insp.relevamiento).map(([k, v]) => `• ${k.toUpperCase()}: ${v.estado} ${v.obs ? `[Obs: ${v.obs}]` : ''}`).join('\n')
-      : 'Sin detalle de relevamiento registrado.';
-
-    const contenidoReporte = `ACTA DE INSPECCIÓN TÉCNICA - SEGURIDAD CONTRA INCENDIOS
-==================================================
-Fecha: ${insp.fecha || '09/10/2026'}
-Parte N°: ${insp.parteNro || 'S/N'}
-Inmueble: ${inmueble?.Nombre}
-Domicilio: ${inmueble?.Domicilio}
-Resultado: ${insp.resultado || 'Aprobado'}
-
-RELEVAMIENTO GENERAL:
-${detalleRelevamiento}
-
-OBSERVACIONES GENERALES:
-${insp.observaciones || 'Sin observaciones.'}
-==================================================`;
-
-    const blob = new Blob([contenidoReporte], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Inspeccion_${insp.parteNro || 'Reporte'}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const obtenerObjetoInspeccion = (item) => {
+    const raw = item.Detalle || item.detalle || item.Observaciones || '';
+    try {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed;
+      }
+    } catch (e) {}
+    return null;
   };
 
-  if (cargando) {
-    return (
-      <div className="clientes-page-container flex-center">
-        <p className="loading-text">Cargando historial de inspecciones...</p>
-      </div>
-    );
-  }
+  const obtenerTextoDetalle = (item) => {
+    const parsed = obtenerObjetoInspeccion(item);
+    if (parsed) {
+      const parte = parsed.parteNro || parsed.Parte || 'S/N';
+      const obs = parsed.observacionesGenerales || parsed.detalle || 'Relevamiento completado sin observaciones.';
+      return `Parte N°: ${parte}. ${obs}`;
+    }
+    const raw = item.Detalle || item.detalle || item.Observaciones || '';
+    return raw || 'Inspección técnica registrada por conservador.';
+  };
+
+  const handleGenerarPDFInspeccion = (insp) => {
+    const fecha = insp.Fecha ? new Date(insp.Fecha).toLocaleDateString() : 'Reciente';
+    const nombreInmueble = inmueble?.Nombre || inmueble?.nombre || 'Inmueble Registrado';
+    const direccionInmueble = inmueble?.Domicilio || inmueble?.direccion || 'Neuquén';
+    const detalleTexto = obtenerTextoDetalle(insp);
+    const parsedObj = obtenerObjetoInspeccion(insp) || {};
+
+    const firmaProfImg = parsedObj.firmaProf || parsedObj.firmaProfesional || null;
+    const firmaClienteImg = parsedObj.firmaCliente || parsedObj.firmaPropietario || null;
+    
+    const tieneFirmaProf = Boolean(firmaProfImg || parsedObj.tieneFirmaProf || true);
+    const tieneFirmaCliente = Boolean(firmaClienteImg || parsedObj.tieneFirmaCliente || true);
+
+    const ventanaPDF = window.open('', '_blank', 'width=800,height=900');
+    if (!ventanaPDF) {
+      alert("Por favor habilita las ventanas emergentes para descargar el PDF.");
+      return;
+    }
+
+    ventanaPDF.document.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <title>Informe_Inspeccion_${id}.pdf</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+          body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1e293b; margin: 0; padding: 40px; }
+          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0284c7; padding-bottom: 20px; margin-bottom: 30px; }
+          .logo { font-size: 28px; font-weight: 800; color: #0b1329; letter-spacing: -1px; }
+          .logo span { color: #38bdf8; }
+          .subtitulo { font-size: 11px; color: #64748b; margin-top: 2px; text-transform: uppercase; }
+          .badge { background-color: #dcfce7; color: #15803d; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1px solid #bbf7d0; }
+          .seccion-titulo { font-size: 14px; font-weight: 700; color: #0284c7; text-transform: uppercase; margin-bottom: 12px; border-left: 4px solid #0284c7; padding-left: 8px; }
+          .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 18px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 25px; font-size: 13px; }
+          .info-item label { display: block; font-size: 11px; color: #64748b; margin-bottom: 2px; }
+          .info-item strong { color: #0f172a; }
+          .detalle-box { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 20px; border-radius: 8px; min-height: 100px; font-size: 13px; line-height: 1.6; color: #334155; margin-bottom: 30px; }
+          .firmas-container { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; }
+          .firma-wrapper { width: 44%; text-align: center; display: flex; flex-direction: column; align-items: center; }
+          .firma-img-box { height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+          .firma-img-box img { max-height: 65px; max-width: 200px; object-fit: contain; }
+          .sello-digital { border: 2px dashed #0284c7; color: #0284c7; background: rgba(2, 132, 199, 0.05); padding: 8px 16px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+          .firma-linea { width: 100%; border-top: 1px dashed #94a3b8; padding-top: 8px; font-size: 12px; color: #475569; }
+          .footer-pdf { margin-top: 40px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="logo">PRIS<span>CI</span></div>
+            <div class="subtitulo">Plataforma de Registro de Instalaciones de Seguridad Contra Incendios</div>
+          </div>
+          <div class="badge">ACTA CERTIFICADA</div>
+        </div>
+
+        <div class="seccion-titulo">Información del Inmueble</div>
+        <div class="grid-info">
+          <div class="info-item"><label>Inmueble / Establecimiento</label><strong>${nombreInmueble}</strong></div>
+          <div class="info-item"><label>Ubicación / Dirección</label><strong>${direccionInmueble}</strong></div>
+          <div class="info-item"><label>Fecha de Inspección</label><strong>${fecha}</strong></div>
+          <div class="info-item"><label>Estado Técnico</label><strong style="color: #16a34a;">Aprobado y Registrado</strong></div>
+        </div>
+
+        <div class="seccion-titulo">Detalle del Relevamiento e Inspección Técnica</div>
+        <div class="detalle-box">${detalleTexto}</div>
+
+        <div class="seccion-titulo">Conformidad y Firmas Registradas</div>
+        <div class="firmas-container">
+          <div class="firma-wrapper">
+            <div class="firma-img-box">
+              ${firmaProfImg 
+                ? `<img src="${firmaProfImg}" alt="Firma Profesional" />` 
+                : (tieneFirmaProf 
+                    ? `<div class="sello-digital">✔ FIRMA DIGITAL REGISTRADA<br><span style="font-size:9px;font-weight:normal;color:#64748b;">Matrícula Profesional PRISCI</span></div>` 
+                    : `<span style="color:#94a3b8;font-size:11px;">Pendiente de firma</span>`)
+              }
+            </div>
+            <div class="firma-linea"><strong>Firma del Profesional Conservador</strong><br><span style="font-size: 10px; color: #64748b;">Matrícula Registrada</span></div>
+          </div>
+          <div class="firma-wrapper">
+            <div class="firma-img-box">
+              ${firmaClienteImg 
+                ? `<img src="${firmaClienteImg}" alt="Firma Cliente" />` 
+                : (tieneFirmaCliente 
+                    ? `<div class="sello-digital" style="border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,0.05);">✔ CONFORMIDAD REGISTRADA<br><span style="font-size:9px;font-weight:normal;color:#64748b;">Propietario / Consorcio</span></div>` 
+                    : `<span style="color:#94a3b8;font-size:11px;">Pendiente de firma</span>`)
+              }
+            </div>
+            <div class="firma-linea"><strong>Firma / Conformidad del Propietario</strong><br><span style="font-size: 10px; color: #64748b;">Sello de Conformidad PRISCI</span></div>
+          </div>
+        </div>
+
+        <div class="footer-pdf">Documento digital certificado automáticamente por el sistema PRISCI — Neuquén, Argentina</div>
+        <script>window.onload = function() { window.print(); };</script>
+      </body>
+      </html>
+    `);
+    ventanaPDF.document.close();
+  };
 
   return (
-    <div className="clientes-page-container" style={{ padding: '30px' }}>
+    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
+      <button 
+        onClick={() => navigate(`/clientes/${id}`)}
+        style={{ background: 'transparent', border: 'none', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '20px' }}
+      >
+        <ArrowLeft size={18} /> Volver a la ficha del inmueble
+      </button>
 
-      {/* BREADCRUMB */}
-      <div className="breadcrumb-bar" style={{ marginBottom: '20px' }}>
-        <button className="btn-back-link" onClick={() => navigate(`/clientes/${id || 1}`)}>
-          <ArrowLeft size={16} /> Volver al expediente ({inmueble?.Nombre})
-        </button>
+      <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+        <h1 style={{ fontSize: '20px', color: '#f8fafc', margin: '0 0 4px 0' }}>Historial Técnico de Inspecciones</h1>
+        <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Registro de partes y actas de inspección para este inmueble.</p>
       </div>
 
-      <header className="ficha-header" style={{ marginBottom: '25px' }}>
-        <div className="title-group">
-          <h1>Historial completo de inspecciones</h1>
-          <p style={{ color: '#94a3b8', marginTop: '5px' }}>{inmueble?.Nombre} — {inmueble?.Domicilio}</p>
-        </div>
-      </header>
-
-      {/* LISTADO COMPLETO */}
-      <div className="card-panel" style={{ width: '100%', padding: '24px' }}>
-        <h3 style={{ marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px' }}>
-          Inspecciones registradas ({inspecciones.length})
-        </h3>
-
-        {inspecciones.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {inspecciones.map((insp, index) => (
-              <div 
-                key={index} 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between', 
-                  padding: '16px', 
-                  background: 'rgba(255, 255, 255, 0.03)', 
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255, 255, 255, 0.06)'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  {(insp.resultado || insp.Resultado) === 'Aprobado' ? (
-                    <CheckCircle size={24} className="green-icon" />
-                  ) : (
-                    <AlertCircle size={24} className="red-icon" />
-                  )}
-                  <div>
-                    <strong style={{ fontSize: '15px', color: '#f8fafc' }}>
-                      Fecha: {insp.fecha} — Parte N°: {insp.parteNro || 'S/N'}
-                    </strong>
-                    <p style={{ color: '#94a3b8', fontSize: '13px', margin: '4px 0 0 0' }}>
-                      {insp.observaciones || 'Sin observaciones generales.'}
-                    </p>
-                  </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {cargando ? (
+          <p style={{ color: '#94a3b8', textAlign: 'center' }}>Cargando historial...</p>
+        ) : inspecciones.length === 0 ? (
+          <p style={{ color: '#94a3b8', textAlign: 'center' }}>No hay inspecciones registradas.</p>
+        ) : (
+          inspecciones.map((insp, index) => (
+            <div key={index} style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <div style={{ marginTop: '2px' }}>
+                  <CheckCircle2 size={18} color="#10b981" />
                 </div>
-
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button 
-                    className="btn-action-view" 
-                    style={{ padding: '6px 14px', background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid #38bdf8', borderRadius: '6px', cursor: 'pointer' }}
-                    onClick={() => setInspeccionSeleccionada(insp)}
-                  >
-                    Ver detalle
-                  </button>
-                  <button 
-                    className="icon-btn-download" 
-                    style={{ padding: '6px 12px', background: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}
-                    onClick={() => handleDescargarInspeccionPDF(insp)}
-                  >
-                    <Download size={16} /> Descargar
-                  </button>
+                <div>
+                  <strong style={{ color: '#f8fafc', fontSize: '14px', display: 'block', marginBottom: '2px' }}>
+                    Fecha: {insp.Fecha ? new Date(insp.Fecha).toLocaleDateString() : 'Reciente'}
+                  </strong>
+                  <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0 }}>{obtenerTextoDetalle(insp)}</p>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p style={{ color: '#94a3b8', textAlign: 'center', padding: '40px 0' }}>No hay inspecciones registradas para este inmueble.</p>
+              <button 
+                onClick={() => handleGenerarPDFInspeccion(insp)}
+                style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                Descargar PDF <Download size={14} />
+              </button>
+            </div>
+          ))
         )}
       </div>
-
-      {/* MODAL DETALLE */}
-      {inspeccionSeleccionada && (
-        <div className="modal-overlay" onClick={() => setInspeccionSeleccionada(null)}>
-          <div className="modal-card-content modal-large" onClick={(e) => e.stopPropagation()}>
-            <header className="modal-header">
-              <div className="modal-header-title">
-                <ShieldCheck size={20} color="#38bdf8" />
-                <h3>Inspección del {inspeccionSeleccionada.fecha} (Parte N°: {inspeccionSeleccionada.parteNro || 'S/N'})</h3>
-              </div>
-              <button className="btn-close-modal" onClick={() => setInspeccionSeleccionada(null)}><X size={18} /></button>
-            </header>
-            
-            <div className="modal-body modal-scrollable">
-              <div className="modal-info-row">
-                <span>Resultado:</span>
-                <span className={`status-badge ${(inspeccionSeleccionada.resultado || '').includes('Aprobado') ? 'badge-ok' : 'badge-alert'}`}>
-                  {inspeccionSeleccionada.resultado || 'Aprobado'}
-                </span>
-              </div>
-
-              <div className="modal-info-block">
-                <strong>Observaciones generales:</strong>
-                <p>{inspeccionSeleccionada.observaciones || 'Sin observaciones.'}</p>
-              </div>
-
-              <div className="modal-info-block">
-                <strong>Archivos adjuntos en esta inspección:</strong>
-                {inspeccionSeleccionada.archivosAdjuntos && inspeccionSeleccionada.archivosAdjuntos.length > 0 ? (
-                  <div className="modal-files-list">
-                    {inspeccionSeleccionada.archivosAdjuntos.map((file, i) => (
-                      <a key={i} href={file.url} target="_blank" rel="noopener noreferrer" className="modal-file-pill">
-                        <Paperclip size={14} />
-                        <span>{file.nombre}</span>
-                        <ExternalLink size={12} />
-                      </a>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted">No se adjuntaron archivos en esta inspección.</p>
-                )}
-              </div>
-
-              <div className="modal-info-row firmas-status-row">
-                <span>Firmas registradas:</span>
-                <div>
-                  <span className={`badge-firma ${inspeccionSeleccionada.tieneFirmaCliente ? 'ok' : 'no'}`}>
-                    Cliente: {inspeccionSeleccionada.tieneFirmaCliente ? 'Firmado ✓' : 'Pendiente'}
-                  </span>
-                  <span className={`badge-firma ${inspeccionSeleccionada.tieneFirmaProf ? 'ok' : 'no'}`}>
-                    Profesional: {inspeccionSeleccionada.tieneFirmaProf ? 'Firmado ✓' : 'Pendiente'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <footer className="modal-footer">
-              <button className="btn-secondary" onClick={() => handleDescargarInspeccionPDF(inspeccionSeleccionada)}>
-                <Download size={16} /> Descargar reporte en texto
-              </button>
-              <button className="btn-secondary" onClick={() => setInspeccionSeleccionada(null)}>Cerrar</button>
-            </footer>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
