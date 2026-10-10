@@ -28,26 +28,44 @@ function Contenido() {
     if (usuarioGuardado) {
       try {
         return JSON.parse(usuarioGuardado);
-      } catch (e) {
-        console.error("Error al parsear usuario:", e);
+      } catch (error) {
+        console.error("Error al recuperar el usuario:", error);
         sessionStorage.removeItem("usuario");
       }
     }
 
-    // Forzamos un usuario municipal predeterminado temporalmente
-    return { id: 1, name: "María González", email: "municipal@prisci.com", idRol: 1 };
+    return null;
   });
 
   const esLogin = location.pathname === "/login";
 
-  const roles = {
+  const rolesPorId = {
     1: "municipal",
     2: "bomberos",
     3: "profesional",
     4: "propietario"
   };
 
-  const rol = usuario ? (roles[usuario.idRol] || "municipal") : "municipal";
+  const rolesPorNombre = {
+    municipal: "municipal",
+    bomberos: "bomberos",
+    profesional: "profesional",
+    conservador: "profesional",
+    propietario: "propietario"
+  };
+
+  const rolTexto = String(
+    usuario?.rol ?? usuario?.RolNombre ?? ""
+  ).trim().toLowerCase();
+
+  const idRolUsuario = Number(
+    usuario?.idRol ?? usuario?.IdRol
+  );
+
+  const rol =
+    rolesPorNombre[rolTexto] ||
+    rolesPorId[idRolUsuario] ||
+    null;
 
   function iniciarSesion(datosUsuario) {
     sessionStorage.setItem("usuario", JSON.stringify(datosUsuario));
