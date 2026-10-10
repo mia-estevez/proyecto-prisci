@@ -19,6 +19,7 @@ import TodosInmuebles from './paginas/todosInmuebles';
 import Bomberos from './paginas/bomberos';
 import AgregarInmueble from './paginas/AgregarInmueble';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
+import Informes from './paginas/Informes';
 
 function Contenido() {
   const location = useLocation();
