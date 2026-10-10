@@ -18,6 +18,7 @@ import HistorialInmueble from './paginas/historialInmueble';
 import TodosInmuebles from './paginas/todosInmuebles';
 import Bomberos from './paginas/bomberos';
 import AgregarInmueble from './paginas/AgregarInmueble';
+import AgregarProfesionales from './paginas/AgregarProfesionales';
 
 function Contenido() {
   const location = useLocation();
@@ -123,6 +124,7 @@ function Contenido() {
             <Route path='/historial-inmueble/:id' element={<HistorialInmueble />} />
             <Route path='/todos-inmuebles' element={<TodosInmuebles />} />
             <Route path='/agregar-inmueble' element={<AgregarInmueble />} />
+            <Route path='/agregar-profesionales' element={<AgregarProfesionales />} />
           </Routes>
         </main>
       </div>
