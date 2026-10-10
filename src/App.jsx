@@ -85,7 +85,7 @@ function Contenido() {
       {/* NAVBAR SUPERIOR */}
       {!esLogin && usuario && <Navbar usuario={usuario} />}
 
-      <div style={{ display: "flex", flex: 1, width: "100%", minHeight: 0 }}>
+      <div style={{display: "flex", flex: 1, width: "100%", minHeight: 0, alignItems: "stretch" }}>
         
         {/* MENÚ LATERAL (SIDEBAR) */}
         {!esLogin && (
@@ -93,12 +93,7 @@ function Contenido() {
         )}
 
         {/* CONTENIDO PRINCIPAL */}
-        <main style={{
-          flex: 1,
-          padding: esLogin ? "0" : "20px",
-          boxSizing: "border-box",
-          overflowY: "auto"
-        }}>
+        <main style={{flex: 1, minWidth: 0, padding: esLogin ? "0" : "20px", boxSizing: "border-box", overflowY: "auto"}}>
           <Routes>
             <Route
               path="/"
