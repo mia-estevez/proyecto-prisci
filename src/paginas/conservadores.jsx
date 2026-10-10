@@ -1,207 +1,198 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// Componentes de React-Leaflet
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
-
-// Íconos vectoriales de Lucide React
-import { 
-  Home, 
-  Users, 
-  ClipboardList, 
-  Clock, 
-  Search, 
-  Filter, 
-  ChevronRight, 
-  Building2 
-} from 'lucide-react';
-
-import 'leaflet/dist/leaflet.css';
-import './conservadores.css';
-
-// Coordenadas Neuquén Capital
-const CENTRO_NEUQUEN = [-38.9516, -68.0591];
-
-// Íconos de pines para el mapa
-const iconoRojo = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const iconoAzul = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+import { Building2, Users, FileText, Clock, Bell, MapPin, Search } from 'lucide-react';
+import './clientes.css';
 
 function Conservadores() {
   const navigate = useNavigate();
-  const ID_CONSERVADOR = 1;
-
-  // ESTADOS
-  const [resumen, setResumen] = useState({ inmuebles: 0, clientes: 0, servicios: 0, vencimientos: 0 });
-  const [inmuebles, setInmuebles] = useState([]);
+  const [inmueblesAsignados, setInmueblesAsignados] = useState([]);
   const [busqueda, setBusqueda] = useState('');
-  const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
 
-  // PETICIONES AL BACKEND
   useEffect(() => {
-    fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/resumen`)
-      .then(res => res.json())
-      .then(data => setResumen(data))
-      .catch(err => console.error("Error al obtener resumen:", err));
+    const inmueblesBaseIniciales = [
+      {
+        id: 1,
+        nombre: 'Edificio Torres del Limay',
+        domicilio: 'Av. Argentina 1234, Neuquén',
+        tipo: 'Comercial',
+        superficie: '1.250 m²',
+        estado: 'Activo'
+      },
+      {
+        id: 2,
+        nombre: 'Galería Comercial Centro',
+        domicilio: 'Gral. Las Heras 450, Neuquén',
+        tipo: 'Residencial',
+        superficie: '1.200 m²',
+        estado: 'Inactivo'
+      }
+    ];
 
-    fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/inmuebles`)
-      .then(res => res.json())
-      .then(data => setInmuebles(data))
-      .catch(err => console.error("Error al obtener inmuebles:", err));
+    const guardadosEnStorage = localStorage.getItem('inmuebles_conservador');
+    if (!guardadosEnStorage) {
+      localStorage.setItem('inmuebles_conservador', JSON.stringify(inmueblesBaseIniciales));
+      setInmueblesAsignados(inmueblesBaseIniciales);
+    } else {
+      setInmueblesAsignados(JSON.parse(guardadosEnStorage));
+    }
   }, []);
 
-  const inmueblesFiltrados = inmuebles.filter(item =>
-    item.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-    item.direccion?.toLowerCase().includes(busqueda.toLowerCase())
+  const inmueblesFiltrados = inmueblesAsignados.filter(inm => 
+    inm.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    inm.domicilio.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
-    <div className="conservadores-page-container">
+    <div className="clientes-page-container" style={{ padding: '30px' }}>
 
-      {/* ENCABEZADO Y TARJETAS KPI */}
-      <section className="welcome-section">
-        <h1>¡Hola, Juan!</h1>
-        <p>Gestioná y consultá la información de los inmuebles asignados.</p>
+      {/* HEADER DE BIENVENIDA */}
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <h1 style={{ fontSize: '28px', color: '#f8fafc', marginBottom: '8px' }}>¡Hola, Juan!</h1>
+        <p style={{ color: '#94a3b8', fontSize: '14px' }}>Gestioná y consultá la información de los inmuebles asignados.</p>
+      </div>
 
-        <div className="kpi-grid">
-          <div className="kpi-card" onClick={() => navigate('/inmuebles')}>
-            <div className="kpi-icon-wrapper blue">
-              <Home size={22} color="#3b82f6" />
-            </div>
-            <div className="kpi-data">
-              <h3>{resumen.inmuebles}</h3>
-              <span>Inmuebles Asignados</span>
-            </div>
+      {/* TARJETAS DE RESUMEN SUPERIOR */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '30px' }}>
+        
+        <div className="card-panel" style={{ margin: 0, padding: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ padding: '12px', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '10px', color: '#38bdf8' }}>
+            <Building2 size={22} />
+          </div>
+          <div>
+            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#f8fafc' }}>{inmueblesAsignados.length}</span>
+            <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>Inmuebles Asignados</p>
+          </div>
+        </div>
+
+        <div className="card-panel" style={{ margin: 0, padding: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ padding: '12px', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '10px', color: '#38bdf8' }}>
+            <Users size={22} />
+          </div>
+          <div>
+            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#f8fafc' }}>
+              {inmueblesAsignados.filter(i => i.estado === 'Activo').length}
+            </span>
+            <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>Clientes Activos</p>
+          </div>
+        </div>
+
+        <div className="card-panel" style={{ margin: 0, padding: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ padding: '12px', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '10px', color: '#38bdf8' }}>
+            <FileText size={22} />
+          </div>
+          <div>
+            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#f8fafc' }}>7</span>
+            <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>Servicios Este mes</p>
+          </div>
+        </div>
+
+        <div className="card-panel" style={{ margin: 0, padding: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ padding: '12px', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '10px', color: '#38bdf8' }}>
+            <Clock size={22} />
+          </div>
+          <div>
+            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#f8fafc' }}>6</span>
+            <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>Vencimientos Próximos 30 días</p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* SECCIÓN CENTRAL: MAPA Y LISTA LATERAL */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
+
+        {/* MAPA DE INMUEBLES */}
+        <div className="card-panel" style={{ margin: 0, padding: '20px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ fontSize: '16px', color: '#f8fafc', marginBottom: '4px' }}>Mapa de mis inmuebles</h3>
+          <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '15px' }}>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
+          
+          <div style={{ position: 'relative', marginBottom: '15px' }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
+            <input 
+              type="text" 
+              placeholder="Buscar por dirección, cliente o nombre de inmueble..." 
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              style={{ 
+                width: '100%', 
+                padding: '10px 10px 10px 38px', 
+                background: 'rgba(15, 23, 42, 0.8)', 
+                border: '1px solid rgba(255, 255, 255, 0.1)', 
+                borderRadius: '8px', 
+                color: '#f8fafc',
+                fontSize: '13px',
+                outline: 'none'
+              }}
+            />
           </div>
 
-          <div className="kpi-card" onClick={() => navigate('/clientes')}>
-            <div className="kpi-icon-wrapper cyan">
-              <Users size={22} color="#06b6d4" />
-            </div>
-            <div className="kpi-data">
-              <h3>{resumen.clientes}</h3>
-              <span>Clientes Activos</span>
-            </div>
-          </div>
-
-          <div className="kpi-card" onClick={() => navigate('/servicios-mes')}>
-            <div className="kpi-icon-wrapper green">
-              <ClipboardList size={22} color="#10b981" />
-            </div>
-            <div className="kpi-data">
-              <h3>{resumen.servicios}</h3>
-              <span>Servicios Este mes</span>
-            </div>
-          </div>
-
-          <div className="kpi-card" onClick={() => navigate('/vencimientos')}>
-            <div className="kpi-icon-wrapper orange">
-              <Clock size={22} color="#f59e0b" />
-            </div>
-            <div className="kpi-data">
-              <h3>{resumen.vencimientos}</h3>
-              <span>Vencimientos Próximos 30 días</span>
+          <div style={{ flex: 1, minHeight: '340px', background: '#1e293b', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.06)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ textAlign: 'center', color: '#94a3b8' }}>
+              <MapPin size={32} color="#38bdf8" style={{ margin: '0 auto 8px auto' }} />
+              <p style={{ fontSize: '14px', fontWeight: '500' }}>Mapa interactivo de Neuquén Capital</p>
+              <span style={{ fontSize: '12px' }}>{inmueblesFiltrados.length} inmuebles localizados en coordenadas</span>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* SECCIÓN DEL MAPA + LISTA LATERAL */}
-      <div className="main-grid">
-        
-        {/* MAPA */}
-        <section className="card-panel map-section">
-          <div className="panel-header">
-            <h3>Mapa de mis inmuebles</h3>
-            <p>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
-          </div>
+        {/* LISTA LATERAL: MIS INMUEBLES */}
+        <div className="card-panel" style={{ margin: 0, padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <h3 style={{ fontSize: '16px', color: '#f8fafc', margin: 0 }}>Mis inmuebles</h3>
+              <span style={{ fontSize: '12px', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                {inmueblesAsignados.length} inmuebles
+              </span>
+            </div>
 
-          <div className="map-search-bar">
-            <Search size={18} className="search-icon" />
-            <input 
-              type="text" 
-              placeholder="Buscar por dirección, cliente o nombre de inmueble..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-            <button className="btn-filter"><Filter size={16} /> Filtros</button>
-          </div>
-
-          <div className="map-display">
-            <MapContainer center={CENTRO_NEUQUEN} zoom={13} style={{ height: '100%', width: '100%', borderRadius: '8px' }}>
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; OpenStreetMap contributors'
-              />
-              
-              {inmueblesFiltrados.map((item) => (
-                <Marker
-                  key={item.id}
-                  position={[item.latitud || -38.9516, item.longitud || -68.0591]}
-                  icon={inmuebleSeleccionado?.id === item.id ? iconoAzul : iconoRojo}
-                  eventHandlers={{
-                    click: () => setInmuebleSeleccionado(item),
-                  }}
-                >
-                  <Popup>
-                    <strong>{item.nombre}</strong><br />
-                    {item.direccion}<br />
-                    <button className="btn-popup" onClick={() => navigate(`/clientes/${item.id}`)}>
-                      Ver expediente
-                    </button>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
-        </section>
-
-        {/* LISTA DE INMUEBLES */}
-        <aside className="card-panel list-section">
-          <div className="panel-header flex-between">
-            <h3>Mis inmuebles</h3>
-            <span className="badge-count">{inmuebles.length} inmuebles</span>
-          </div>
-
-          <div className="inmuebles-list">
-            {inmueblesFiltrados.length === 0 ? (
-              <p className="empty-msg">No hay inmuebles asignados registrados.</p>
-            ) : (
-              inmueblesFiltrados.slice(0, 6).map((item) => (
-                <div key={item.id} className="inmueble-item" onClick={() => navigate(`/clientes/${item.id}`)}>
-                  <div className="inmueble-icon-box">
-                    <Building2 size={20} color="#38bdf8" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '340px', overflowY: 'auto' }}>
+              {inmueblesFiltrados.length > 0 ? (
+                inmueblesFiltrados.map((inm) => (
+                  <div 
+                    key={inm.id}
+                    onClick={() => navigate(`/clientes/${inm.id}`)}
+                    style={{ 
+                      padding: '12px', 
+                      background: 'rgba(255,255,255,0.02)', 
+                      border: '1px solid rgba(255,255,255,0.08)', 
+                      borderRadius: '8px', 
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#38bdf8';
+                      e.currentTarget.style.background = 'rgba(56, 189, 248, 0.04)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <strong style={{ color: '#f8fafc', fontSize: '14px', display: 'block', marginBottom: '4px' }}>{inm.nombre}</strong>
+                      <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: inm.estado === 'Activo' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(148, 163, 184, 0.15)', color: inm.estado === 'Activo' ? '#4ade80' : '#94a3b8' }}>
+                        {inm.estado}
+                      </span>
+                    </div>
+                    <span style={{ color: '#94a3b8', fontSize: '12px', display: 'block' }}>{inm.domicilio}</span>
+                    <span style={{ color: '#38bdf8', fontSize: '11px', display: 'block', marginTop: '6px' }}>Tipo: {inm.tipo}</span>
                   </div>
-                  <div className="inmueble-details">
-                    <strong>{item.nombre}</strong>
-                    <p>{item.direccion}</p>
-                    <span className="sub-tag">{item.tipoInmueble}</span>
-                  </div>
-                  <ChevronRight size={18} className="arrow" />
-                </div>
-              ))
-            )}
+                ))
+              ) : (
+                <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>No se encontraron inmuebles asignados.</p>
+              )}
+            </div>
           </div>
 
-          <button className="btn-link-all" onClick={() => navigate('/inmuebles')}>
-            Ver todos los inmuebles ›
-          </button>
-        </aside>
+          <div style={{ marginTop: '15px', textAlign: 'right', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
+            <span 
+              onClick={() => navigate('/todos-inmuebles')} 
+              style={{ cursor: 'pointer', color: '#38bdf8', fontSize: '13px', fontWeight: '500' }}
+            >
+              Ver todos los inmuebles ›
+            </span>
+          </div>
+        </div>
 
       </div>
 
