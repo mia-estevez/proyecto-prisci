@@ -126,7 +126,7 @@ function Contenido() {
             <Route path='/todos-inmuebles' element={<TodosInmuebles />} />
             <Route path='/agregar-inmueble' element={<AgregarInmueble />} />
             <Route path='/profesionales' element={<AgregarProfesionales />} />
-            <Route path='/informes' element={<Informes />} />
+            <Route path='/reportes' element={<Informes />} />
           </Routes>
         </main>
       </div>
