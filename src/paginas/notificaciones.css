@@ -16,3 +16,145 @@
   margin: 0;
   text-align: center;
 }
+
+.notificaciones-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.notificaciones-volver {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.notificaciones-titulo h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+}
+
+.notificaciones-titulo p {
+  margin: 0;
+  color: #777;
+}
+
+.notificaciones-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.notificaciones-acciones button,
+.notificacion-botones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+.notificaciones-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 55px 20px;
+  color: #777;
+  text-align: center;
+}
+
+.notificaciones-vacio h3,
+.notificaciones-vacio p {
+  margin: 0;
+}
+
+.notificaciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notificacion-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 18px;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  background: white;
+}
+
+.notificacion-no-leida {
+  border-left: 4px solid #e74c3c;
+  background: #fffafa;
+}
+
+.notificacion-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #75421f;
+}
+
+.notificacion-contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+.notificacion-titulo-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.notificacion-titulo-fila h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.notificacion-contenido p {
+  margin: 8px 0;
+}
+
+.notificacion-fecha {
+  color: #777;
+  font-size: 13px;
+}
+
+.notificacion-etiqueta {
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: #fde8e7;
+  color: #c0392b;
+  font-size: 12px;
+}
+
+.notificacion-botones {
+  display: flex;
+  gap: 7px;
+}
+
+@media (max-width: 600px) {
+  .notificacion-card {
+    flex-wrap: wrap;
+  }
+
+  .notificacion-botones {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
