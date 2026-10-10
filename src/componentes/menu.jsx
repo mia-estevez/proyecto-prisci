@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import "./menu.css";
 
-function Menu( {rol}) {
+function Menu({ rol, onCerrarSesion }) {
     const location = useLocation();
 
     if (rol == "municipal") {
@@ -44,10 +44,10 @@ function Menu( {rol}) {
                 Historial
             </Link>
 
-            <Link to="/logout" className="menu-logout">
+            <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                 <i className="bi bi-box-arrow-right"></i>
                 Cerrar sesión
-            </Link>
+            </button>
 
             </aside>
         );
@@ -62,10 +62,10 @@ function Menu( {rol}) {
                     Mapa de inmuebles
                 </Link>
 
-                <Link to="/logout" className="menu-logout">
+                <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                     <i className="bi bi-box-arrow-right"></i>
                     Cerrar sesión
-                </Link>
+                </button>
             
             </aside>
         );
@@ -89,10 +89,10 @@ function Menu( {rol}) {
                     Ver inspecciones
                 </Link>
 
-                <Link to="/logout" className="menu-logout">
+                <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                     <i className="bi bi-box-arrow-right"></i>
                     Cerrar sesión
-                </Link>
+                </button>
             </aside>
         )
     }
@@ -111,10 +111,10 @@ function Menu( {rol}) {
                     Ver inspecciones
                 </Link>
 
-                <Link to="/logout" className="menu-logout">
+                <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                     <i className="bi bi-box-arrow-right"></i>
                     Cerrar sesión
-                </Link>
+                </button>
 
             </aside>
         )

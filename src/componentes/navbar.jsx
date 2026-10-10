@@ -1,10 +1,33 @@
 import { Link } from "react-router-dom";
-import "./Navbar.css";
+import "./navbar.css";
 
-function Navbar() {
+function Navbar({ usuario }) {
+  console.log("Usuario recibido en Navbar:", usuario);
+  
+  const roles = {
+    1: "Municipal",
+    2: "Bomberos",
+    3: "Profesional",
+    4: "Propietario"
+  };
+
+  const iconosRol = {
+    1: "bi-building",
+    2: "bi-fire",
+    3: "bi-cone-striped",
+    4: "bi-house"
+  };
+
+  const nombreCompleto = usuario
+    ? `${usuario.nombre || ""} ${usuario.apellido || ""}`.trim()
+    : "Usuario";
+
+  const nombreRol = usuario
+    ? roles[Number(usuario.idRol)] || "Usuario"
+    : "Usuario";
+
   return (
     <nav className="navbar">
-
       <div className="navbar-logo">
         <h1>
           <span className="logo-blanco">PRIS</span>
@@ -18,23 +41,26 @@ function Navbar() {
       </div>
 
       <div className="navbar-actions">
-
-        <Link to="/notificaciones" className="navbar-icon">
-          🔔
+        <Link
+          to="/notificaciones"
+          className="navbar-icon"
+          aria-label="Notificaciones"
+        >
+          <i className="bi bi-bell navbar-bell-icon"></i>
+          <span className="navbar-notificacion"></span>
         </Link>
 
-        <Link to="/bomberos" className="navbar-role">
-          👷
-          <span>Usuario</span>
-          <span className="navbar-arrow">▼</span>
-        </Link>
+        <div className="navbar-role">
+          <i className="bi bi-person-workspace navbar-role-icon"></i>
 
-        <Link to="/perfil" className="navbar-profile">
-          👤
-        </Link>
+          <div className="navbar-user-info">
+            <span className="navbar-user-name">{nombreCompleto}</span>
+            <span className="navbar-user-role">{nombreRol}</span>
+          </div>
 
+          <i className="bi bi-chevron-down navbar-arrow"></i>
+        </div>
       </div>
-
     </nav>
   );
 }

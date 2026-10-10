@@ -1,0 +1,633 @@
+/* FONDO OSCURO Y CONTENEDOR DEL MODAL */
+
+.ficha-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  /* Fondo oscuro detrás de la ficha */
+  background: rgba(5, 12, 25, 0.82);
+  backdrop-filter: blur(5px);
+}
+
+/* Ventana principal de la ficha */
+.ficha-modal {
+  display: flex;
+  flex-direction: column;
+
+  width: min(1100px, 100%);
+  max-height: 92vh;
+
+  overflow: hidden;
+
+  color: #e8edf5;
+  background: #172235;
+
+  border: 1px solid #35465f;
+  border-radius: 16px;
+
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+
+/* ENCABEZADO DE LA FICHA */
+.ficha-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 26px 30px;
+
+  background: #1d2c43;
+  border-bottom: 1px solid #35465f;
+}
+
+/* Texto pequeño superior: PRISCI */
+.ficha-etiqueta {
+  color: #83b9ff;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+/* Título principal */
+.ficha-header h2 {
+  margin: 8px 0;
+
+  color: #ffffff;
+
+  font-size: 25px;
+  font-weight: 700;
+}
+
+/* Descripción debajo del título */
+.ficha-header p {
+  margin: 0;
+
+  color: #aab8cb;
+  font-size: 13px;
+}
+
+/* Botón X para cerrar el modal */
+.ficha-cerrar {
+  flex-shrink: 0;
+
+  width: 38px;
+  height: 38px;
+
+  color: #dce6f4;
+  font-size: 28px;
+  line-height: 1;
+
+  background: #293a52;
+  border: 1px solid #435570;
+  border-radius: 9px;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ficha-cerrar:hover {
+  color: white;
+  background: #3b4e69;
+}
+
+
+/* CUERPO DE LA FICHA Y BARRA DE DESPLAZAMIENTO */
+
+/* El scroll queda dentro del modal */
+.ficha-contenido {
+  padding: 25px 30px;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Apariencia de la barra de desplazamiento */
+.ficha-contenido::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ficha-contenido::-webkit-scrollbar-track {
+  background: #131d2d;
+}
+
+.ficha-contenido::-webkit-scrollbar-thumb {
+  background: #465b78;
+  border-radius: 10px;
+}
+
+
+/* SECCIONES Y ENCABEZADOS AZULES */
+
+/* Espacio entre las secciones */
+.ficha-seccion {
+  margin-bottom: 27px;
+}
+
+/* Encabezado azul de cada sección */
+.ficha-seccion-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-bottom: 16px;
+  padding: 12px 16px;
+
+  background: #1767ad;
+  border-radius: 7px;
+}
+
+/* Nombre de cada sección */
+.ficha-seccion-titulo h3 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 650;
+}
+
+/* Indicación de quién puede editar */
+.ficha-seccion-titulo > span {
+  color: #e1efff;
+
+  font-size: 11px;
+  text-align: right;
+}
+
+
+/* FORMULARIO DE DATOS GENERALES*/
+
+/* Distribución de los campos en dos columnas */
+.ficha-form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* Etiquetas de los campos */
+.ficha-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  color: #b9c7d9;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Campos de texto, fechas y selectores de la tabla */
+.ficha-campo input,
+.ficha-tabla input,
+.ficha-tabla select,
+.ficha-observaciones {
+  width: 100%;
+  min-width: 0;
+
+  padding: 10px 12px;
+
+  color: #edf3fb;
+  font: inherit;
+
+  background: #101a2a;
+  border: 1px solid #394b64;
+  border-radius: 7px;
+
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Resaltar los campos cuando se seleccionan */
+.ficha-campo input:focus,
+.ficha-tabla input:focus,
+.ficha-tabla select:focus,
+.ficha-observaciones:focus {
+  border-color: #55a5ff;
+  box-shadow: 0 0 0 2px rgba(85, 165, 255, 0.13);
+}
+
+/* Campos que no se pueden editar */
+.ficha-campo input[readonly],
+.ficha-observaciones[readonly] {
+  color: #c0ccdc;
+
+  background: #202d40;
+
+  cursor: default;
+}
+
+
+/* TABLA DE INSTALACIONES CONTRA INCENDIOS*/
+
+/* Permite desplazar la tabla horizontalmente si hace falta */
+.ficha-tabla-contenedor {
+  overflow-x: auto;
+
+  border: 1px solid #35465f;
+  border-radius: 8px;
+}
+
+/* Tabla completa */
+.ficha-tabla {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  font-size: 12px;
+}
+
+/* Fila de encabezados */
+.ficha-tabla thead {
+  background: #223650;
+}
+
+/* Celdas del encabezado */
+.ficha-tabla th {
+  padding: 13px 15px;
+
+  color: #bcdcff;
+  font-weight: 650;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Celdas de información */
+.ficha-tabla td {
+  padding: 12px 15px;
+
+  color: #d6dfeb;
+
+  border-top: 1px solid #2f4057;
+}
+
+/* Efecto al pasar el cursor por una fila */
+.ficha-tabla tbody tr:hover {
+  background: rgba(75, 125, 185, 0.08);
+}
+
+/* Nombre de cada instalación */
+.ficha-tabla td:first-child {
+  min-width: 180px;
+
+  font-weight: 600;
+}
+
+/* Campos editables dentro de la tabla */
+.ficha-tabla input,
+.ficha-tabla select {
+  min-width: 135px;
+
+  font-size: 12px;
+}
+
+
+/* PARTE ESTADOS DE LAS INSTALACIONES*/
+
+/* Estilo general de las etiquetas de estado */
+.ficha-estado {
+  display: inline-block;
+
+  padding: 5px 9px;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* Instalación vigente */
+.estado-vigente {
+  color: #9de6bc;
+  background: rgba(36, 151, 89, 0.17);
+}
+
+/* Instalación pendiente o con algún problema */
+.estado-pendiente {
+  color: #ffd58a;
+  background: rgba(221, 153, 34, 0.15);
+}
+
+
+/* PARTE DE OBSERVACIONES */
+
+.ficha-observaciones {
+  min-height: 100px;
+
+  resize: vertical;
+
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+
+/*DOCUMENTACIÓN ADJUNTA*/
+
+/* Contenedor de los documentos */
+.ficha-documentos {
+  padding: 15px;
+
+  background: #111c2c;
+  border: 1px solid #34465e;
+  border-radius: 8px;
+}
+
+/* Distribución de cada documento */
+.ficha-documento {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Icono ilustrativo del archivo PDF */
+.ficha-documento-icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+
+  width: 43px;
+  height: 48px;
+
+  color: #ffaaaa;
+  font-size: 12px;
+  font-weight: 800;
+
+  background: #492d3a;
+  border-radius: 6px;
+}
+
+/* Nombre del documento */
+.ficha-documento strong {
+  color: #eaf1fa;
+  font-size: 13px;
+}
+
+/* Descripción del documento */
+.ficha-documento p {
+  margin: 5px 0 0;
+
+  color: #9eafc5;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* FECHA DE ACTUALIZACIÓN Y MENSAJES */
+
+/* Bloque inferior con información de la inspección */
+.ficha-actualizacion {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 15px;
+
+  color: #aebdd0;
+  font-size: 12px;
+
+  background: #111c2c;
+  border-radius: 8px;
+}
+
+/* Fecha o dato destacado */
+.ficha-actualizacion strong {
+  color: #dce9fa;
+  text-align: right;
+}
+
+/* Mensaje que aparece al guardar cambios */
+.ficha-mensaje {
+  margin: 16px 0 0;
+  padding: 12px;
+
+  color: #b9e8cb;
+  font-size: 13px;
+
+  background: #183a30;
+  border: 1px solid #28634c;
+  border-radius: 7px;
+}
+
+
+/* PIE DEL MODAL Y BOTONES */
+
+/* Contenedor de los botones */
+.ficha-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  padding: 18px 30px;
+
+  background: #1d2c43;
+  border-top: 1px solid #35465f;
+}
+
+/* Estilo común de los botones */
+.ficha-btn {
+  padding: 11px 16px;
+
+  color: #e5edf8;
+
+  font-size: 12px;
+  font-weight: 650;
+
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* Botones secundarios: cerrar e imprimir */
+.ficha-btn-secundario {
+  background: #293b53;
+  border-color: #435570;
+}
+
+.ficha-btn-secundario:hover {
+  background: #364b67;
+}
+
+/* Botón principal: guardar cambios */
+.ficha-btn-principal {
+  color: white;
+  background: #1478d4;
+}
+
+.ficha-btn-principal:hover {
+  background: #258ce9;
+}
+
+
+/* ESTILOS PARA IMPRIMIR O GUARDAR COMO PDF */
+
+@media print {
+  /* Ocultar el resto de la página */
+
+  body * {
+    visibility: hidden;
+  }
+
+  /* Mostrar solamente la ficha */
+
+  .ficha-modal,
+  .ficha-modal * {
+    visibility: visible;
+  }
+
+  /* Quitar el fondo oscuro de la pantalla */
+
+  .ficha-overlay {
+    position: static;
+
+    display: block;
+
+    padding: 0;
+
+    background: white;
+  }
+
+  /* Adaptar la ficha al papel */
+
+  .ficha-modal {
+    width: 100%;
+    max-height: none;
+
+    overflow: visible;
+
+    color: #111;
+    background: white;
+
+    border: none;
+    box-shadow: none;
+  }
+
+  /* Fondo blanco en el contenido impreso */
+
+  .ficha-header,
+  .ficha-contenido,
+  .ficha-footer {
+    color: #111;
+    background: white;
+  }
+
+  /* Mostrar todo el contenido sin scroll */
+
+  .ficha-contenido {
+    overflow: visible;
+  }
+
+  /* Ocultar controles que no corresponden al documento */
+
+  .ficha-cerrar,
+  .ficha-footer,
+  .ficha-seccion-titulo > span {
+    display: none;
+  }
+
+  /* Conservar el encabezado azul de las secciones */
+
+  .ficha-seccion-titulo {
+    background: #1767ad !important;
+
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Conservar el encabezado de la tabla */
+
+  .ficha-tabla th {
+    color: #fff;
+
+    background: #223650 !important;
+
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Campos legibles al imprimir */
+
+  .ficha-campo input,
+  .ficha-tabla input,
+  .ficha-tabla select,
+  .ficha-observaciones {
+    color: #111;
+    background: white;
+    border-color: #bbb;
+  }
+}
+
+
+/* DISEÑO RESPONSIVE PARA CELULARES Y TABLETS */
+
+@media (max-width: 700px) {
+  /* Reducir el espacio alrededor del modal */
+
+  .ficha-overlay {
+    padding: 8px;
+  }
+
+  .ficha-modal {
+    max-height: 96vh;
+    border-radius: 11px;
+  }
+
+  /* Ajustar el encabezado */
+
+  .ficha-header {
+    padding: 20px;
+  }
+
+  .ficha-header h2 {
+    font-size: 21px;
+  }
+
+  /* Reducir el espacio interior */
+
+  .ficha-contenido {
+    padding: 18px;
+  }
+
+  /* Una columna para los datos generales */
+
+  .ficha-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Adaptar los encabezados de sección */
+
+  .ficha-seccion-titulo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ficha-seccion-titulo > span {
+    text-align: left;
+  }
+
+  /* Ajustar los botones al ancho disponible */
+
+  .ficha-footer {
+    padding: 15px;
+  }
+
+  .ficha-btn {
+    flex: 1 1 auto;
+  }
+}
