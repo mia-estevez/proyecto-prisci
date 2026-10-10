@@ -39,6 +39,13 @@ function Menu({ rol, onCerrarSesion }) {
                 Usuarios
             </Link>
 
+            
+            <Link to="/solicitudes-registro" className={location.pathname === "/solicitudes-registro" ? "menu-link active": "menu-link"}>
+                <i className="bi bi-person-lines-fill"></i>
+                Solicitudes de Registro
+            </Link>
+
+
             <Link to="/historial" className={location.pathname === "/historial" ? "menu-link active" : "menu-link"}>
                 <i className="bi bi-clock-history"></i>
                 Historial
