@@ -8,6 +8,8 @@ function Login({ onLogin }) {
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
   const [mostrarSolicitud, setMostrarSolicitud] = useState(false);
+  const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
+  const [mensajeSolicitud, setMensajeSolicitud] = useState("");
 
   const [solicitud, setSolicitud] = useState({
     nombre: "",
@@ -66,10 +68,59 @@ function Login({ onLogin }) {
     }
   }
 
-  function enviarSolicitud(evento) {
+  
+  // Enviar solicitud de registro al backend
+  async function enviarSolicitud(evento) {
     evento.preventDefault();
-    alert("El formulario todavía no está conectado al sistema.");
+
+    setMensajeSolicitud("");
+    setEnviandoSolicitud(true);
+
+    try {
+      const respuesta = await fetch(
+        "http://localhost:3001/api/solicitudes-registro",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(solicitud)
+        }
+      );
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        setMensajeSolicitud(
+          datos.mensaje || "No se pudo enviar la solicitud."
+        );
+        return;
+      }
+
+      setMensajeSolicitud(
+        "¡Solicitud enviada correctamente! Municipalidad revisará tus datos y se comunicará con vos."
+      );
+
+      setSolicitud({
+        nombre: "",
+        apellido: "",
+        telefono: "",
+        email: "",
+        motivo: "",
+        rol: ""
+      });
+
+    } catch (error) {
+      console.error("Error al enviar la solicitud:", error);
+
+      setMensajeSolicitud(
+        "No se pudo conectar con el servidor. Intentá nuevamente."
+      );
+    } finally {
+      setEnviandoSolicitud(false);
+    }
   }
+
 
   return (
     <div className="login-container">
@@ -265,18 +316,38 @@ function Login({ onLogin }) {
                   <i className="bi bi-info-circle"></i>
                   <p>Municipalidad revisará tu solicitud y se comunicará con vos por fuera del sistema. Enviar el formulario no crea una cuenta.</p>
                 </div>
+
+                {mensajeSolicitud && (
+                  <p
+                    className="solicitud-mensaje"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {mensajeSolicitud}
+                  </p>
+                )}
               </div>
 
               <div className="solicitud-modal-footer">
                 <button
                   type="button"
                   className="solicitud-btn-cancelar"
-                  onClick={() => setMostrarSolicitud(false)}
+                  disabled={enviandoSolicitud}
+                  onClick={() => {
+                    setMostrarSolicitud(false);
+                    setMensajeSolicitud("");
+                  }}
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="solicitud-btn-enviar">
-                  Enviar solicitud
+                <button
+                  type="submit"
+                  className="solicitud-btn-enviar"
+                  disabled={enviandoSolicitud}
+                >
+                  {enviandoSolicitud
+                    ? "Enviando..."
+                    : "Enviar solicitud"}
                 </button>
               </div>
             </form>
