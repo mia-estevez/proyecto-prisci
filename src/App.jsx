@@ -21,6 +21,7 @@ import AgregarInmueble from './paginas/AgregarInmueble';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
 import Informes from './paginas/Informes';
 import Usuarios from './paginas/Usuarios';
+import Historial from './paginas/Historial';
 
 function Contenido() {
   const location = useLocation();
