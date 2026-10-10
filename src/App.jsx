@@ -26,6 +26,7 @@ import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
 import AgregarInmueble from './paginas/AgregarInmueble';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
 import Informes from './paginas/Informes';
+import Usuarios from './paginas/Usuarios';
 
 function Contenido() {
   const location = useLocation();
@@ -144,6 +145,7 @@ function Contenido() {
             <Route path='/agregar-inmueble' element={<AgregarInmueble />} />
             <Route path='/profesionales' element={<AgregarProfesionales />} />
             <Route path='/reportes' element={<Informes />} />
+            <Route path="/usuarios" element={<Usuarios />} />
           </Routes>
         </main>
       </div>
