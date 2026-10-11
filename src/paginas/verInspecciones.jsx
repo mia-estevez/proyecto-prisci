@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Calendar, Building2, CheckCircle2, AlertTriangle, Plus, Download, X, ArrowLeft, FileText } from 'lucide-react';
+import { Search, Filter, Calendar, Building2, CheckCircle2, AlertTriangle, Plus, Download, X, ArrowLeft, Clock } from 'lucide-react';
 import './conservadores.css';
 
 function VerInspecciones() {
@@ -23,6 +23,7 @@ function VerInspecciones() {
     const cargarDatos = async () => {
       try {
         setCargando(true);
+        
         // 1. Obtener inmuebles asignados
         const resInm = await fetch('http://localhost:3001/api/todos-inmuebles');
         let listaInm = resInm.ok ? await resInm.json() : [];
@@ -35,7 +36,7 @@ function VerInspecciones() {
         }
         setInmuebles(listaInm);
 
-        // 2. Traer todas las inspecciones de todos los inmuebles
+        // 2. Traer inspecciones de todos los inmuebles
         let todasInsp = [];
         for (const inm of listaInm) {
           const idInm = inm.IdInmueble || inm.id;
@@ -44,23 +45,71 @@ function VerInspecciones() {
             const dataInsp = await resInsp.json();
             dataInsp.forEach(item => {
               let parte = 'S/N';
-              let obs = item.Detalle || item.detalle || item.Observaciones || '';
-              let estadoItem = 'Aprobado';
+              let obsGenerales = item.Detalle || item.detalle || item.Observaciones || '';
+              let observacionesEspecificas = [];
+              let tieneFallaMarcada = false;
+              let esRegistroPendiente = false;
 
               try {
-                const parsed = typeof obs === 'string' ? JSON.parse(obs) : obs;
+                const parsed = typeof obsGenerales === 'string' ? JSON.parse(obsGenerales) : obsGenerales;
+                
                 if (typeof parsed === 'object' && parsed !== null) {
                   parte = parsed.parteNro || parsed.Parte || 'S/N';
-                  obs = parsed.observacionesGenerales || parsed.detalle || 'Relevamiento completado.';
+                  obsGenerales = parsed.observacionesGenerales || parsed.detalle || '';
+
+                  // RECORRER SECCIONES Y VERIFICAR SOLO MARCADOS COMO "CON OBSERVACIONES"
+                  const objetoRelevamiento = parsed.relevamiento || parsed;
                   
-                  // Detección de estado
-                  if (parsed.conObservaciones || (obs.toLowerCase().includes('observacion') || obs.toLowerCase().includes('reparar'))) {
-                    estadoItem = 'Con Observaciones';
-                  } else if (parsed.pendiente) {
-                    estadoItem = 'Pendiente';
+                  Object.keys(objetoRelevamiento).forEach(clave => {
+                    const itemSeccion = objetoRelevamiento[clave];
+                    if (typeof itemSeccion === 'object' && itemSeccion !== null) {
+                      const estNorm = String(itemSeccion.estado || '').toLowerCase().replace(/_/g, ' ').trim();
+                      
+                      // Solo si fue explícitamente marcado "Con observaciones"
+                      if (estNorm === 'con observaciones') {
+                        tieneFallaMarcada = true;
+                        if (itemSeccion.obs && itemSeccion.obs.trim() !== '') {
+                          observacionesEspecificas.push(`${clave}: ${itemSeccion.obs}`);
+                        }
+                      }
+                    }
+                  });
+
+                  if (parsed.pendiente) {
+                    esRegistroPendiente = true;
                   }
                 }
               } catch (e) {}
+
+              // Construir texto descriptivo
+              let detalleTexto = obsGenerales.trim();
+              if (observacionesEspecificas.length > 0) {
+                const textoObs = observacionesEspecificas.join(' | ');
+                detalleTexto = detalleTexto ? `${detalleTexto} (${textoObs})` : textoObs;
+              }
+
+              if (!detalleTexto) {
+                detalleTexto = 'Relevamiento completado sin observaciones.';
+              }
+
+              // DETERMINAR ESTADO FINAL EXACTO
+              let estadoFinal = 'Aprobado';
+              const textoAnalisis = (detalleTexto + ' ' + (item.Estado || '')).toLowerCase();
+
+              if (esRegistroPendiente || textoAnalisis.includes('pendiente') || textoAnalisis.includes('programad')) {
+                estadoFinal = 'Pendiente';
+              } else if (
+                tieneFallaMarcada || 
+                observacionesEspecificas.length > 0 || 
+                (obsGenerales.trim() !== '' && !obsGenerales.toLowerCase().includes('sin observacio') && !obsGenerales.toLowerCase().includes('completado'))
+              ) {
+                estadoFinal = 'Con observaciones';
+              } else {
+                estadoFinal = 'Aprobado';
+              }
+
+              // Normalizar fecha para ordenamiento estricto
+              const fechaObj = item.Fecha ? new Date(item.Fecha) : new Date(0);
 
               todasInsp.push({
                 idInmueble: idInm,
@@ -68,17 +117,17 @@ function VerInspecciones() {
                 direccion: inm.Domicilio || inm.direccion || '',
                 fecha: item.Fecha ? new Date(item.Fecha).toISOString().split('T')[0] : '',
                 fechaDisplay: item.Fecha ? new Date(item.Fecha).toLocaleDateString() : 'Reciente',
-                rawFecha: item.Fecha ? new Date(item.Fecha) : new Date(0),
+                rawFecha: fechaObj.getTime(), // Timestamp exacto para ordenar
                 parte,
-                detalle: obs,
-                estado: estadoItem,
+                detalle: detalleTexto,
+                estado: estadoFinal,
                 itemOriginal: item
               });
             });
           }
         }
 
-        // Ordenar por fecha más reciente
+        // ORDENAMIENTO PREDETERMINADO: MÁS RECIENTES PRIMERO (DESC)
         todasInsp.sort((a, b) => b.rawFecha - a.rawFecha);
         setInspecciones(todasInsp);
 
@@ -92,7 +141,7 @@ function VerInspecciones() {
     cargarDatos();
   }, []);
 
-  // Función para abrir la ventana de acta/PDF
+  // Generación de Acta PDF
   const handleDescargarPDF = (item) => {
     const ventanaPDF = window.open('', '_blank', 'width=800,height=900');
     if (!ventanaPDF) {
@@ -139,7 +188,7 @@ function VerInspecciones() {
           <div class="info-item"><label>Inmueble / Establecimiento</label><strong>${item.nombreInmueble}</strong></div>
           <div class="info-item"><label>Ubicación / Dirección</label><strong>${item.direccion}</strong></div>
           <div class="info-item"><label>Fecha de Inspección</label><strong>${item.fechaDisplay}</strong></div>
-          <div class="info-item"><label>Estado Técnico</label><strong style="color: #16a34a;">${item.estado}</strong></div>
+          <div class="info-item"><label>Estado Técnico</label><strong style="color: ${item.estado === 'Aprobado' ? '#16a34a' : '#d97706'};">${item.estado}</strong></div>
         </div>
 
         <div class="seccion-titulo">Detalle del Relevamiento e Inspección Técnica</div>
@@ -167,7 +216,6 @@ function VerInspecciones() {
     ventanaPDF.document.close();
   };
 
-  // Confirmar elección en el modal y navegar a la carga
   const handleConfirmarNuevaInspeccion = () => {
     if (!inmuebleSeleccionadoModal) {
       alert("Por favor selecciona un inmueble.");
@@ -177,7 +225,7 @@ function VerInspecciones() {
     navigate(`/inspecciones/${inmuebleSeleccionadoModal}`);
   };
 
-  // Filtrado múltiple
+  // Filtrado
   const inspeccionesFiltradas = inspecciones.filter(item => {
     const coincideTexto = 
       item.nombreInmueble.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -185,7 +233,21 @@ function VerInspecciones() {
       item.detalle.toLowerCase().includes(busqueda.toLowerCase());
 
     const coincideInmueble = filtroInmueble === 'todos' || String(item.idInmueble) === String(filtroInmueble);
-    const coincideEstado = filtroEstado === 'todos' || item.estado.toLowerCase().replace(/\s+/g, '') === filtroEstado.toLowerCase().replace(/\s+/g, '');
+    
+    let coincideEstado = true;
+    if (filtroEstado !== 'todos') {
+      const estadoItemNorm = item.estado.toLowerCase().trim();
+      const filtroNorm = filtroEstado.toLowerCase().trim();
+      
+      if (filtroNorm === 'aprobado') {
+        coincideEstado = estadoItemNorm === 'aprobado';
+      } else if (filtroNorm === 'con observaciones' || filtroNorm === 'conobservaciones') {
+        coincideEstado = estadoItemNorm.includes('observacion');
+      } else if (filtroNorm === 'pendiente') {
+        coincideEstado = estadoItemNorm.includes('pendiente');
+      }
+    }
+
     const coincideFecha = !filtroFecha || item.fecha === filtroFecha;
 
     return coincideTexto && coincideInmueble && coincideEstado && coincideFecha;
@@ -193,7 +255,6 @@ function VerInspecciones() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* BOTÓN VOLVER */}
       <button 
         onClick={() => navigate('/conservadores')}
         style={{ background: 'transparent', border: 'none', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '15px' }}
@@ -201,7 +262,6 @@ function VerInspecciones() {
         <ArrowLeft size={18} /> Volver al panel
       </button>
 
-      {/* CABECERA */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px' }}>
         <div>
           <h1 style={{ fontSize: '24px', color: '#f8fafc', margin: '0 0 4px 0' }}>Registro General de Inspecciones</h1>
@@ -219,7 +279,6 @@ function VerInspecciones() {
       {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '18px', marginBottom: '25px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
         
-        {/* Buscador Texto */}
         <div style={{ position: 'relative', width: '100%' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
           <input 
@@ -231,10 +290,8 @@ function VerInspecciones() {
           />
         </div>
 
-        {/* Filtros Combinados */}
         <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
           
-          {/* Filtro por Inmueble */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#0f172a', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <Building2 size={16} color="#38bdf8" />
             <select 
@@ -251,7 +308,6 @@ function VerInspecciones() {
             </select>
           </div>
 
-          {/* Filtro por Estado */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#0f172a', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <Filter size={16} color="#38bdf8" />
             <select 
@@ -261,12 +317,11 @@ function VerInspecciones() {
             >
               <option value="todos" style={{ background: '#0f172a' }}>Todos los Estados</option>
               <option value="aprobado" style={{ background: '#0f172a' }}>🟢 Aprobado</option>
-              <option value="conobservaciones" style={{ background: '#0f172a' }}>🟠 Con Observaciones</option>
+              <option value="con observaciones" style={{ background: '#0f172a' }}>🟠 Con Observaciones</option>
               <option value="pendiente" style={{ background: '#0f172a' }}>🔴 Pendiente</option>
             </select>
           </div>
 
-          {/* Filtro por Fecha */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#0f172a', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <Calendar size={16} color="#38bdf8" />
             <input 
@@ -288,7 +343,7 @@ function VerInspecciones() {
         </div>
       </div>
 
-      {/* LISTADO DE INSPECCIONES */}
+      {/* LISTADO DE INSPECCIONES ORDENADAS DE MÁS RECIENTES A MÁS ANTIGUAS */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {cargando ? (
           <p style={{ color: '#94a3b8', textAlign: 'center', padding: '30px 0' }}>Cargando inspecciones...</p>
@@ -297,48 +352,61 @@ function VerInspecciones() {
             No se encontraron inspecciones que coincidan con los filtros.
           </div>
         ) : (
-          inspeccionesFiltradas.map((item, index) => (
-            <div 
-              key={index} 
-              style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}
-            >
-              <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flex: 1, minWidth: '280px' }}>
-                <div style={{ background: item.estado === 'Aprobado' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)', padding: '10px', borderRadius: '10px', marginTop: '2px' }}>
-                  {item.estado === 'Aprobado' ? <CheckCircle2 size={20} color="#10b981" /> : <AlertTriangle size={20} color="#f59e0b" />}
-                </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                    <strong style={{ color: '#f8fafc', fontSize: '15px' }}>{item.nombreInmueble}</strong>
-                    <span style={{ fontSize: '11px', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                      Parte N°: {item.parte}
-                    </span>
+          inspeccionesFiltradas.map((item, index) => {
+            const esAprobado = item.estado === 'Aprobado';
+            const esPendiente = item.estado === 'Pendiente';
+            const esConObservaciones = item.estado === 'Con observaciones';
+
+            return (
+              <div 
+                key={index} 
+                style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}
+              >
+                <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flex: 1, minWidth: '280px' }}>
+                  <div style={{ 
+                    background: esAprobado ? 'rgba(16, 185, 129, 0.15)' : esPendiente ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)', 
+                    padding: '10px', 
+                    borderRadius: '10px', 
+                    marginTop: '2px' 
+                  }}>
+                    {esAprobado && <CheckCircle2 size={20} color="#10b981" />}
+                    {esPendiente && <Clock size={20} color="#ef4444" />}
+                    {esConObservaciones && <AlertTriangle size={20} color="#f59e0b" />}
                   </div>
-                  <p style={{ color: '#cbd5e1', fontSize: '13px', margin: '0 0 6px 0' }}>{item.detalle}</p>
-                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>Fecha de ejecución: {item.fechaDisplay}</span>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                      <strong style={{ color: '#f8fafc', fontSize: '15px' }}>{item.nombreInmueble}</strong>
+                      <span style={{ fontSize: '11px', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                        Parte N°: {item.parte}
+                      </span>
+                    </div>
+                    <p style={{ color: '#cbd5e1', fontSize: '13px', margin: '0 0 6px 0' }}>{item.detalle}</p>
+                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>Fecha de ejecución: {item.fechaDisplay}</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ 
+                    fontSize: '12px', 
+                    fontWeight: '600', 
+                    padding: '4px 12px', 
+                    borderRadius: '12px',
+                    background: esAprobado ? 'rgba(16, 185, 129, 0.2)' : esPendiente ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                    color: esAprobado ? '#10b981' : esPendiente ? '#ef4444' : '#f59e0b'
+                  }}>
+                    {item.estado}
+                  </span>
+
+                  <button 
+                    onClick={() => handleDescargarPDF(item)}
+                    style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '8px 14px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <Download size={14} /> PDF
+                  </button>
                 </div>
               </div>
-
-              <div style={{ display: 'flex', items: 'center', gap: '15px' }}>
-                <span style={{ 
-                  fontSize: '12px', 
-                  fontWeight: '600', 
-                  padding: '4px 12px', 
-                  borderRadius: '12px',
-                  background: item.estado === 'Aprobado' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                  color: item.estado === 'Aprobado' ? '#10b981' : '#f59e0b'
-                }}>
-                  {item.estado}
-                </span>
-
-                <button 
-                  onClick={() => handleDescargarPDF(item)}
-                  style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '8px 14px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <Download size={14} /> PDF
-                </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

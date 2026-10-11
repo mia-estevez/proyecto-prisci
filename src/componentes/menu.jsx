@@ -86,16 +86,22 @@ function Menu({ rol, onCerrarSesion }) {
                     Mapa de inmuebles
                 </Link>
 
-                <Link to="/servicios" className={location.pathname === "/todos-inmuebles" ? "menu-link active" : "menu-link"}>
+                <Link 
+                    to="/todos-inmuebles" 
+                    className={location.pathname === "/todos-inmuebles" ? "menu-link active" : "menu-link"}
+                >
                     <i className="bi bi-briefcase"></i>
                     Mis servicios
                 </Link>
 
-                <Link to="/inspecciones" className={location.pathname === "/ver-inspecciones" ? "menu-link active" : "menu-link"}>
+                <Link 
+                    to="/ver-inspecciones" 
+                    className={location.pathname === "/ver-inspecciones" ? "menu-link active" : "menu-link"}
+                >
                     <i className="bi bi-clipboard-check"></i>
                     Ver inspecciones
                 </Link>
-
+                
                 <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                     <i className="bi bi-box-arrow-right"></i>
                     Cerrar sesión
