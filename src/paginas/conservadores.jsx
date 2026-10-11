@@ -71,8 +71,8 @@ function Conservadores() {
   const navigate = useNavigate();
   const ID_CONSERVADOR = localStorage.getItem('usuarioId') || 1;
 
-  // ESTADOS DINÁMICOS
-  const [resumen, setResumen] = useState({ inmuebles: 2, clientes: 1, servicios: 5, vencimientos: 4 });
+  // ESTADOS DINÁMICOS (vencimientos inicializado en 0 para evitar valores estáticos)
+  const [resumen, setResumen] = useState({ inmuebles: 2, clientes: 1, servicios: 5, vencimientos: 0 });
   const [inmuebles, setInmuebles] = useState([]);
   const [cargando, setCargando] = useState(true);
 
@@ -100,6 +100,44 @@ function Conservadores() {
     2: { lat: -38.9580, lng: -68.0720, dir: 'Gral. Las Heras 450, Neuquén' }
   };
 
+  // Cálculo dinámico de vencimientos en base a las inspecciones reales de la BD
+  useEffect(() => {
+    const calcularVencimientosDinamicos = async () => {
+      try {
+        const resInm = await fetch('http://localhost:3001/api/todos-inmuebles');
+        if (!resInm.ok) return;
+        const listaInm = await resInm.json();
+
+        const hoy = new Date();
+        let contadorVencimientos = 0;
+
+        for (const inm of listaInm) {
+          const idInmueble = inm.IdInmueble || inm.id;
+          const resInsp = await fetch(`http://localhost:3001/api/inmuebles/${idInmueble}/inspecciones`);
+          if (resInsp.ok) {
+            const inspecciones = await resInsp.json();
+            if (inspecciones && inspecciones.length > 0 && inspecciones[0].Fecha) {
+              const ultimaFecha = new Date(inspecciones[0].Fecha);
+              const diasDiferencia = Math.floor((hoy - ultimaFecha) / (1000 * 3600 * 24));
+              if (diasDiferencia >= 60) {
+                contadorVencimientos++;
+              }
+            } else {
+              contadorVencimientos++; // Sin inspección previa cuenta como vencido/pendiente
+            }
+          }
+        }
+
+        // Actualizamos el estado del resumen con el valor real calculado
+        setResumen(prev => ({ ...prev, vencimientos: contadorVencimientos }));
+      } catch (error) {
+        console.error("Error al calcular vencimientos dinámicos:", error);
+      }
+    };
+
+    calcularVencimientosDinamicos();
+  }, []);
+
   useEffect(() => {
     const obtenerDatosDinamicos = async () => {
       try {
@@ -108,7 +146,8 @@ function Conservadores() {
         const resResumen = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/resumen`);
         if (resResumen.ok) {
           const dataResumen = await resResumen.json();
-          setResumen(dataResumen);
+          // Mantenemos los datos del backend pero preservamos el cálculo dinámico de vencimientos
+          setResumen(prev => ({ ...dataResumen, vencimientos: prev.vencimientos }));
         }
 
         const resInmuebles = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/inmuebles`);
@@ -231,7 +270,7 @@ function Conservadores() {
             <Clock size={22} color="#f59e0b" />
           </div>
           <div className="kpi-data">
-            <h3>{resumen.vencimientos || 4}</h3>
+            <h3>{resumen.vencimientos}</h3>
             <span>Vencimientos Próximos 30 días</span>
           </div>
         </div>
