@@ -135,6 +135,8 @@ function Contenido() {
             <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
             <Route path="/propietario/notificaciones" element={<PropietarioNotificaciones />} />
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
+            <Route path="/solicitudes-registro" element={<SolicitudesRegistro />}
+/>
           </Routes>
         </main>
       </div>
