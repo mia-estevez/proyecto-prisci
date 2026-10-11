@@ -124,7 +124,7 @@ function Menu({ rol, onCerrarSesion }) {
                     Mis inmuebles
                 </Link>
 
-                <Link to="/inspecciones" className={location.pathname === "/inspecciones" ? "menu-link active" : "menu-link"}>
+                <Link to="/propietario/historial" className={location.pathname === "/propietario/historial" ? "menu-link active" : "menu-link"}>
                     <i className="bi bi-clock-history"></i>
                     Historial
                 </Link>

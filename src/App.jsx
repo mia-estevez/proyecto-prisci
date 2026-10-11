@@ -24,6 +24,7 @@ import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
 import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
 import SolicitudesRegistro from './paginas/SolicitudesRegistro';
 import VerInspecciones from './paginas/verInspecciones';
+import PropietarioHistorial from './paginas/propietarioHistorial';
 
 function Contenido() {
   const location = useLocation();
@@ -138,6 +139,7 @@ function Contenido() {
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
             <Route path="/historial" element={<SolicitudesRegistro />} />
             <Route path='/ver-inspecciones' element={<VerInspecciones />} />
+            <Route path='/propietario/historial' element={<PropietarioHistorial />} />
           </Routes>
         </main>
       </div>
