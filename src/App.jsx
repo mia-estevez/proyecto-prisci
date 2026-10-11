@@ -22,7 +22,7 @@ import FichaPropietario from './paginas/fichaPropietarios';
 import PropietariosHistorial from './paginas/propietariosHistorial';
 import PropietarioNotificaciones from './paginas/propietarioNotificaciones';
 import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
-import SolicitudesRegistro from "./paginas/SolicitudesRegistro";
+import SolicitudesRegistro from './paginas/SolicitudesRegistro';
 
 function Contenido() {
   const location = useLocation();
@@ -135,7 +135,7 @@ function Contenido() {
             <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
             <Route path="/propietario/notificaciones" element={<PropietarioNotificaciones />} />
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
-            <Route path="/solicitudes-registro" element={<SolicitudesRegistro />}
+            <Route path="/historial" element={<SolicitudesRegistro />} />
 />
           </Routes>
         </main>
