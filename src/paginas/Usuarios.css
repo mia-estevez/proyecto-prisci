@@ -1,218 +1,359 @@
+/* =====================================
+   USUARIOS - PRISCI (TEMA OSCURO)
+===================================== */
 
-/* CONTENIDO: USUARIOS */
 .prisci-page {
+  --usr-texto: #e2e8f0;
+  --usr-secundario: #94a3b8;
+  --usr-borde: rgba(255, 255, 255, 0.08);
+  --usr-fondo-card: #0d1b3e;
+  --usr-fondo-hover: #13244d;
+  --usr-azul: #00a8e8;
+
   width: 100%;
-  padding: 12px;
-  box-sizing: border-box;
-  color: #e8f0fb;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-}
-
-.prisci-page * {
+  min-width: 0;
+  min-height: 100%;
+  padding: 24px;
+  color: var(--usr-texto);
+  font-family: inherit;
+  font-size: 14px;
   box-sizing: border-box;
 }
 
-.prisci-page h1 {
-  color: #f3f7ff;
-  font-size: 22px;
-  margin: 0 0 5px;
+.prisci-page *,
+.prisci-page *::before,
+.prisci-page *::after {
+  box-sizing: border-box;
 }
+
+/* Encabezado */
 
 .breadcrumb {
-  color: #92a9c4;
-  font-size: 10px;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  color: #b6c6d9;
+  color: var(--usr-azul);
   font-size: 12px;
-  margin: 0 0 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .title-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 15px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
+
+.title-row-info h1 {
+  color: #ffffff;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0 0 6px;
+}
+
+.subtitle {
+  color: var(--usr-secundario);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Panel Contenedor */
 
 .panel {
-  background: #0a1c30;
-  border: 1px solid #1e344c;
-  border-radius: 5px;
-  padding: 12px;
+  background: var(--usr-fondo-card);
+  border: 1px solid var(--usr-borde);
+  border-radius: 12px;
+  padding: 20px;
   min-width: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Botones Principales */
+
 .btn {
-  border-radius: 4px;
-  padding: 9px 12px;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  transition: all 0.15s ease;
 }
 
 .primary {
-  background: #168fe4;
-  border: 1px solid #168fe4;
-  color: white;
+  background: var(--usr-azul);
+  border: 1px solid var(--usr-azul);
+  color: #ffffff;
+}
+
+.primary:hover {
+  background: #0092cd;
+  border-color: #0092cd;
 }
 
 .secondary {
-  background: #0a1b2e;
-  border: 1px solid #38506a;
-  color: #d9e5f2;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--usr-borde);
+  color: #e2e8f0;
+}
+
+.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .outline {
-  background: #0c2137;
-  border: 1px solid #1769a4;
-  color: #6ec2ff;
+  background: rgba(0, 168, 232, 0.12);
+  border: 1px solid rgba(0, 168, 232, 0.3);
+  color: var(--usr-azul);
 }
+
+.outline:hover {
+  background: var(--usr-azul);
+  color: #ffffff;
+}
+
+/* Barra de Herramientas y Filtros */
 
 .toolbar {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
-}
-
-.control {
-  width: 100%;
-  min-width: 0;
-  height: 32px;
-  padding: 7px 9px;
-  background: #10263d;
-  border: 1px solid #2a4058;
-  border-radius: 4px;
-  color: #eaf2fd;
-  outline: none;
-}
-
-.control::placeholder {
-  color: #728aa5;
-}
-
-.control:focus {
-  border-color: #269df3;
-}
-
-.search {
-  flex: 1 1 180px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   min-width: 0;
-  color: #d6e3f2;
-  font-size: 10px;
+  color: var(--usr-secundario);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.search {
+  flex: 1 1 220px;
 }
 
 .compact-field {
-  flex: 0 1 125px;
+  flex: 0 1 160px;
 }
+
+.control {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 14px;
+  background: rgba(13, 27, 62, 0.8);
+  border: 1px solid var(--usr-borde);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.control option {
+  background: #0d1b3e;
+  color: #ffffff;
+}
+
+.control::placeholder {
+  color: #64748b;
+}
+
+.control:focus {
+  border-color: var(--usr-azul);
+  box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.15);
+}
+
+/* Tabla */
 
 .table-wrap {
   width: 100%;
   overflow-x: auto;
+  border: 1px solid var(--usr-borde);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .data-table thead {
-  background: #10263d;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .data-table th {
   text-align: left;
-  color: #dbe8f6;
+  color: #94a3b8;
   font-weight: 600;
-  padding: 12px 9px;
-  border-bottom: 1px solid #294057;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--usr-borde);
 }
 
 .data-table td {
-  padding: 11px 9px;
-  color: #c6d4e4;
-  border-bottom: 1px solid #1a3047;
+  padding: 12px 16px;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr {
+  transition: background 0.15s ease;
 }
 
 .data-table tbody tr:hover {
-  background: #0e2339;
+  background: var(--usr-fondo-hover);
 }
 
+/* Badges de Estado */
+
 .status {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .status.green {
-  background: #146a55;
-  color: #c9ffeb;
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
 .status.yellow {
-  background: #795c20;
-  color: #fff0be;
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
-.table-button {
-  background: #0d2238;
-  border: 1px solid #29435c;
-  color: #c9d9eb;
-  border-radius: 3px;
-  padding: 5px 8px;
-  margin-right: 4px;
-  cursor: pointer;
+.status.red {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
 }
+
+/* Acciones en la Tabla */
+
+.table-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--usr-borde);
+  color: #e2e8f0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.table-button:hover {
+  background: var(--usr-azul);
+  border-color: var(--usr-azul);
+  color: #ffffff;
+}
+
+/* Pie de Tabla y Paginación */
 
 .table-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  padding-top: 12px;
-  color: #91a8c0;
-  font-size: 10px;
+  gap: 12px;
+  padding-top: 16px;
+  color: var(--usr-secundario);
+  font-size: 12px;
 }
 
 .pagination {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
 }
 
 .pagination button {
-  min-width: 27px;
-  height: 27px;
-  background: #0d2238;
-  border: 1px solid #29435c;
-  color: #c9d9eb;
-  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--usr-borde);
+  color: #e2e8f0;
+  border-radius: 8px;
+  font-size: 12px;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: rgba(0, 168, 232, 0.2);
+  border-color: var(--usr-azul);
+  color: #ffffff;
 }
 
 .pagination button.current {
-  background: #168fe4;
-  border-color: #168fe4;
-  color: white;
+  background: var(--usr-azul);
+  border-color: var(--usr-azul);
+  color: #ffffff;
+  font-weight: 600;
 }
 
-@media (max-width: 650px) {
+.pagination button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Responsivo */
+
+@media (max-width: 700px) {
+  .prisci-page {
+    padding: 16px 12px;
+  }
+
   .title-row {
+    flex-direction: column;
     align-items: flex-start;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .compact-field {
+    flex: 1 1 100%;
   }
 
   .table-footer {
