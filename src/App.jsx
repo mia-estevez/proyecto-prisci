@@ -30,18 +30,18 @@ function Contenido() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [usuario, setUsuario] = useState(() => {
-    const usuarioGuardado = sessionStorage.getItem("usuario");
-    if (usuarioGuardado) {
-      try {
-        return JSON.parse(usuarioGuardado);
-      } catch (error) {
-        console.error("Error al recuperar el usuario:", error);
-        sessionStorage.removeItem("usuario");
-      }
+const [usuario, setUsuario] = useState(() => {
+  const usuarioGuardado = sessionStorage.getItem("usuario");
+  if (usuarioGuardado) {
+    try {
+      return JSON.parse(usuarioGuardado);
+    } catch (error) {
+      sessionStorage.removeItem("usuario");
     }
-    return null;
-  });
+  }
+  // USUARIO TEMPORAL PARA PROBAR LAS VISTAS
+  return { nombre: "María", rol: "municipal", idRol: 1 };
+});
 
   const esLogin = location.pathname === "/login";
 
