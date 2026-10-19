@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import "./solicitudesRegistro.css";
+import './SolicitudesRegistro.css'; 
 
 const solicitudesIniciales = [
   {

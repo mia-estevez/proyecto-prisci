@@ -25,23 +25,30 @@ import PropietariosTodosInmuebles from './paginas/propietariosTodosInmuebles';
 import SolicitudesRegistro from './paginas/SolicitudesRegistro';
 import VerInspecciones from './paginas/verInspecciones';
 import PropietarioHistorial from './paginas/propietarioHistorial';
+import Usuarios from './paginas/Usuarios';
+
+// Tus páginas específicas del menú municipal
+import AgregarInmueble from './paginas/AgregarInmueble';
+import AgregarProfesionales from './paginas/AgregarProfesionales';
+import Historial from './paginas/Historial';
+import Informes from './paginas/Informes';
 
 function Contenido() {
   const location = useLocation();
   const navigate = useNavigate();
 
-const [usuario, setUsuario] = useState(() => {
-  const usuarioGuardado = sessionStorage.getItem("usuario");
-  if (usuarioGuardado) {
-    try {
-      return JSON.parse(usuarioGuardado);
-    } catch (error) {
-      sessionStorage.removeItem("usuario");
+  const [usuario, setUsuario] = useState(() => {
+    const usuarioGuardado = sessionStorage.getItem("usuario");
+    if (usuarioGuardado) {
+      try {
+        return JSON.parse(usuarioGuardado);
+      } catch (error) {
+        sessionStorage.removeItem("usuario");
+      }
     }
-  }
-  // USUARIO TEMPORAL PARA PROBAR LAS VISTAS
-  return { nombre: "María", rol: "municipal", idRol: 1 };
-});
+    // USUARIO TEMPORAL PARA PROBAR LAS VISTAS
+    return { nombre: "María", rol: "municipal", idRol: 1 };
+  });
 
   const esLogin = location.pathname === "/login";
 
@@ -91,7 +98,7 @@ const [usuario, setUsuario] = useState(() => {
       {/* NAVBAR SUPERIOR */}
       {!esLogin && usuario && <Navbar usuario={usuario} />}
 
-      <div style={{display: "flex", flex: 1, width: "100%", minHeight: 0, alignItems: "stretch" }}>
+      <div style={{ display: "flex", flex: 1, width: "100%", minHeight: 0, alignItems: "stretch" }}>
         
         {/* MENÚ LATERAL (SIDEBAR) */}
         {!esLogin && (
@@ -99,7 +106,7 @@ const [usuario, setUsuario] = useState(() => {
         )}
 
         {/* CONTENIDO PRINCIPAL */}
-        <main style={{flex: 1, minWidth: 0, padding: esLogin ? "0" : "20px", boxSizing: "border-box", overflowY: "auto"}}>
+        <main style={{ flex: 1, minWidth: 0, padding: esLogin ? "0" : "20px", boxSizing: "border-box", overflowY: "auto" }}>
           <Routes>
             <Route
               path="/"
@@ -137,9 +144,16 @@ const [usuario, setUsuario] = useState(() => {
             <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
             <Route path="/propietario/notificaciones" element={<PropietarioNotificaciones />} />
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
-            <Route path="/historial" element={<SolicitudesRegistro />} />
             <Route path='/ver-inspecciones' element={<VerInspecciones />} />
             <Route path='/propietario/historial' element={<PropietarioHistorial />} />
+
+            {/* ENLACES DIRECTOS DEL MENÚ MUNICIPAL */}
+            <Route path="/agregar-inmueble" element={<AgregarInmueble />} />
+            <Route path="/profesionales" element={<AgregarProfesionales />} />
+            <Route path="/reportes" element={<Informes />} />
+            <Route path="/usuarios" element={<Usuarios />} />
+            <Route path="/solicitudes-registro" element={<SolicitudesRegistro />} />
+            <Route path="/historial" element={<Historial />} />
           </Routes>
         </main>
       </div>
