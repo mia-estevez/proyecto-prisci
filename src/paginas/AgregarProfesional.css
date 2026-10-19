@@ -1,171 +1,247 @@
 
-/* CONTENIDO: AGREGAR PROFESIONAL */
 .prisci-page {
+  --prof-texto: #e2e8f0;
+  --prof-secundario: #94a3b8;
+  --prof-borde: rgba(255, 255, 255, 0.08);
+  --prof-fondo-card: #0d1b3e;
+  --prof-fondo-hover: #13244d;
+  --prof-azul: #00a8e8;
+
   width: 100%;
-  padding: 12px;
+  min-width: 0;
+  min-height: 100%;
+  padding: 24px;
+  color: var(--prof-texto);
+  font-family: inherit;
+  font-size: 14px;
   box-sizing: border-box;
-  color: #e8f0fb;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
 }
 
-.prisci-page * {
+.prisci-page *,
+.prisci-page *::before,
+.prisci-page *::after {
   box-sizing: border-box;
+}
+
+/* Encabezado */
+
+.breadcrumb {
+  color: var(--prof-azul);
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .prisci-page h1 {
-  color: #f3f7ff;
-  font-size: 22px;
-  margin: 0 0 5px;
-}
-
-.breadcrumb {
-  color: #92a9c4;
-  font-size: 10px;
-  margin-bottom: 10px;
+  color: #ffffff;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0 0 6px;
 }
 
 .subtitle {
-  color: #b6c6d9;
-  font-size: 12px;
-  margin: 0 0 16px;
+  color: var(--prof-secundario);
+  font-size: 14px;
+  margin: 0 0 24px;
+  line-height: 1.5;
 }
+
+/* Distribución del Formulario */
 
 .form-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(220px, .8fr);
-  gap: 10px;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+  gap: 20px;
   align-items: start;
-}
-
-.panel {
-  background: #0a1c30;
-  border: 1px solid #1e344c;
-  border-radius: 5px;
-  padding: 12px;
-  min-width: 0;
-}
-
-.panel h3 {
-  font-size: 12px;
-  color: #e6effa;
-  margin: 0 0 12px;
-}
-
-.section-heading {
-  border-top: 1px solid #1b3047;
-  padding-top: 13px;
-  margin-top: 16px !important;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-  color: #d6e3f2;
-  font-size: 10px;
-}
-
-.control {
-  width: 100%;
-  min-width: 0;
-  height: 32px;
-  padding: 7px 9px;
-  background: #10263d;
-  border: 1px solid #2a4058;
-  border-radius: 4px;
-  color: #eaf2fd;
-  outline: none;
-}
-
-.control::placeholder {
-  color: #728aa5;
-}
-
-.control:focus {
-  border-color: #269df3;
 }
 
 .side-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
+/* Panel Contenedor */
+
+.panel {
+  background: var(--prof-fondo-card);
+  border: 1px solid var(--prof-borde);
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.panel h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-heading {
+  border-top: 1px solid var(--prof-borde);
+  padding-top: 18px;
+  margin-top: 20px !important;
+}
+
+/* Formulario y Grillas de Campos */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: var(--prof-secundario);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.control {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 14px;
+  background: rgba(13, 27, 62, 0.8);
+  border: 1px solid var(--prof-borde);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.control option {
+  background: #0d1b3e;
+  color: #ffffff;
+}
+
+.control::placeholder {
+  color: #64748b;
+}
+
+.control:focus {
+  border-color: var(--prof-azul);
+  box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.15);
+}
+
+/* Especialidades / Checkboxes */
+
+/* Especialidades / Checkboxes con más espacio */
 .checkbox-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px 8px;
+  gap: 16px 24px; /* Mayor espacio vertical y horizontal entre cada opción */
+  margin-top: 12px;
 }
 
 .check-option {
   display: flex;
   align-items: center;
-  gap: 7px;
-  color: #d1deed;
-  font-size: 10px;
+  gap: 12px; /* Espacio entre el cuadrito y el texto */
+  color: #cbd5e1;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .prisci-page input[type="checkbox"] {
-  accent-color: #168fe4;
+  accent-color: var(--prof-azul);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
+
+/* Subida de Documentos */
 
 .document-upload {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
-  margin-bottom: 9px;
-  background: #0e2339;
-  border: 1px solid #1b334c;
-  border-radius: 4px;
-  color: #d5e5f6;
-  font-size: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--prof-borde);
+  border-radius: 10px;
+  color: #e2e8f0;
+  font-size: 13px;
+  transition: border-color 0.15s ease;
 }
 
-.document-upload input {
+.document-upload:hover {
+  border-color: rgba(0, 168, 232, 0.3);
+}
+
+.document-upload input[type="file"] {
   max-width: 100%;
-  font-size: 9px;
+  font-size: 12px;
+  color: var(--prof-secundario);
 }
 
 .document-upload small {
-  color: #91a8c2;
-  font-size: 9px;
+  color: var(--prof-secundario);
+  font-size: 11px;
 }
 
+/* Botones de Acción */
+
 .btn {
-  border-radius: 4px;
-  padding: 9px 12px;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
+  border: 0;
 }
 
 .primary {
-  background: #168fe4;
-  border: 1px solid #168fe4;
-  color: white;
+  background: var(--prof-azul);
+  border: 1px solid var(--prof-azul);
+  color: #ffffff;
+}
+
+.primary:hover {
+  background: #0092cd;
+  border-color: #0092cd;
 }
 
 .secondary {
-  background: #0a1b2e;
-  border: 1px solid #38506a;
-  color: #d9e5f2;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--prof-borde);
+  color: #e2e8f0;
+}
+
+.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 7px;
+  gap: 10px;
+  margin-top: 24px;
 }
 
-@media (max-width: 700px) {
+/* Responsivo */
+
+@media (max-width: 850px) {
   .form-layout {
     grid-template-columns: 1fr;
   }
@@ -176,5 +252,15 @@
 
   .checkbox-grid {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .prisci-page {
+    padding: 16px 12px;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: 1fr;
   }
 }
