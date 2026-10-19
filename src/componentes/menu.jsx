@@ -5,48 +5,69 @@ function Menu({ rol, onCerrarSesion }) {
     const location = useLocation();
 
     if (rol == "municipal") {
-        
         return (
             <aside className="menu">
 
-            <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
+            <Link 
+                to="/" 
+                className={location.pathname === "/" ? "menu-link active" : "menu-link"}
+            >
                 <i className="bi bi-map"></i>
                 Mapa de inmuebles
             </Link>
 
-            <Link to="/agregar-inmueble" className={location.pathname === "/agregar-inmueble" ? "menu-link active" : "menu-link"}>
+            <Link 
+                to="/agregar-inmueble" 
+                className={location.pathname === "/agregar-inmueble" || location.pathname.startsWith("/inmuebles") ? "menu-link active" : "menu-link"}
+            >
                 <i className="bi bi-building-add"></i>
                 Agregar inmueble
             </Link>
 
-            <Link to="/profesionales" className={location.pathname === "/profesionales" ? "menu-link active" : "menu-link"}>
+            <Link 
+                to="/profesionales" 
+                className={location.pathname === "/profesionales" || location.pathname.startsWith("/conservadores") ? "menu-link active" : "menu-link"}
+            >
                 <i className="bi bi-person-plus"></i>
                 Agregar profesionales
             </Link>
 
-            <Link to="/inspecciones" className={location.pathname === "/inspecciones" ? "menu-link active" : "menu-link"}>
+            <Link 
+                to="/inspecciones" 
+                className={location.pathname.startsWith("/inspecciones") ? "menu-link active" : "menu-link"}
+            >
                 <i className="bi bi-clipboard-check"></i>
                 Ver inspecciones
             </Link>
 
-            <Link to="/reportes" className={location.pathname === "/reportes" ? "menu-link active" : "menu-link"}>
+            <Link 
+                to="/reportes" 
+                className={location.pathname.startsWith("/reportes") || location.pathname.startsWith("/servicios-mes") ? "menu-link active" : "menu-link"}
+            >
                 <i className="bi bi-bar-chart"></i>
                 Reportes
             </Link>
 
-            <Link to="/usuarios" className={location.pathname === "/usuarios" ? "menu-link active" : "menu-link"}>
+            <Link 
+                to="/usuarios" 
+                className={location.pathname.startsWith("/usuarios") ? "menu-link active" : "menu-link"}
+            >
                 <i className="bi bi-people"></i>
                 Usuarios
             </Link>
 
-            
-            <Link to="/solicitudes-registro" className={location.pathname === "/solicitudes-registro" ? "menu-link active": "menu-link"}>
+            <Link 
+                to="/solicitudes-registro" 
+                className={location.pathname === "/solicitudes-registro" ? "menu-link active": "menu-link"}
+            >
                 <i className="bi bi-person-lines-fill"></i>
                 Solicitudes de Registro
             </Link>
 
-
-            <Link to="/historial" className={location.pathname === "/historial" ? "menu-link active" : "menu-link"}>
+            <Link 
+                to="/historial" 
+                className={location.pathname.startsWith("/historial") ? "menu-link active" : "menu-link"}
+            >
                 <i className="bi bi-clock-history"></i>
                 Historial
             </Link>
@@ -61,7 +82,6 @@ function Menu({ rol, onCerrarSesion }) {
     }
 
     if (rol == "bomberos") {
-        
         return(
             <aside className="menu">
                 <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
@@ -73,7 +93,6 @@ function Menu({ rol, onCerrarSesion }) {
                     <i className="bi bi-box-arrow-right"></i>
                     Cerrar sesión
                 </button>
-            
             </aside>
         );
     }
@@ -107,13 +126,12 @@ function Menu({ rol, onCerrarSesion }) {
                     Cerrar sesión
                 </button>
             </aside>
-        )
+        );
     }
 
     if (rol == "propietario") {
         return (
             <aside className="menu">
-
                 <Link to="/" className={location.pathname === "/" ? "menu-link active": "menu-link"}>
                     <i className="bi bi-map"></i>
                     Mapa de inmuebles
@@ -133,9 +151,8 @@ function Menu({ rol, onCerrarSesion }) {
                     <i className="bi bi-box-arrow-right"></i>
                     Cerrar sesión 
                 </button>
-
             </aside>
-        )
+        );
     }
 }
 
