@@ -4,85 +4,59 @@ import "./menu.css";
 function Menu({ rol, onCerrarSesion }) {
     const location = useLocation();
 
-    if (rol == "municipal") {
+    if (rol === "municipal") {
         return (
             <aside className="menu">
+                <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-map"></i>
+                    Mapa de inmuebles
+                </Link>
 
-            <Link 
-                to="/" 
-                className={location.pathname === "/" ? "menu-link active" : "menu-link"}
-            >
-                <i className="bi bi-map"></i>
-                Mapa de inmuebles
-            </Link>
+                <Link to="/agregar-inmueble" className={location.pathname === "/agregar-inmueble" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-building-add"></i>
+                    Agregar inmueble
+                </Link>
 
-            <Link 
-                to="/agregar-inmueble" 
-                className={location.pathname === "/agregar-inmueble" || location.pathname.startsWith("/inmuebles") ? "menu-link active" : "menu-link"}
-            >
-                <i className="bi bi-building-add"></i>
-                Agregar inmueble
-            </Link>
+                <Link to="/profesionales" className={location.pathname === "/profesionales" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-person-plus"></i>
+                    Agregar profesionales
+                </Link>
 
-            <Link 
-                to="/profesionales" 
-                className={location.pathname === "/profesionales" || location.pathname.startsWith("/conservadores") ? "menu-link active" : "menu-link"}
-            >
-                <i className="bi bi-person-plus"></i>
-                Agregar profesionales
-            </Link>
+                <Link to="/inspecciones" className={location.pathname === "/inspecciones" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-clipboard-check"></i>
+                    Ver inspecciones
+                </Link>
 
-            <Link 
-                to="/inspecciones" 
-                className={location.pathname.startsWith("/inspecciones") ? "menu-link active" : "menu-link"}
-            >
-                <i className="bi bi-clipboard-check"></i>
-                Ver inspecciones
-            </Link>
+                <Link to="/reportes" className={location.pathname === "/reportes" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-bar-chart"></i>
+                    Reportes
+                </Link>
 
-            <Link 
-                to="/reportes" 
-                className={location.pathname.startsWith("/reportes") || location.pathname.startsWith("/servicios-mes") ? "menu-link active" : "menu-link"}
-            >
-                <i className="bi bi-bar-chart"></i>
-                Reportes
-            </Link>
+                <Link to="/usuarios" className={location.pathname === "/usuarios" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-people"></i>
+                    Usuarios
+                </Link>
 
-            <Link 
-                to="/usuarios" 
-                className={location.pathname.startsWith("/usuarios") ? "menu-link active" : "menu-link"}
-            >
-                <i className="bi bi-people"></i>
-                Usuarios
-            </Link>
+                <Link to="/solicitudes-registro" className={location.pathname === "/solicitudes-registro" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-person-lines-fill"></i>
+                    Solicitudes de Registro
+                </Link>
 
-            <Link 
-                to="/solicitudes-registro" 
-                className={location.pathname === "/solicitudes-registro" ? "menu-link active": "menu-link"}
-            >
-                <i className="bi bi-person-lines-fill"></i>
-                Solicitudes de Registro
-            </Link>
+                <Link to="/historial" className={location.pathname === "/historial" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-clock-history"></i>
+                    Historial
+                </Link>
 
-            <Link 
-                to="/historial" 
-                className={location.pathname.startsWith("/historial") ? "menu-link active" : "menu-link"}
-            >
-                <i className="bi bi-clock-history"></i>
-                Historial
-            </Link>
-
-            <button type="button" className="menu-logout" onClick={onCerrarSesion}>
-                <i className="bi bi-box-arrow-right"></i>
-                Cerrar sesión
-            </button>
-
+                <button type="button" className="menu-logout" onClick={onCerrarSesion}>
+                    <i className="bi bi-box-arrow-right"></i>
+                    Cerrar sesión
+                </button>
             </aside>
         );
     }
 
-    if (rol == "bomberos") {
-        return(
+    if (rol === "bomberos") {
+        return (
             <aside className="menu">
                 <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
                     <i className="bi bi-map"></i>
@@ -97,7 +71,7 @@ function Menu({ rol, onCerrarSesion }) {
         );
     }
 
-    if (rol == "profesional") {
+    if (rol === "profesional") {
         return (
             <aside className="menu">
                 <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
@@ -129,15 +103,15 @@ function Menu({ rol, onCerrarSesion }) {
         );
     }
 
-    if (rol == "propietario") {
+    if (rol === "propietario") {
         return (
             <aside className="menu">
-                <Link to="/" className={location.pathname === "/" ? "menu-link active": "menu-link"}>
+                <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
                     <i className="bi bi-map"></i>
                     Mapa de inmuebles
                 </Link>
 
-                <Link to="/propietario/todos-inmuebles" className={location.pathname === "/propietario/todos-inmuebles" || location.pathname.startsWith("/propietario/inmuebles") ? "menu-link active": "menu-link"}>
+                <Link to="/propietario/todos-inmuebles" className={location.pathname === "/propietario/todos-inmuebles" || location.pathname.startsWith("/propietario/inmuebles") ? "menu-link active" : "menu-link"}>
                     <i className="bi bi-building"></i>
                     Mis inmuebles
                 </Link>
@@ -154,6 +128,8 @@ function Menu({ rol, onCerrarSesion }) {
             </aside>
         );
     }
+
+    return null;
 }
 
 export default Menu;
