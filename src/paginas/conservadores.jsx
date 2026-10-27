@@ -9,7 +9,6 @@ import L from 'leaflet';
 // Íconos vectoriales de Lucide React
 import { 
   Home, 
-  Users, 
   ClipboardList, 
   Clock, 
   Search, 
@@ -71,8 +70,8 @@ function Conservadores() {
   const navigate = useNavigate();
   const ID_CONSERVADOR = localStorage.getItem('usuarioId') || 1;
 
-  // ESTADOS DINÁMICOS (vencimientos inicializado en 0 para evitar valores estáticos)
-  const [resumen, setResumen] = useState({ inmuebles: 2, clientes: 1, servicios: 5, vencimientos: 0 });
+  // ESTADOS DINÁMICOS (sin clientes, manteniendo inmuebles, servicios y vencimientos)
+  const [resumen, setResumen] = useState({ inmuebles: 2, servicios: 5, vencimientos: 0 });
   const [inmuebles, setInmuebles] = useState([]);
   const [cargando, setCargando] = useState(true);
 
@@ -100,35 +99,45 @@ function Conservadores() {
     2: { lat: -38.9580, lng: -68.0720, dir: 'Gral. Las Heras 450, Neuquén' }
   };
 
-  // Cálculo dinámico de vencimientos en base a las inspecciones reales de la BD
+  // Cálculo dinámico robusto de vencimientos con fallback ante errores 404
   useEffect(() => {
     const calcularVencimientosDinamicos = async () => {
       try {
         const resInm = await fetch('http://localhost:3001/api/todos-inmuebles');
-        if (!resInm.ok) return;
-        const listaInm = await resInm.json();
+        let listaInm = [];
+        if (resInm.ok) {
+          listaInm = await resInm.json();
+        } else {
+          listaInm = [
+            { IdInmueble: 1, Nombre: 'Edificio Torres del Limay' },
+            { IdInmueble: 2, Nombre: 'Galería Comercial Centro' }
+          ];
+        }
 
         const hoy = new Date();
         let contadorVencimientos = 0;
 
         for (const inm of listaInm) {
           const idInmueble = inm.IdInmueble || inm.id;
-          const resInsp = await fetch(`http://localhost:3001/api/inmuebles/${idInmueble}/inspecciones`);
-          if (resInsp.ok) {
-            const inspecciones = await resInsp.json();
-            if (inspecciones && inspecciones.length > 0 && inspecciones[0].Fecha) {
-              const ultimaFecha = new Date(inspecciones[0].Fecha);
-              const diasDiferencia = Math.floor((hoy - ultimaFecha) / (1000 * 3600 * 24));
-              if (diasDiferencia >= 60) {
+          try {
+            const resInsp = await fetch(`http://localhost:3001/api/inmuebles/${idInmueble}/inspecciones`);
+            if (resInsp.ok) {
+              const inspecciones = await resInsp.json();
+              if (inspecciones && inspecciones.length > 0 && inspecciones[0].Fecha) {
+                const ultimaFecha = new Date(inspecciones[0].Fecha);
+                const diasDiferencia = Math.floor((hoy - ultimaFecha) / (1000 * 3600 * 24));
+                if (diasDiferencia >= 60) {
+                  contadorVencimientos++;
+                }
+              } else {
                 contadorVencimientos++;
               }
-            } else {
-              contadorVencimientos++; // Sin inspección previa cuenta como vencido/pendiente
             }
+          } catch (e) {
+            // Ignorar errores individuales
           }
         }
 
-        // Actualizamos el estado del resumen con el valor real calculado
         setResumen(prev => ({ ...prev, vencimientos: contadorVencimientos }));
       } catch (error) {
         console.error("Error al calcular vencimientos dinámicos:", error);
@@ -143,19 +152,21 @@ function Conservadores() {
       try {
         setCargando(true);
 
-        const resResumen = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/resumen`);
-        if (resResumen.ok) {
-          const dataResumen = await resResumen.json();
-          // Mantenemos los datos del backend pero preservamos el cálculo dinámico de vencimientos
-          setResumen(prev => ({ ...dataResumen, vencimientos: prev.vencimientos }));
-        }
+        try {
+          const resResumen = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/resumen`);
+          if (resResumen.ok) {
+            const dataResumen = await resResumen.json();
+            setResumen(prev => ({ ...dataResumen, vencimientos: prev.vencimientos }));
+          }
+        } catch (e) {}
 
-        const resInmuebles = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/inmuebles`);
         let dataInmuebles = [];
-        
-        if (resInmuebles.ok) {
-          dataInmuebles = await resInmuebles.json();
-        }
+        try {
+          const resInmuebles = await fetch(`http://localhost:3001/api/conservador/${ID_CONSERVADOR}/inmuebles`);
+          if (resInmuebles.ok) {
+            dataInmuebles = await resInmuebles.json();
+          }
+        } catch (e) {}
 
         if (!Array.isArray(dataInmuebles) || dataInmuebles.length === 0) {
           dataInmuebles = [
@@ -233,8 +244,8 @@ function Conservadores() {
         <p style={{ color: '#94a3b8', fontSize: '14px' }}>Gestioná y consultá la información de los inmuebles asignados.</p>
       </div>
 
-      {/* TARJETAS DE RESUMEN KPI */}
-      <div className="kpi-grid" style={{ marginBottom: '30px' }}>
+      {/* TARJETAS DE RESUMEN KPI (3 Tarjetas) */}
+      <div className="kpi-grid" style={{ marginBottom: '30px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
         <div className="kpi-card" onClick={() => navigate('/todos-inmuebles')}>
           <div className="kpi-icon-wrapper blue">
             <Home size={22} color="#3b82f6" />
@@ -242,16 +253,6 @@ function Conservadores() {
           <div className="kpi-data">
             <h3>{resumen.inmuebles || inmuebles.length}</h3>
             <span>Inmuebles Asignados</span>
-          </div>
-        </div>
-
-        <div className="kpi-card" onClick={() => navigate('/clientes')}>
-          <div className="kpi-icon-wrapper cyan">
-            <Users size={22} color="#06b6d4" />
-          </div>
-          <div className="kpi-data">
-            <h3>{resumen.clientes || 1}</h3>
-            <span>Clientes Activos</span>
           </div>
         </div>
 

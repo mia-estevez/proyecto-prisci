@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
@@ -130,8 +129,35 @@ app.get('/api/conservador/:id/resumen', async (req, res) => {
 });
 
 // ======================================================
-// 2. INMUEBLES ASIGNADOS AL CONSERVADOR
+// 2. INMUEBLES ASIGNADOS AL CONSERVADOR Y GENERALES
 // ======================================================
+
+// Endpoint general corregido para solucionar el error 404 de /api/todos-inmuebles
+app.get('/api/todos-inmuebles', async (req, res) => {
+  try {
+    const [inmuebles] = await db.query(
+      `SELECT 
+         IdInmueble AS id,
+         IdInmueble,
+         Nombre AS nombre,
+         Nombre,
+         Domicilio AS domicilio,
+         Domicilio,
+         Actividad AS tipoInmueble,
+         Actividad,
+         Superficie AS superficie,
+         CantMatafuego AS cantidadMatafuegos,
+         RedAgua AS redAgua,
+         EstadoSistema AS estadoSistema,
+         IdPropietario AS idPropietario
+       FROM Inmueble`
+    );
+    res.json(inmuebles);
+  } catch (error) {
+    console.error('Error al obtener todos los inmuebles:', error);
+    res.status(500).json({ mensaje: 'Error al obtener los inmuebles' });
+  }
+});
 
 app.get('/api/conservador/:id/inmuebles', async (req, res) => {
   const { id } = req.params;
@@ -225,7 +251,7 @@ app.get('/api/servicios/vencimientos', async (req, res) => {
 });
 
 // ======================================================
-// 5. EXPEDIENTE COMPLETO DEL INMUEBLE
+// 5. EXPEDIENTE COMPLETO DEL INMUEBLE E INSPECCIONES
 // ======================================================
 
 app.get('/api/inmuebles/:id', async (req, res) => {
@@ -304,40 +330,6 @@ app.get('/api/inmuebles/:id/inspecciones', async (req, res) => {
   }
 });
 
-// Obtener información general de un inmueble para la ficha del propietario
-app.get('/api/propietario/inmuebles/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [rows] = await db.query(
-      `SELECT * FROM inmueble WHERE IdInmueble = ?`,
-      [id]
-    );
-    if (rows.length === 0) {
-      return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
-    }
-    res.json(rows[0]);
-  } catch (err) {
-    console.error("Error al obtener inmueble:", err);
-    res.status(500).json({ mensaje: 'Error en el servidor' });
-  }
-});
-
-// Obtener las inspecciones reales de un inmueble para el propietario o conservador
-app.get('/api/inmuebles/:id/inspecciones', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [rows] = await db.query(
-      `SELECT * FROM inspeccion WHERE IdInmueble = ? ORDER BY Fecha DESC`,
-      [id]
-    );
-    res.json(rows);
-  } catch (err) {
-    console.error("Error al obtener inspecciones del inmueble:", err);
-    res.status(500).json({ mensaje: "Error en el servidor" });
-  }
-});
-
-
 // ======================================================
 // 5.1. OBTENER INSTALACIONES TÉCNICAS
 // ======================================================
@@ -352,7 +344,6 @@ app.get('/api/inmuebles/:id/instalaciones', async (req, res) => {
       });
     }
 
-    // Cargar instalaciones iniciales si aún no existen.
     await inicializarInstalaciones(id);
 
     const [instalaciones] = await db.query(
@@ -622,7 +613,6 @@ app.post('/api/login', async (req, res) => {
   const { email, contrasena } = req.body;
 
   try {
-    // Consulta utilizando el pool de promesas configurado en db.js
     const [results] = await db.query(
       `SELECT u.*, r.Nombre as RolNombre 
        FROM usuarios u 
@@ -637,7 +627,6 @@ app.post('/api/login', async (req, res) => {
 
     const usuario = results[0];
 
-    // Validación flexible (texto plano o hash bcrypt)
     let passwordMatch = false;
     if (usuario.Contrasena && usuario.Contrasena.startsWith('$2b$')) {
       passwordMatch = await bcrypt.compare(contrasena, usuario.Contrasena);
@@ -736,11 +725,8 @@ app.post('/api/registro-prueba', async (req, res) => {
 
 
 /* ======================================================
-  SOLICITUDES DE REGISTRO
+   SOLICITUDES DE REGISTRO
 ====================================================== */
-// ------------------------------------------------------
-// ENVIAR UNA SOLICITUD DE REGISTRO
-// ------------------------------------------------------
 
 app.post('/api/solicitudes-registro', async (req, res) => {
   const {
@@ -752,7 +738,6 @@ app.post('/api/solicitudes-registro', async (req, res) => {
     rol
   } = req.body;
 
-  // Validar que todos los campos estén completos.
   if (
     !nombre?.trim() ||
     !apellido?.trim() ||
@@ -766,7 +751,6 @@ app.post('/api/solicitudes-registro', async (req, res) => {
     });
   }
 
-  // Validar los roles permitidos para solicitar el registro.
   const rolesPermitidos = [
     'profesional',
     'propietario',
@@ -779,7 +763,6 @@ app.post('/api/solicitudes-registro', async (req, res) => {
     });
   }
 
-  // Validar el formato básico del correo.
   const emailNormalizado = email.trim().toLowerCase();
   const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -818,11 +801,6 @@ app.post('/api/solicitudes-registro', async (req, res) => {
   }
 });
 
-
-// ------------------------------------------------------
-// CONSULTAR LAS SOLICITUDES DE REGISTRO
-// ------------------------------------------------------
-
 app.get('/api/solicitudes-registro', async (req, res) => {
   try {
     const [solicitudes] = await db.query(
@@ -851,11 +829,6 @@ app.get('/api/solicitudes-registro', async (req, res) => {
     });
   }
 });
-
-
-// ------------------------------------------------------
-//  ACTUALIZAR EL ESTADO DE UNA SOLICITUD
-// ------------------------------------------------------
 
 app.patch('/api/solicitudes-registro/:id/estado', async (req, res) => {
   const { id } = req.params;
@@ -906,21 +879,37 @@ app.patch('/api/solicitudes-registro/:id/estado', async (req, res) => {
   }
 });
 
-
 app.get('/api/prueba', (req, res) => {
   res.json({ mensaje: 'El servidor actualizado funciona' });
 });
 
 
 // ======================================================
-// 9. PROPIETARIOS
+// 9. PROPIETARIOS (Inmuebles e Historial Específico)
 // ======================================================
 
-// Endpoint que valida que el usuario sea el propietario real del inmueble
+// Obtener inmuebles específicos asociados a un Propietario (por IdUsu o IdPropietario)
+app.get('/api/propietario/:id/inmuebles', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT i.* 
+       FROM Inmueble i 
+       JOIN Propietario p ON i.IdPropietario = p.IdPropietario 
+       WHERE p.IdUsu = ? OR p.IdPropietario = ?`,
+      [id, id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Error al obtener inmuebles del propietario:", err);
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
+
 app.get('/api/propietario/inmuebles/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query(`SELECT * FROM inmueble WHERE IdInmueble = ?`, [id]);
+    const [rows] = await db.query(`SELECT * FROM Inmueble WHERE IdInmueble = ?`, [id]);
     if (rows.length === 0) return res.status(404).json({ mensaje: 'Inmueble no encontrado' });
     
     res.json(rows[0]);
@@ -934,8 +923,8 @@ app.get('/api/propietario/:id/resumen', async (req, res) => {
   const { id } = req.params;
   try {
     const [inmuebles] = await db.query(
-      `SELECT COUNT(*) as total FROM inmueble i JOIN propietario p ON i.IdPropietario = p.IdPropietario WHERE p.IdUsu = ?`,
-      [id]
+      `SELECT COUNT(*) as total FROM Inmueble i JOIN Propietario p ON i.IdPropietario = p.IdPropietario WHERE p.IdUsu = ? OR p.IdPropietario = ?`,
+      [id, id]
     );
     res.json({
       inmuebles: inmuebles[0].total || 0,

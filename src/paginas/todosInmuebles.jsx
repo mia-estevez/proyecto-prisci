@@ -69,7 +69,6 @@ function TodosInmuebles() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
         {inmueblesFiltrados.length > 0 ? (
           inmueblesFiltrados.map((inm) => {
-            const esActivo = inm.estado === 'Activo';
             return (
               <div 
                 key={inm.id}
@@ -101,22 +100,6 @@ function TodosInmuebles() {
                       </div>
                       <div>
                         <h3 style={{ fontSize: '16px', color: '#f8fafc', margin: 0 }}>{inm.nombre}</h3>
-                        {/* ESTADO DINÁMICO CONDICIONAL */}
-                        <span 
-                          style={{ 
-                            marginTop: '4px', 
-                            display: 'inline-block',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            fontSize: '11px',
-                            fontWeight: '600',
-                            backgroundColor: esActivo ? 'rgba(34, 197, 94, 0.15)' : 'rgba(148, 163, 184, 0.15)',
-                            color: esActivo ? '#4ade80' : '#94a3b8',
-                            border: `1px solid ${esActivo ? 'rgba(34, 197, 94, 0.3)' : 'rgba(148, 163, 184, 0.3)'}`
-                          }}
-                        >
-                          {inm.estado}
-                        </span>
                       </div>
                     </div>
                   </div>
