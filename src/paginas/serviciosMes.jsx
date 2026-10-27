@@ -64,9 +64,9 @@ function ServiciosMes() {
         {serviciosFiltrados.length === 0 ? (
           <p className="empty-msg">No hay servicios programados para este mes.</p>
         ) : (
-          serviciosFiltrados.map((item) => (
+          serviciosFiltrados.map((item, index) => (
             <div 
-              key={item.IdInmueble} 
+              key={`${item.IdInmueble}-${index}`} 
               className="service-card-row" 
               onClick={() => navigate(`/clientes/${item.IdInmueble}`)}
             >
