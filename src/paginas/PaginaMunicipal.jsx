@@ -1,49 +1,68 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+
+import "leaflet/dist/leaflet.css";
 import "./PaginaMunicipal.css";
 
 const inmueblesIniciales = [
   {
     id: 1,
+    idReal: 1,
     nombre: "Edificio Torres del Limay",
     direccion: "Av. Argentina 1234, Neuquén",
     tipo: "Edificio residencial",
     categoria: "residencial",
+    latitudValida: -38.9516,
+    longitudValida: -68.0591,
     imagen:
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=300&q=80",
   },
   {
     id: 2,
+    idReal: 2,
     nombre: "Consorcio Los Teros",
     direccion: "Calle San Martín 567, Neuquén",
     tipo: "Edificio residencial",
     categoria: "residencial",
+    latitudValida: -38.9560,
+    longitudValida: -68.0650,
     imagen:
       "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=300&q=80",
   },
   {
     id: 3,
+    idReal: 3,
     nombre: "Hotel del Comahue",
     direccion: "Av. Olascoaga 890, Neuquén",
     tipo: "Hotel",
     categoria: "hotel",
+    latitudValida: -38.9450,
+    longitudValida: -68.0530,
     imagen:
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80",
   },
   {
     id: 4,
+    idReal: 4,
     nombre: "Centro Médico Neuquén",
     direccion: "Calle Roca 345, Neuquén",
     tipo: "Centro de salud",
     categoria: "salud",
+    latitudValida: -38.9480,
+    longitudValida: -68.0700,
     imagen:
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=300&q=80",
   },
   {
     id: 5,
+    idReal: 5,
     nombre: "Supermercado La Anónima",
     direccion: "Av. Argentina 2200, Neuquén",
     tipo: "Local comercial",
     categoria: "comercial",
+    latitudValida: -38.9620,
+    longitudValida: -68.0450,
     imagen:
       "https://images.unsplash.com/photo-1604719312566-8912e9c8a213?auto=format&fit=crop&w=300&q=80",
   },
@@ -75,6 +94,48 @@ const estadisticas = [
     icono: "clipboard",
   },
 ];
+
+const CENTRO_NEUQUEN = [-38.9516, -68.0591];
+
+const crearIcono = (colorHex) => {
+  const svg = `
+    <svg width="32" height="44" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 36 12 36C12 36 24 21 24 12C24 5.37 18.63 0 12 0ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16Z" fill="${colorHex}" stroke="#0f172a" stroke-width="1.5"/>
+    </svg>
+  `;
+  return L.divIcon({
+    className: 'custom-leaflet-marker',
+    html: svg,
+    iconSize: [32, 44],
+    iconAnchor: [16, 44],
+    popupAnchor: [0, -42]
+  });
+};
+
+const iconoRojo = crearIcono('#ef4444');
+const iconoAzul = crearIcono('#38bdf8');
+
+function ControladorMapa({ inmuebles, inmuebleSeleccionado }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.invalidateSize();
+
+    if (inmuebleSeleccionado) {
+      map.flyTo(
+        [inmuebleSeleccionado.latitudValida, inmuebleSeleccionado.longitudValida], 
+        16, 
+        { duration: 1.2 }
+      );
+    } else if (inmuebles.length > 0) {
+      const puntos = inmuebles.map(item => [item.latitudValida, item.longitudValida]);
+      const bounds = L.latLngBounds(puntos);
+      map.fitBounds(bounds, { padding: [60, 60] });
+    }
+  }, [inmuebles, inmuebleSeleccionado, map]);
+
+  return null;
+}
 
 function Icono({ nombre, size = 28 }) {
   const atributos = {
@@ -130,19 +191,10 @@ function Icono({ nombre, size = 28 }) {
         <path d="m20 20-4-4" />
       </>
     ),
-    filter: (
-      <path d="M4 4h16l-6 7v6l-4 3v-9z" />
-    ),
+    filter: <path d="M4 4h16l-6 7v6l-4 3v-9z" />,
     arrow: <path d="m9 18 6-6-6-6" />,
     plus: <path d="M12 5v14M5 12h14" />,
     chevron: <path d="m7 10 5 5 5-5" />,
-    locate: (
-      <>
-        <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
-        <circle cx="12" cy="12" r="7" />
-        <path d="m9 12 2 2 4-4" />
-      </>
-    ),
   };
 
   return <svg {...atributos}>{dibujos[nombre] || null}</svg>;
@@ -164,9 +216,7 @@ export default function PaginaMunicipal() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroAbierto, setFiltroAbierto] = useState(false);
   const [categoria, setCategoria] = useState("todos");
-  const [inmuebleSeleccionado, setInmuebleSeleccionado] =
-    useState(null);
-  const [zoom, setZoom] = useState(1);
+  const [inmuebleSeleccionado, setInmuebleSeleccionado] = useState(null);
 
   const inmueblesFiltrados = useMemo(() => {
     const texto = busqueda.toLowerCase().trim();
@@ -183,25 +233,6 @@ export default function PaginaMunicipal() {
       return coincideTexto && coincideCategoria;
     });
   }, [busqueda, categoria]);
-
-  const posiciones = [
-    { x: 25, y: 25 },
-    { x: 40, y: 33 },
-    { x: 52, y: 18 },
-    { x: 58, y: 48 },
-    { x: 32, y: 55 },
-    { x: 65, y: 60 },
-    { x: 45, y: 72 },
-    { x: 75, y: 70 },
-    { x: 82, y: 42 },
-    { x: 18, y: 43 },
-    { x: 35, y: 80 },
-    { x: 60, y: 85 },
-    { x: 70, y: 30 },
-    { x: 50, y: 55 },
-    { x: 85, y: 80 },
-    { x: 28, y: 15 },
-  ];
 
   return (
     <main className="municipal-dashboard">
@@ -243,7 +274,7 @@ export default function PaginaMunicipal() {
 
       {/* Mapa y listado lateral */}
       <section className="municipal-main-grid">
-        <article className="municipal-map-panel">
+        <article className="municipal-map-panel" style={{ display: 'flex', flexDirection: 'column' }}>
           <div className="municipal-panel-heading">
             <div className="municipal-heading-icon">
               <Icono nombre="map" size={31} />
@@ -318,125 +349,49 @@ export default function PaginaMunicipal() {
             </div>
           </div>
 
-          {/* Mapa */}
-          <div className="municipal-map">
-            <div
-              className="municipal-map-canvas"
-              style={{ transform: `scale(${zoom})` }}
+          {/* Mapa Leaflet Real */}
+          <div className="municipal-map" style={{ flex: 1, minHeight: '380px', position: 'relative', overflow: 'hidden', borderRadius: '8px' }}>
+            <MapContainer 
+              center={CENTRO_NEUQUEN} 
+              zoom={13} 
+              style={{ height: '100%', width: '100%', borderRadius: '8px' }}
             >
-              <iframe
-                title="Mapa de Neuquén"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=-68.10%2C-38.99%2C-68.00%2C-38.93&layer=mapnik"
-                loading="lazy"
-                className="municipal-map-iframe"
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; OpenStreetMap contributors'
               />
 
-              <div className="municipal-map-shade" />
+              <ControladorMapa 
+                inmuebles={inmueblesFiltrados} 
+                inmuebleSeleccionado={inmuebleSeleccionado} 
+              />
+              
+              {inmueblesFiltrados.map((item) => {
+                const idItem = item.idReal;
+                const esSeleccionado = inmuebleSeleccionado?.idReal === idItem;
 
-              <span className="municipal-map-label label-parque">
-                PARQUE
-                <br />
-                CENTRAL
-              </span>
-
-              <span className="municipal-map-label label-neuquen">
-                Neuquén
-              </span>
-
-              <span className="municipal-map-label label-barrio">
-                BARRIO
-                <br />
-                SANTA GENOVEVA
-              </span>
-
-              <span className="municipal-map-label label-confluencia">
-                BARRIO
-                <br />
-                CONFLUENCIA
-              </span>
-
-              <span className="municipal-rio-label">Río Limay</span>
-
-              {posiciones.map((posicion, indice) => (
-                <button
-                  type="button"
-                  key={indice}
-                  className="municipal-map-marker"
-                  style={{
-                    left: `${posicion.x}%`,
-                    top: `${posicion.y}%`,
-                  }}
-                  title={`Inmueble registrado ${indice + 1}`}
-                  aria-label={`Seleccionar inmueble ${indice + 1}`}
-                  onClick={() =>
-                    setInmuebleSeleccionado(
-                      inmueblesFiltrados[indice % Math.max(inmueblesFiltrados.length, 1)] ||
-                        null
-                    )
-                  }
-                >
-                  <Icono nombre="building" size={19} />
-                </button>
-              ))}
-            </div>
-
-            {/* Controles de zoom */}
-            <div className="municipal-map-controls">
-              <button
-                type="button"
-                aria-label="Acercar mapa"
-                onClick={() => setZoom((actual) => Math.min(actual + 0.1, 1.5))}
-              >
-                +
-              </button>
-
-              <button
-                type="button"
-                aria-label="Alejar mapa"
-                onClick={() => setZoom((actual) => Math.max(actual - 0.1, 1))}
-              >
-                −
-              </button>
-
-              <button
-                type="button"
-                aria-label="Restablecer mapa"
-                onClick={() => setZoom(1)}
-              >
-                <Icono nombre="locate" size={23} />
-              </button>
-            </div>
-
-            {/* Referencias */}
-            <div className="municipal-map-legend">
-              <div>
-                <span className="municipal-legend-dot red">
-                  <Icono nombre="building" size={15} />
-                </span>
-                <span>Inmueble registrado</span>
-              </div>
-
-              <div>
-                <span className="municipal-legend-dot blue">
-                  <Icono nombre="building" size={15} />
-                </span>
-                <span>Inmueble seleccionado</span>
-              </div>
-            </div>
-
-            {inmuebleSeleccionado && (
-              <div className="municipal-map-selection">
-                <button
-                  type="button"
-                  onClick={() => setInmuebleSeleccionado(null)}
-                  aria-label="Cerrar información"
-                >
-                  ×
-                </button>
-                <strong>{inmuebleSeleccionado.nombre}</strong>
-                <span>{inmuebleSeleccionado.direccion}</span>
-              </div>
-            )}
+                return (
+                  <Marker
+                    key={`marker-${idItem}`}
+                    position={[item.latitudValida, item.longitudValida]}
+                    icon={esSeleccionado ? iconoAzul : iconoRojo}
+                    eventHandlers={{
+                      click: () => setInmuebleSeleccionado(item),
+                    }}
+                  >
+                    <Popup>
+                      <div className="popup-container" style={{ padding: '5px' }}>
+                        <strong style={{ fontSize: '14px', color: '#0f172a' }}>{item.nombre}</strong>
+                        <p style={{ fontSize: '12px', margin: '4px 0', color: '#334155' }}>{item.direccion}</p>
+                        <span className="popup-tag" style={{ fontSize: '10px', background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', marginBottom: '8px' }}>
+                          {item.tipo}
+                        </span>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
+            </MapContainer>
           </div>
         </article>
 
@@ -501,7 +456,6 @@ export default function PaginaMunicipal() {
               window.dispatchEvent(new CustomEvent("prisci:agregar-inmueble"))
             }
           >
-      
             <Icono nombre="plus" size={22} />
             <span>Agregar inmueble</span>
           </button>
