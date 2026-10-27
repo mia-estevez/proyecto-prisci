@@ -1,5 +1,6 @@
 
 import React from "react";
+import './Agregarprofesional.css';
 
 const especialidades = [
   "Instalaciones contra incendios",
