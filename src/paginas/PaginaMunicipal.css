@@ -340,230 +340,23 @@
 }
 
 /* =========================================
-   MAPA
+   MAPA LEAFLET (ACTUALIZADO)
 ========================================= */
 
 .municipal-map {
   position: relative;
-  width: 100%;
-  height: clamp(390px, 42vw, 495px);
-  min-height: 350px;
+  width: 100% !important;
+  height: 420px !important; /* Altura fija forzada */
+  min-height: 420px !important;
   overflow: hidden;
-  isolation: isolate;
   border: 1px solid #263f59;
   border-radius: 9px;
   background: #172d43;
 }
 
-.municipal-map-canvas {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  transform-origin: center;
-  transition: transform 0.2s ease;
-}
-
-.municipal-map-iframe {
-  position: absolute;
-  inset: -2%;
-  width: 104%;
-  height: 104%;
-  border: 0;
-  filter: brightness(0.62) invert(0.88) hue-rotate(180deg) saturate(0.7);
-}
-
-.municipal-map-shade {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    135deg,
-    rgba(10, 30, 48, 0.2),
-    rgba(8, 26, 43, 0.25)
-  );
-}
-
-.municipal-map-label {
-  position: absolute;
-  z-index: 2;
-  color: #f1f6ff;
-  font-size: 11px;
-  font-weight: 750;
-  line-height: 1.4;
-  text-align: center;
-  text-shadow: 0 2px 4px #061321, 0 0 8px #061321;
-  pointer-events: none;
-}
-
-.label-parque {
-  top: 17%;
-  left: 22%;
-}
-
-.label-neuquen {
-  top: 47%;
-  left: 39%;
-  font-size: 19px;
-}
-
-.label-barrio {
-  top: 27%;
-  right: 6%;
-}
-
-.label-confluencia {
-  bottom: 39%;
-  left: 7%;
-}
-
-.municipal-rio-label {
-  position: absolute;
-  z-index: 2;
-  bottom: 16%;
-  left: 30%;
-  color: #e5f0ff;
-  font-size: 13px;
-  font-style: italic;
-  transform: rotate(28deg);
-  text-shadow: 0 1px 4px #071a2c;
-  pointer-events: none;
-}
-
-.municipal-map-marker {
-  position: absolute;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.14);
-  border-radius: 50%;
-  background: #f02d40;
-  color: white;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  transition: background 0.15s, box-shadow 0.15s;
-}
-
-.municipal-map-marker:hover {
-  z-index: 6;
-  background: #ff4658;
-  box-shadow: 0 0 0 5px rgba(240, 45, 64, 0.2);
-}
-
-.municipal-map-controls {
-  position: absolute;
-  z-index: 7;
-  top: 13px;
-  left: 13px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 8px;
-  background: rgba(5, 21, 36, 0.94);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-.municipal-map-controls button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 36px;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+.custom-leaflet-marker {
   background: transparent;
-  color: white;
-  cursor: pointer;
-  font-size: 26px !important;
-  font-weight: 650;
-}
-
-.municipal-map-controls button:hover {
-  background: #143550;
-}
-
-.municipal-map-legend {
-  position: absolute;
-  z-index: 7;
-  right: 10px;
-  bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 195px;
-  padding: 12px;
-  border: 1px solid rgba(49, 76, 103, 0.55);
-  border-radius: 8px;
-  background: rgba(5, 21, 36, 0.94);
-  color: #eaf1fc;
-}
-
-.municipal-map-legend > div {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 11px;
-}
-
-.municipal-legend-dot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  color: white;
-}
-
-.municipal-legend-dot.red {
-  background: #f02d40;
-}
-
-.municipal-legend-dot.blue {
-  background: #0797f5;
-}
-
-.municipal-map-selection {
-  position: absolute;
-  z-index: 10;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  max-width: 65%;
-  padding: 13px 32px 13px 13px;
-  border: 1px solid var(--municipal-border);
-  border-radius: 8px;
-  background: rgba(5, 21, 36, 0.96);
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.25);
-}
-
-.municipal-map-selection strong {
-  font-size: 12px;
-}
-
-.municipal-map-selection span {
-  color: var(--municipal-muted);
-  font-size: 11px;
-}
-
-.municipal-map-selection button {
-  position: absolute;
-  top: 4px;
-  right: 8px;
-  padding: 0;
   border: none;
-  background: transparent;
-  color: white;
-  cursor: pointer;
-  font-size: 21px !important;
 }
 
 /* =========================================
@@ -860,27 +653,6 @@
     min-height: 320px;
   }
 
-  .municipal-map-legend {
-    right: 7px;
-    bottom: 7px;
-    min-width: 170px;
-    padding: 9px;
-  }
-
-  .municipal-map-legend > div {
-    font-size: 10px;
-  }
-
-  .municipal-map-marker {
-    width: 29px;
-    height: 29px;
-  }
-
-  .municipal-map-marker svg {
-    width: 16px;
-    height: 16px;
-  }
-
   .municipal-recent-heading {
     flex-wrap: wrap;
   }
@@ -892,7 +664,6 @@
   .municipal-property {
     gap: 9px;
   }
-
 
   .municipal-property-image {
     flex-basis: 76px;
