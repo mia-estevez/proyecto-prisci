@@ -9,7 +9,6 @@ import L from 'leaflet';
 // Íconos vectoriales de Lucide React
 import { 
   Home, 
-  Users, 
   ClipboardList, 
   Clock, 
   Search, 
@@ -71,8 +70,8 @@ function Conservadores() {
   const navigate = useNavigate();
   const ID_CONSERVADOR = localStorage.getItem('usuarioId') || 1;
 
-  // ESTADOS DINÁMICOS
-  const [resumen, setResumen] = useState({ inmuebles: 2, clientes: 1, servicios: 5, vencimientos: 0 });
+  // ESTADOS DINÁMICOS (sin clientes, manteniendo inmuebles, servicios y vencimientos)
+  const [resumen, setResumen] = useState({ inmuebles: 2, servicios: 5, vencimientos: 0 });
   const [inmuebles, setInmuebles] = useState([]);
   const [cargando, setCargando] = useState(true);
 
@@ -100,7 +99,7 @@ function Conservadores() {
     2: { lat: -38.9580, lng: -68.0720, dir: 'Gral. Las Heras 450, Neuquén' }
   };
 
-  // Cálculo dinámico robusto con fallback ante errores 404 de red
+  // Cálculo dinámico robusto de vencimientos con fallback ante errores 404
   useEffect(() => {
     const calcularVencimientosDinamicos = async () => {
       try {
@@ -109,7 +108,6 @@ function Conservadores() {
         if (resInm.ok) {
           listaInm = await resInm.json();
         } else {
-          // Fallback local si la ruta del backend da 404
           listaInm = [
             { IdInmueble: 1, Nombre: 'Edificio Torres del Limay' },
             { IdInmueble: 2, Nombre: 'Galería Comercial Centro' }
@@ -136,7 +134,7 @@ function Conservadores() {
               }
             }
           } catch (e) {
-            // Ignorar errores individuales de inspección por 404
+            // Ignorar errores individuales
           }
         }
 
@@ -246,8 +244,8 @@ function Conservadores() {
         <p style={{ color: '#94a3b8', fontSize: '14px' }}>Gestioná y consultá la información de los inmuebles asignados.</p>
       </div>
 
-      {/* TARJETAS DE RESUMEN KPI */}
-      <div className="kpi-grid" style={{ marginBottom: '30px' }}>
+      {/* TARJETAS DE RESUMEN KPI (3 Tarjetas) */}
+      <div className="kpi-grid" style={{ marginBottom: '30px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
         <div className="kpi-card" onClick={() => navigate('/todos-inmuebles')}>
           <div className="kpi-icon-wrapper blue">
             <Home size={22} color="#3b82f6" />
@@ -255,16 +253,6 @@ function Conservadores() {
           <div className="kpi-data">
             <h3>{resumen.inmuebles || inmuebles.length}</h3>
             <span>Inmuebles Asignados</span>
-          </div>
-        </div>
-
-        <div className="kpi-card" onClick={() => navigate('/clientes')}>
-          <div className="kpi-icon-wrapper cyan">
-            <Users size={22} color="#06b6d4" />
-          </div>
-          <div className="kpi-data">
-            <h3>{resumen.clientes || 1}</h3>
-            <span>Clientes Activos</span>
           </div>
         </div>
 
