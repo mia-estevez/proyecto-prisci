@@ -2,8 +2,6 @@ import { useMemo, useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
-
-import "leaflet/dist/leaflet.css";
 import "./PaginaMunicipal.css";
 
 const inmueblesIniciales = [
@@ -350,12 +348,12 @@ export default function PaginaMunicipal() {
             </div>
           </div>
 
-          {/* Mapa Leaflet Real */}
-          <div className="municipal-map" style={{ flex: 1, minHeight: '380px', position: 'relative', overflow: 'hidden', borderRadius: '8px' }}>
+          {/* Mapa Leaflet Corregido con Altura Fija Forzada */}
+          <div style={{ height: "420px", width: "100%", position: "relative", borderRadius: "8px", overflow: "hidden", marginTop: "10px" }}>
             <MapContainer 
               center={CENTRO_NEUQUEN} 
               zoom={13} 
-              style={{ height: '100%', width: '100%', borderRadius: '8px' }}
+              style={{ height: "420px", width: "100%", borderRadius: "8px" }}
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
