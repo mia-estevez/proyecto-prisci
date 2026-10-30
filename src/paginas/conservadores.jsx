@@ -43,23 +43,29 @@ const crearIcono = (colorHex) => {
 const iconoRojo = crearIcono('#ef4444');  // Marcador Rojo (Sin seleccionar)
 const iconoAzul = crearIcono('#38bdf8');  // Marcador Azul (Seleccionado)
 
-// COMPONENTE PARA GESTIONAR EL ZOOM Y RECENTREADO AUTOMÁTICO
+// COMPONENTE PARA GESTIONAR EL ZOOM Y RECENTREADO AUTOMÁTICO (Con protección contra errores de desmontaje)
 function ControladorMapa({ inmuebles, inmuebleSeleccionado }) {
   const map = useMap();
 
   useEffect(() => {
-    map.invalidateSize();
+    if (!map || !map.getContainer()) return;
 
-    if (inmuebleSeleccionado) {
-      map.flyTo(
-        [inmuebleSeleccionado.latitudValida, inmuebleSeleccionado.longitudValida], 
-        16, 
-        { duration: 1.2 }
-      );
-    } else if (inmuebles.length > 0) {
-      const puntos = inmuebles.map(item => [item.latitudValida, item.longitudValida]);
-      const bounds = L.latLngBounds(puntos);
-      map.fitBounds(bounds, { padding: [60, 60] });
+    try {
+      map.invalidateSize();
+
+      if (inmuebleSeleccionado) {
+        map.flyTo(
+          [inmuebleSeleccionado.latitudValida, inmuebleSeleccionado.longitudValida], 
+          16, 
+          { duration: 1.2 }
+        );
+      } else if (inmuebles.length > 0) {
+        const puntos = inmuebles.map(item => [item.latitudValida, item.longitudValida]);
+        const bounds = L.latLngBounds(puntos);
+        map.fitBounds(bounds, { padding: [60, 60] });
+      }
+    } catch (error) {
+      // Previene excepciones al desmontar el mapa
     }
   }, [inmuebles, inmuebleSeleccionado, map]);
 
@@ -70,7 +76,8 @@ function Conservadores() {
   const navigate = useNavigate();
   const ID_CONSERVADOR = localStorage.getItem('usuarioId') || 1;
 
-  // ESTADOS DINÁMICOS (sin clientes, manteniendo inmuebles, servicios y vencimientos)
+  // ESTADOS DINÁMICOS
+  const [nombreUsuario, setNombreUsuario] = useState('Profesional');
   const [resumen, setResumen] = useState({ inmuebles: 2, servicios: 5, vencimientos: 0 });
   const [inmuebles, setInmuebles] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -92,6 +99,21 @@ function Conservadores() {
   const handleCerrarFicha = () => {
     setFichaAbierta(false);
   };
+
+  // Cargar nombre del usuario autenticado dinámicamente
+  useEffect(() => {
+    const nombreGuardado = localStorage.getItem('usuarioNombre');
+    if (nombreGuardado) {
+      setNombreUsuario(nombreGuardado);
+    } else {
+      try {
+        const usuarioObj = JSON.parse(localStorage.getItem('usuario') || '{}');
+        if (usuarioObj.nombre) {
+          setNombreUsuario(usuarioObj.nombre);
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   // DIRECCIONES Y COORDENADAS GPS EN NEUQUÉN CAPITAL
   const DIRECCIONES_REALES = {
@@ -133,9 +155,7 @@ function Conservadores() {
                 contadorVencimientos++;
               }
             }
-          } catch (e) {
-            // Ignorar errores individuales
-          }
+          } catch (e) {}
         }
 
         setResumen(prev => ({ ...prev, vencimientos: contadorVencimientos }));
@@ -238,9 +258,9 @@ function Conservadores() {
   return (
     <div className="clientes-page-container" style={{ padding: '30px' }}>
 
-      {/* HEADER DE BIENVENIDA */}
+      {/* HEADER DE BIENVENIDA DINÁMICO */}
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '28px', color: '#f8fafc', marginBottom: '8px' }}>¡Hola, Juan!</h1>
+        <h1 style={{ fontSize: '28px', color: '#f8fafc', marginBottom: '8px' }}>¡Hola, {nombreUsuario}!</h1>
         <p style={{ color: '#94a3b8', fontSize: '14px' }}>Gestioná y consultá la información de los inmuebles asignados.</p>
       </div>
 
