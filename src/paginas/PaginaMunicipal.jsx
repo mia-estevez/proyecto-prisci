@@ -402,9 +402,12 @@ export default function PaginaMunicipal() {
             <button
               type="button"
               onClick={() => {
-                setBusqueda("");
-                setCategoria("todos");
-                setInmuebleSeleccionado(null);
+                // Redirige dinámicamente a la vista de lista completa
+                if (typeof onCambiarVista === 'function') {
+                  onCambiarVista('todos-inmuebles');
+                } else {
+                  window.location.hash = "#todos-inmuebles";
+                }
               }}
             >
               Ver todos
