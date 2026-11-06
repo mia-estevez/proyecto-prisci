@@ -142,8 +142,8 @@ function Contenido() {
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
             <Route path='/ver-inspecciones' element={<VerInspecciones />} />
             <Route path='/propietario/historial' element={<PropietarioHistorial />} />
-            <Route path='/propietario-solicitudes' element={<PropietarioSolicitudes />} />
-            <Route path='/formulario-solicitud' element={<FormularioSolicitud />} />
+            <Route path='/propietario/solicitudes' element={<PropietarioSolicitudes />} />
+            <Route path='/propietario/solicitud/nuevo/:idInmueble' element={<FormularioSolicitud />} />
             <Route path="/agregar-inmueble" element={<AgregarInmueble />} />
             <Route path="/profesionales" element={<AgregarProfesionales />} />
             <Route path="/reportes" element={<Informes />} />

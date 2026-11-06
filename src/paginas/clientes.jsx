@@ -185,7 +185,20 @@ function Clientes() {
         <h1 style={{ fontSize: '24px', color: '#f8fafc', margin: 0 }}>{inmueble?.Nombre || 'Inmueble del Cliente'}</h1>
         <span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '4px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: '600' }}>
           Registrado
-        </span>
+        </span><button 
+  onClick={() => {
+    // Busca el ID sin importar si viene como id, IdInmueble o idInmueble
+    const idReal = inmueble?.IdInmueble || inmueble?.id || inmueble?.idInmueble || inm?.IdInmueble || inm?.id;
+    if (idReal) {
+      navigate(`/propietario/solicitud/nuevo/${idReal}`);
+    } else {
+      console.error("No se encontró el ID del inmueble para la solicitud");
+    }
+  }} 
+  style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}
+>
+  Solicitar cambio
+</button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr 1.2fr', gap: '20px', alignItems: 'stretch' }}>

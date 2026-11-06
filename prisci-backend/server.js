@@ -974,6 +974,19 @@ app.get('/api/propietario/:id/solicitudes', async (req, res) => {
   }
 });
 
+app.get('/api/propietario/:id/solicitudes', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM solicitudpropietario WHERE IdPropietario = ? ORDER BY Fecha DESC`,
+      [id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener solicitudes:', error);
+    res.json([]);
+  }
+});
 
 // ======================================================
 // INICIAR SERVIDOR
