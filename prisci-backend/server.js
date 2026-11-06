@@ -936,9 +936,9 @@ app.get('/api/propietario/:id/resumen', async (req, res) => {
   }
 });
 
-// ======================================================
+// =====================================================
 // SOLICITUDES DE PROPIETARIOS A LA MUNICIPALIDAD
-// ======================================================
+// =====================================================
 
 app.post('/api/solicitudes-propietario', async (req, res) => {
   const { idPropietario, idInmueble, nombreInmueble, motivo, detalle } = req.body;
