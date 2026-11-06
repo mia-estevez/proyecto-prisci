@@ -26,12 +26,12 @@ import SolicitudesRegistro from './paginas/SolicitudesRegistro';
 import VerInspecciones from './paginas/verInspecciones';
 import PropietarioHistorial from './paginas/propietarioHistorial';
 import Usuarios from './paginas/Usuarios';
-
-// Tus páginas específicas del menú municipal
+import PropietarioSolicitudes from './paginas/propietariosSolicitudes';
 import AgregarInmueble from './paginas/AgregarInmueble';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
 import Historial from './paginas/Historial';
 import Informes from './paginas/Informes';
+import FormularioSolicitud from './paginas/formularioSolicitud';
 
 function Contenido() {
   const location = useLocation();
@@ -46,7 +46,6 @@ function Contenido() {
         sessionStorage.removeItem("usuario");
       }
     }
-    // USUARIO TEMPORAL PARA PROBAR LAS VISTAS
     return { nombre: "María", rol: "municipal", idRol: 1 };
   });
 
@@ -95,17 +94,14 @@ function Contenido() {
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#0b1329" }}>
       
-      {/* NAVBAR SUPERIOR */}
       {!esLogin && usuario && <Navbar usuario={usuario} />}
 
       <div style={{ display: "flex", flex: 1, width: "100%", minHeight: 0, alignItems: "stretch" }}>
         
-        {/* MENÚ LATERAL (SIDEBAR) */}
         {!esLogin && (
           <Menu rol={rol} onCerrarSesion={cerrarSesion} />
         )}
 
-        {/* CONTENIDO PRINCIPAL */}
         <main style={{ flex: 1, minWidth: 0, padding: esLogin ? "0" : "20px", boxSizing: "border-box", overflowY: "auto" }}>
           <Routes>
             <Route
@@ -146,8 +142,8 @@ function Contenido() {
             <Route path="/propietario/todos-inmuebles" element={<PropietariosTodosInmuebles />} />
             <Route path='/ver-inspecciones' element={<VerInspecciones />} />
             <Route path='/propietario/historial' element={<PropietarioHistorial />} />
-
-            {/* ENLACES DIRECTOS DEL MENÚ MUNICIPAL */}
+            <Route path='/propietario/solicitudes' element={<PropietarioSolicitudes />} />
+            <Route path='/propietario/solicitud/nuevo/:idInmueble' element={<FormularioSolicitud />} />
             <Route path="/agregar-inmueble" element={<AgregarInmueble />} />
             <Route path="/profesionales" element={<AgregarProfesionales />} />
             <Route path="/reportes" element={<Informes />} />

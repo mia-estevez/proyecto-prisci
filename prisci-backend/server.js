@@ -936,6 +936,57 @@ app.get('/api/propietario/:id/resumen', async (req, res) => {
   }
 });
 
+// =====================================================
+// SOLICITUDES DE PROPIETARIOS A LA MUNICIPALIDAD
+// =====================================================
+
+app.post('/api/solicitudes-propietario', async (req, res) => {
+  const { idPropietario, idInmueble, nombreInmueble, motivo, detalle } = req.body;
+
+  try {
+    const [resultado] = await db.query(
+      `INSERT INTO solicitudpropietario (IdPropietario, IdInmueble, NombreInmueble, Motivo, Detalle, Estado, Fecha)
+       VALUES (?, ?, ?, ?, ?, 'Pendiente', NOW())`,
+      [idPropietario, idInmueble, nombreInmueble, motivo, detalle]
+    );
+
+    res.status(201).json({
+      mensaje: 'Solicitud enviada a la municipalidad correctamente',
+      idSolicitud: resultado.insertId
+    });
+  } catch (error) {
+    console.error('Error al registrar solicitud de propietario:', error);
+    res.status(500).json({ mensaje: 'Error al enviar la solicitud' });
+  }
+});
+
+app.get('/api/propietario/:id/solicitudes', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM solicitudpropietario WHERE IdPropietario = ? ORDER BY Fecha DESC`,
+      [id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener solicitudes:', error);
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
+
+app.get('/api/propietario/:id/solicitudes', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM solicitudpropietario WHERE IdPropietario = ? ORDER BY Fecha DESC`,
+      [id]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener solicitudes:', error);
+    res.json([]);
+  }
+});
 
 // ======================================================
 // INICIAR SERVIDOR
@@ -946,3 +997,4 @@ const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
 });
+
