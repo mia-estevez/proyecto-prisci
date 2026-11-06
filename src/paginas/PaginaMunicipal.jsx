@@ -404,6 +404,7 @@ export default function PaginaMunicipal() {
               onClick={() => {
                 setBusqueda("");
                 setCategoria("todos");
+                setInmuebleSeleccionado(null);
               }}
             >
               Ver todos
@@ -451,9 +452,17 @@ export default function PaginaMunicipal() {
           <button
             type="button"
             className="municipal-add-button"
-            onClick={() =>
-              window.dispatchEvent(new CustomEvent("prisci:agregar-inmueble"))
-            }
+            onClick={() => {
+              // Busca el ítem del menú lateral de la izquierda que dice "Agregar inmueble" y hace clic por vos
+              const linkMenu = Array.from(document.querySelectorAll('a, button')).find(
+                el => el.textContent && el.textContent.trim() === "Agregar inmueble" && el !== event.currentTarget
+              );
+              if (linkMenu) {
+                linkMenu.click();
+              } else {
+                window.location.hash = "#agregar-inmueble";
+              }
+            }}
           >
             <Icono nombre="plus" size={22} />
             <span>Agregar inmueble</span>

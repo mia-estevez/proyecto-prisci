@@ -65,7 +65,11 @@ export default function AgregarInmueble() {
   const [direccionEncontrada, setDireccionEncontrada] = useState("");
   const [buscando, setBuscando] = useState(false);
   const [imagen, setImagen] = useState(null);
-  const [conservadores, setConservadores] = useState([]);
+  // Lista con profesionales iniciales para que no aparezca vacía la selección
+  const [conservadores, setConservadores] = useState([
+    { id: 1, nombre: "Ing. Carlos Pérez (Mat. 1234)" },
+    { id: 2, nombre: "Arq. Ana Gómez (Mat. 5678)" }
+  ]);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
 
@@ -192,11 +196,18 @@ export default function AgregarInmueble() {
     form.localidad,
   ]);
 
-  // Preparado para conectar con el guardado real en el próximo paso.
   function registrarInmueble(event) {
     event.preventDefault();
     setError("");
     setMensaje("");
+
+    // VALIDACIÓN OBLIGATORIA DE PROFESIONAL / CONSERVADOR
+    if (!form.conservadorId) {
+      setError(
+        "⚠️ Atención: Es obligatorio seleccionar un profesional responsable o registrar uno antes de dar de alta el inmueble."
+      );
+      return;
+    }
 
     if (!coordenadas) {
       setError(
@@ -232,9 +243,6 @@ export default function AgregarInmueble() {
       imagen,
     };
 
-    // Por ahora no guarda en la base de datos.
-    // En el siguiente paso conectaremos este objeto
-    // con la conexión existente de PRISCI.
     console.log("Inmueble preparado para registrar:", nuevoInmueble);
 
     setMensaje(
@@ -352,7 +360,7 @@ export default function AgregarInmueble() {
 
             <div className="form-grid">
               <Field
-                label="Nombre o razón social"
+                label="Nombre o razón/social"
                 placeholder="Ej. Consorcio Los Tilos"
                 value={form.propietario}
                 onChange={(v) => actualizar("propietario", v)}
@@ -383,42 +391,71 @@ export default function AgregarInmueble() {
               />
             </div>
 
-            <h3 className="section-heading">
-              Asignación al conservador
-            </h3>
+            {/* SECCIÓN CENTRADA DE ASIGNACIÓN AL PROFESIONAL */}
+            <div className="professional-section-center">
+              <h3 className="section-heading">
+                Asignación al profesional / conservador *
+              </h3>
 
-            <div className="form-grid">
-              <label className="field">
-                <span>Conservador responsable</span>
+              <div className="form-grid-center">
+                <label className="field">
+                  <span>Profesional responsable *</span>
 
-                <select
-                  className="control"
-                  value={form.conservadorId}
-                  onChange={(e) =>
-                    actualizar("conservadorId", e.target.value)
-                  }
-                >
-                  <option value="">
-                    Seleccione un conservador...
-                  </option>
-
-                  {conservadores.map((conservador) => (
-                    <option
-                      key={conservador.id}
-                      value={conservador.id}
-                    >
-                      {conservador.nombre ||
-                        conservador.name ||
-                        conservador.email}
+                  <select
+                    className="control"
+                    value={form.conservadorId}
+                    onChange={(e) =>
+                      actualizar("conservadorId", e.target.value)
+                    }
+                    required
+                  >
+                    <option value="" disabled>
+                      Seleccione un profesional registrado...
                     </option>
-                  ))}
-                </select>
-              </label>
-            </div>
 
-            <p className="map-help">
-              La lista se conectará con los conservadores registrados en PRISCI.
-            </p>
+                    {conservadores.map((conservador) => (
+                      <option
+                        key={conservador.id}
+                        value={conservador.id}
+                      >
+                        {conservador.nombre ||
+                          conservador.name ||
+                          conservador.email}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="professional-link-container">
+                <span className="map-help" style={{ margin: 0 }}>
+                  ¿No aparece el profesional?{" "}
+                  <a
+                    href="#agregar-profesionales"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const linkProf = Array.from(
+                        document.querySelectorAll("a, button")
+                      ).find(
+                        (el) =>
+                          el.textContent &&
+                          el.textContent
+                            .trim()
+                            .toLowerCase()
+                            .includes("agregar profesionales")
+                      );
+                      if (linkProf) {
+                        linkProf.click();
+                      } else {
+                        window.location.hash = "#agregar-profesionales";
+                      }
+                    }}
+                  >
+                    Registrar nuevo profesional
+                  </a>
+                </span>
+              </div>
+            </div>
           </section>
 
           <div className="side-stack">
