@@ -31,6 +31,7 @@ import AgregarInmueble from './paginas/AgregarInmueble';
 import AgregarProfesionales from './paginas/AgregarProfesionales';
 import Historial from './paginas/Historial';
 import Informes from './paginas/Informes';
+import FormularioSolicitud from './paginas/formularioSolicitud';
 
 function Contenido() {
   const location = useLocation();
@@ -142,6 +143,7 @@ function Contenido() {
             <Route path='/ver-inspecciones' element={<VerInspecciones />} />
             <Route path='/propietario/historial' element={<PropietarioHistorial />} />
             <Route path='/propietario-solicitudes' element={<PropietarioSolicitudes />} />
+            <Route path='/formulario-solicitud' element={<FormularioSolicitud />} />
             <Route path="/agregar-inmueble" element={<AgregarInmueble />} />
             <Route path="/profesionales" element={<AgregarProfesionales />} />
             <Route path="/reportes" element={<Informes />} />
