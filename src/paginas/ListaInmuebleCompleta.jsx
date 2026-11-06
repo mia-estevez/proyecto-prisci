@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Building2, Search, MapPin, ChevronRight } from 'lucide-react';
-import './clientes.css';
+import './ListaInmuebleCompleta.css';
 
-function TodosInmuebles() {
-  const navigate = useNavigate();
+export default function ListaInmuebleCompleta({ onCambiarVista }) {
   const [busqueda, setBusqueda] = useState('');
 
   // Al cargar el componente, leemos los estados dinámicos
   const estadosGuardados = JSON.parse(localStorage.getItem('estados_inmuebles') || '{}');
 
-  const DIRECCIONES_OFICIALES = {
+  const DIRECCIONES OFICIALES = {
     1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250 m²', estado: estadosGuardados[1] || 'Activo' },
     2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200 m²', estado: estadosGuardados[2] || 'Inactivo' }
   };
@@ -29,9 +27,18 @@ function TodosInmuebles() {
   return (
     <div className="clientes-page-container" style={{ padding: '30px' }}>
 
-      {/* BARRA DE NAVEGACIÓN / BREADCRUMB */}
+      {/* BARRA DE NAVEGACIÓN / BREADCRUMB DINÁMICA */}
       <div className="breadcrumb-bar" style={{ marginBottom: '20px' }}>
-        <button className="btn-back-link" onClick={() => navigate('/conservadores')}>
+        <button 
+          className="btn-back-link" 
+          onClick={() => {
+            if (typeof onCambiarVista === 'function') {
+              onCambiarVista('mapa'); // O la vista principal que corresponda
+            } else {
+              window.location.hash = "#mapa";
+            }
+          }}
+        >
           <ArrowLeft size={16} /> Volver al panel principal
         </button>
       </div>
@@ -72,7 +79,11 @@ function TodosInmuebles() {
             return (
               <div 
                 key={inm.id}
-                onClick={() => navigate(`/clientes/${inm.id}`)}
+                onClick={() => {
+                  if (typeof onCambiarVista === 'function') {
+                    onCambiarVista(`detalle-${inm.id}`);
+                  }
+                }}
                 className="card-panel" 
                 style={{ 
                   margin: 0, 
@@ -130,5 +141,3 @@ function TodosInmuebles() {
     </div>
   );
 }
-
-export default TodosInmuebles;

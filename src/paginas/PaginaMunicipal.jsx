@@ -396,13 +396,13 @@ export default function PaginaMunicipal() {
 
         {/* Últimos inmuebles */}
         <aside className="municipal-recent-panel">
-          <div className="municipal-recent-heading">
+         <div className="municipal-recent-heading">
             <Icono nombre="building" size={28} />
             <h2>Últimos inmuebles registrados</h2>
             <button
               type="button"
               onClick={() => {
-                // Redirige dinámicamente a la vista de lista completa
+                // Llama a la función que cambia de pantalla en tu componente principal
                 if (typeof onCambiarVista === 'function') {
                   onCambiarVista('todos-inmuebles');
                 } else {
