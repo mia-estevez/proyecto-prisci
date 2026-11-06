@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-10-2026 a las 05:06:29
+-- Tiempo de generación: 06-11-2026 a las 21:26:20
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -67,7 +67,7 @@ CREATE TABLE `conservador` (
 --
 
 INSERT INTO `conservador` (`IdConservador`, `Matricula`, `Empresa`, `IdUsu`) VALUES
-(1, 'MAT-PRUEBA-001', 'Empresa de prueba', 3);
+(1, 'MAT-2024-88', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -93,7 +93,8 @@ CREATE TABLE `inmueble` (
 --
 
 INSERT INTO `inmueble` (`IdInmueble`, `Nombre`, `Domicilio`, `NomenclaturaCatastral`, `Superficie`, `Actividad`, `CantMatafuego`, `RedAgua`, `EstadoSistema`, `IdPropietario`) VALUES
-(1, 'Edificio Torres del Limay', 'Av. Argentina 1234, Neuquén', 'PRUEBA-001', 500.00, 'Residencial', 10, 1, 'Pendiente de inspección', 1);
+(1, 'Edificio Torres del Limay', 'Av. Corrientes 1234', 'NC-001-A', 450.50, 'Comercial', 6, 1, 'Vigente', 1),
+(2, 'Galería Comercial Centro', 'Av. Las Heras 4321', 'NC-002-B', 1200.00, 'Residencial', 12, 1, 'Vigente', 1);
 
 -- --------------------------------------------------------
 
@@ -115,33 +116,24 @@ CREATE TABLE `inspeccion` (
 --
 
 INSERT INTO `inspeccion` (`IdInspeccion`, `Fecha`, `Resultado`, `Observaciones`, `IdInmueble`, `IdConservador`) VALUES
-(2, '2026-10-09', 'Con observaciones', '{\"parteNro\":\"PR-2026-8875\",\"empresaCliente\":\"Martín López\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"probando guardado en la bd\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Con observaciones\",\"obs\":\"proximos a vencer\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 1, 1),
-(3, '2026-10-09', 'Con observaciones', '{\"parteNro\":\"PR-2026-4368\",\"empresaCliente\":\"Martín López\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Con observaciones\",\"obs\":\"proximo a vencer\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 1, 1),
-(4, '2026-10-09', 'Aprobado', '{\"parteNro\":\"PR-2026-8858\",\"empresaCliente\":\"Martín López\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"probandooo\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 1, 1);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `instalacioninmueble`
---
-
-CREATE TABLE `instalacioninmueble` (
-  `IdInstalacion` int(11) NOT NULL,
-  `IdInmueble` int(11) NOT NULL,
-  `Nombre` varchar(100) NOT NULL,
-  `Estado` varchar(50) NOT NULL,
-  `Vencimiento` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `instalacioninmueble`
---
-
-INSERT INTO `instalacioninmueble` (`IdInstalacion`, `IdInmueble`, `Nombre`, `Estado`, `Vencimiento`) VALUES
-(1, 1, 'Extintores', 'Vigente', '2026-12-15'),
-(2, 1, 'Hidrantes', 'Pendiente de revisión', NULL),
-(3, 1, 'Detectores de humo', 'Vencido', '2027-02-10'),
-(4, 1, 'Señalización de emergencia', 'Vigente', NULL);
+(1, '2026-10-09', 'Aprobado', 'Revisión mensual de extintores y mangueras OK', 1, 1),
+(2, '2026-10-14', 'Pendiente', 'Inspección de bomba contra incendios pendiente', 2, 1),
+(3, '2024-03-15', 'Aprobado', 'Sin observaciones en la prueba de presión', 1, 1),
+(4, '2026-10-08', 'Con observaciones', 'Rakata rakata', 1, 1),
+(5, '2026-10-09', 'Aprobado', 'Parte N°: PR-2026-4239. Relevamiento completado.', 1, 1),
+(6, '2026-10-09', 'Aprobado', 'Parte N°: PR-2026-8060. Relevamiento completado.', 2, 1),
+(7, '2026-10-09', 'Pendiente', 'Parte N°: PR-2026-3666. Relevamiento completado.', 1, 1),
+(8, '2026-10-09', 'Aprobado', 'Parte N°: PR-2026-8728. Relevamiento completado.', 1, 1),
+(9, '2026-10-10', 'Aprobado', '{\"parteNro\":\"PR-2026-2582\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 1, 1),
+(10, '2026-10-10', 'Aprobado', '{\"parteNro\":\"PR-2026-5958\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":true,\"tieneFirmaProf\":true}', 1, 1),
+(11, '2026-10-10', 'Aprobado', '{\"parteNro\":\"PR-2026-9074\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 1, 1),
+(12, '2026-10-11', 'Con observaciones', '{\"parteNro\":\"PR-2026-3720\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"Le falta extintor\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Con observaciones\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Con observaciones\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":true,\"tieneFirmaProf\":true}', 1, 1),
+(13, '2026-10-11', 'Con observaciones', '{\"parteNro\":\"PR-2026-3442\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Galería Comercial Centro\",\"domicilio\":\"Gral. Las Heras 450, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Con observaciones\",\"obs\":\"lll\"},\"lucesEmergencia\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Con observaciones\",\"obs\":\"lllll\"},\"instalacionElectrica\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 2, 1),
+(14, '2026-10-11', 'Aprobado', '{\"parteNro\":\"PR-2026-9135\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"No aplica\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 1, 1),
+(15, '2026-10-11', 'Aprobado', '{\"parteNro\":\"Prueba\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Galería Comercial Centro\",\"domicilio\":\"Gral. Las Heras 450, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"No aplica\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 2, 1),
+(16, '2026-10-11', 'Aprobado', '{\"parteNro\":\"PR-2026-8765\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Galería Comercial Centro\",\"domicilio\":\"Gral. Las Heras 450, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"Inspección vía de escape pendiente\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 2, 1),
+(17, '2023-01-08', 'Aprobado', '{\"parteNro\":\"PR-2026-4285\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Galería Comercial Centro\",\"domicilio\":\"Gral. Las Heras 450, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"Inspección de luces de emergencia pendiente\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"lucesEmergencia\":{\"estado\":\"No aplica\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 2, 1),
+(18, '2026-10-16', 'Con observaciones', '{\"parteNro\":\"PR-2026-1142\",\"empresaCliente\":\"Juan Pérez\",\"establecimiento\":\"Edificio Torres del Limay\",\"domicilio\":\"Av. Argentina 1234, Neuquén\",\"localidad\":\"Neuquén\",\"observacionesGenerales\":\"\",\"relevamiento\":{\"viasEscape\":{\"estado\":\"Con observaciones\",\"obs\":\"mal hechas \"},\"lucesEmergencia\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"deteccionIncendios\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionFijaAgua\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"matafuegos\":{\"estado\":\"Con observaciones\",\"obs\":\"no anda ninguno xd \"},\"instalacionElectrica\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"instalacionGas\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"productosQuimicos\":{\"estado\":\"Correcto\",\"obs\":\"\"},\"ordenLimpia\":{\"estado\":\"Correcto\",\"obs\":\"\"}},\"archivosAdjuntos\":[],\"tieneFirmaCliente\":false,\"tieneFirmaProf\":false}', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -153,26 +145,6 @@ CREATE TABLE `municipal` (
   `IdMunicipal` int(11) NOT NULL,
   `IdUsu` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `observacionesficha`
---
-
-CREATE TABLE `observacionesficha` (
-  `IdObservacion` int(11) NOT NULL,
-  `IdInmueble` int(11) NOT NULL,
-  `Observaciones` text DEFAULT NULL,
-  `FechaActualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `observacionesficha`
---
-
-INSERT INTO `observacionesficha` (`IdObservacion`, `IdInmueble`, `Observaciones`, `FechaActualizacion`) VALUES
-(1, 1, 'Probando guardar datos', '2026-10-09 21:19:55');
 
 -- --------------------------------------------------------
 
@@ -190,7 +162,7 @@ CREATE TABLE `propietario` (
 --
 
 INSERT INTO `propietario` (`IdPropietario`, `IdUsu`) VALUES
-(1, 4);
+(1, 1);
 
 -- --------------------------------------------------------
 
@@ -208,10 +180,10 @@ CREATE TABLE `rol` (
 --
 
 INSERT INTO `rol` (`IdRol`, `Nombre`) VALUES
-(2, 'Bomberos'),
+(4, 'Bombero'),
+(2, 'Conservador'),
 (1, 'Municipal'),
-(3, 'Profesional'),
-(4, 'Propietario');
+(3, 'Propietario');
 
 -- --------------------------------------------------------
 
@@ -231,27 +203,26 @@ CREATE TABLE `solicitud` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `solicitudregistro`
+-- Estructura de tabla para la tabla `solicitudpropietario`
 --
 
-CREATE TABLE `solicitudregistro` (
-  `IdSolicitudRegistro` int(11) NOT NULL,
-  `Nombre` varchar(100) NOT NULL,
-  `Apellido` varchar(100) NOT NULL,
-  `Telefono` varchar(20) NOT NULL,
-  `Email` varchar(100) NOT NULL,
-  `Motivo` text NOT NULL,
-  `RolSolicitado` enum('profesional','propietario','bomberos') NOT NULL,
-  `Estado` enum('Pendiente','Aceptada','Rechazada') NOT NULL DEFAULT 'Pendiente',
-  `FechaSolicitud` timestamp NOT NULL DEFAULT current_timestamp()
+CREATE TABLE `solicitudpropietario` (
+  `IdSolicitudPropietario` int(11) NOT NULL,
+  `IdPropietario` int(11) NOT NULL,
+  `IdInmueble` int(11) NOT NULL,
+  `NombreInmueble` varchar(255) DEFAULT NULL,
+  `Motivo` varchar(255) NOT NULL,
+  `Detalle` text NOT NULL,
+  `Estado` varchar(50) DEFAULT 'Pendiente',
+  `Fecha` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `solicitudregistro`
+-- Volcado de datos para la tabla `solicitudpropietario`
 --
 
-INSERT INTO `solicitudregistro` (`IdSolicitudRegistro`, `Nombre`, `Apellido`, `Telefono`, `Email`, `Motivo`, `RolSolicitado`, `Estado`, `FechaSolicitud`) VALUES
-(1, 'aa', 'aaa', '2998760546', 'jdhdhs@gmail.com', 'dnhhch', 'profesional', 'Pendiente', '2026-10-10 03:04:41');
+INSERT INTO `solicitudpropietario` (`IdSolicitudPropietario`, `IdPropietario`, `IdInmueble`, `NombreInmueble`, `Motivo`, `Detalle`, `Estado`, `Fecha`) VALUES
+(1, 1, 1, 'Edificio Torres del Limay', 'Actualización de la nomenclatura catastral', 'Cámbiame la nomenclatura catastral a 4F555G3', 'Pendiente', '2026-11-06 17:19:52');
 
 -- --------------------------------------------------------
 
@@ -275,10 +246,11 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`IdUsu`, `Nombre`, `Apellido`, `Dni`, `Email`, `Contrasena`, `Telefono`, `IdRol`) VALUES
-(1, 'Usuario', 'Prueba', '12345678', 'municipal@prisci.com', '$2b$10$cpiDpok8vJkJ6p3gLKmS1.AUbPrlZNUeij4A3V4p0HqczKItQU3F6', '2991234567', 1),
-(2, 'Carlos', 'Gómez', '40000001', 'bomberos@prisci.com', '$2b$10$RE/noaZyFCLjAPWQRdTY5uLwyHWdY1l5hkd.a1iS4suB8ImTLvjcO', '2994000001', 2),
-(3, 'Laura', 'Pérez', '40000002', 'profesional@prisci.com', '$2b$10$RE/noaZyFCLjAPWQRdTY5uLwyHWdY1l5hkd.a1iS4suB8ImTLvjcO', '2994000002', 3),
-(4, 'Martín', 'López', '40000003', 'propietario@prisci.com', '$2b$10$RE/noaZyFCLjAPWQRdTY5uLwyHWdY1l5hkd.a1iS4suB8ImTLvjcO', '2994000003', 4);
+(1, 'Juan', 'Pérez', '30111222', 'juan.perez@email.com', '123456', '1144332211', 3),
+(2, 'Profesional', 'Conservador', '30111223', 'profesional@prisci.com', '1234', '2994000001', 2),
+(3, 'Oficial', 'Bomberos', '30111224', 'bomberos@prisci.com', '1234', '2994000002', 4),
+(4, 'Propietario', 'Edificio', '30111225', 'propietario@prisci.com', '1234', '2994000003', 3),
+(5, 'Agente', 'Municipal', '30111226', 'municipal@prisci.com', 'PrisciPrueba2026!', '2994000004', 1);
 
 --
 -- Índices para tablas volcadas
@@ -323,25 +295,11 @@ ALTER TABLE `inspeccion`
   ADD KEY `IdConservador` (`IdConservador`);
 
 --
--- Indices de la tabla `instalacioninmueble`
---
-ALTER TABLE `instalacioninmueble`
-  ADD PRIMARY KEY (`IdInstalacion`),
-  ADD KEY `fk_instalacion_inmueble` (`IdInmueble`);
-
---
 -- Indices de la tabla `municipal`
 --
 ALTER TABLE `municipal`
   ADD PRIMARY KEY (`IdMunicipal`),
   ADD UNIQUE KEY `IdUsu` (`IdUsu`);
-
---
--- Indices de la tabla `observacionesficha`
---
-ALTER TABLE `observacionesficha`
-  ADD PRIMARY KEY (`IdObservacion`),
-  ADD UNIQUE KEY `IdInmueble` (`IdInmueble`);
 
 --
 -- Indices de la tabla `propietario`
@@ -366,10 +324,10 @@ ALTER TABLE `solicitud`
   ADD KEY `IdConservador` (`IdConservador`);
 
 --
--- Indices de la tabla `solicitudregistro`
+-- Indices de la tabla `solicitudpropietario`
 --
-ALTER TABLE `solicitudregistro`
-  ADD PRIMARY KEY (`IdSolicitudRegistro`);
+ALTER TABLE `solicitudpropietario`
+  ADD PRIMARY KEY (`IdSolicitudPropietario`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -406,31 +364,19 @@ ALTER TABLE `conservador`
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `IdInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `inspeccion`
 --
 ALTER TABLE `inspeccion`
-  MODIFY `IdInspeccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT de la tabla `instalacioninmueble`
---
-ALTER TABLE `instalacioninmueble`
-  MODIFY `IdInstalacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IdInspeccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `municipal`
 --
 ALTER TABLE `municipal`
   MODIFY `IdMunicipal` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `observacionesficha`
---
-ALTER TABLE `observacionesficha`
-  MODIFY `IdObservacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`
@@ -451,16 +397,16 @@ ALTER TABLE `solicitud`
   MODIFY `IdSolicitud` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `solicitudregistro`
+-- AUTO_INCREMENT de la tabla `solicitudpropietario`
 --
-ALTER TABLE `solicitudregistro`
-  MODIFY `IdSolicitudRegistro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `solicitudpropietario`
+  MODIFY `IdSolicitudPropietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `IdUsu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IdUsu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
@@ -499,22 +445,10 @@ ALTER TABLE `inspeccion`
   ADD CONSTRAINT `inspeccion_ibfk_2` FOREIGN KEY (`IdConservador`) REFERENCES `conservador` (`IdConservador`);
 
 --
--- Filtros para la tabla `instalacioninmueble`
---
-ALTER TABLE `instalacioninmueble`
-  ADD CONSTRAINT `fk_instalacion_inmueble` FOREIGN KEY (`IdInmueble`) REFERENCES `inmueble` (`IdInmueble`) ON DELETE CASCADE;
-
---
 -- Filtros para la tabla `municipal`
 --
 ALTER TABLE `municipal`
   ADD CONSTRAINT `municipal_ibfk_1` FOREIGN KEY (`IdUsu`) REFERENCES `usuarios` (`IdUsu`);
-
---
--- Filtros para la tabla `observacionesficha`
---
-ALTER TABLE `observacionesficha`
-  ADD CONSTRAINT `fk_observaciones_inmueble` FOREIGN KEY (`IdInmueble`) REFERENCES `inmueble` (`IdInmueble`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `propietario`
