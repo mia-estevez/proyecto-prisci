@@ -404,6 +404,7 @@ export default function PaginaMunicipal() {
               onClick={() => {
                 setBusqueda("");
                 setCategoria("todos");
+                setInmuebleSeleccionado(null);
               }}
             >
               Ver todos
