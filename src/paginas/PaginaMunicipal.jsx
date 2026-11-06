@@ -211,7 +211,7 @@ function FechaActual() {
   return fecha.charAt(0).toUpperCase() + fecha.slice(1);
 }
 
-export default function PaginaMunicipal({ onNavegar }) {
+export default function PaginaMunicipal() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroAbierto, setFiltroAbierto] = useState(false);
   const [categoria, setCategoria] = useState("todos");
@@ -452,10 +452,14 @@ export default function PaginaMunicipal({ onNavegar }) {
             type="button"
             className="municipal-add-button"
             onClick={() => {
-              if (onNavegar) {
-                onNavegar("agregar-inmueble");
+              // Busca el ítem del menú lateral de la izquierda que dice "Agregar inmueble" y hace clic por vos
+              const linkMenu = Array.from(document.querySelectorAll('a, button')).find(
+                el => el.textContent && el.textContent.trim() === "Agregar inmueble" && el !== event.currentTarget
+              );
+              if (linkMenu) {
+                linkMenu.click();
               } else {
-                window.dispatchEvent(new CustomEvent("prisci:agregar-inmueble"));
+                window.location.hash = "#agregar-inmueble";
               }
             }}
           >
