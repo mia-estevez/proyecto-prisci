@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
@@ -212,6 +213,7 @@ function FechaActual() {
 }
 
 export default function PaginaMunicipal() {
+  const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState("");
   const [filtroAbierto, setFiltroAbierto] = useState(false);
   const [categoria, setCategoria] = useState("todos");
@@ -401,14 +403,8 @@ export default function PaginaMunicipal() {
             <h2>Últimos inmuebles registrados</h2>
             <button
               type="button"
-              onClick={() => {
-                // Llama a la función que cambia de pantalla en tu componente principal
-                if (typeof onCambiarVista === 'function') {
-                  onCambiarVista('todos-inmuebles');
-                } else {
-                  window.location.hash = "#todos-inmuebles";
-                }
-              }}
+              onClick={() => navigate('/todos-inmuebles')}
+              style={{ cursor: 'pointer', background: 'transparent', border: 'none', color: '#38bdf8', fontWeight: 'bold' }}
             >
               Ver todos
             </button>
@@ -456,7 +452,6 @@ export default function PaginaMunicipal() {
             type="button"
             className="municipal-add-button"
             onClick={() => {
-              // Busca el ítem del menú lateral de la izquierda que dice "Agregar inmueble" y hace clic por vos
               const linkMenu = Array.from(document.querySelectorAll('a, button')).find(
                 el => el.textContent && el.textContent.trim() === "Agregar inmueble" && el !== event.currentTarget
               );

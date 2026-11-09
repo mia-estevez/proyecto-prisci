@@ -6,13 +6,15 @@ export default function ListaInmuebleCompleta({ onCambiarVista }) {
   const [busqueda, setBusqueda] = useState('');
 
   // Al cargar el componente, leemos los estados dinámicos
+ // Al cargar el componente, leemos los estados dinámicos
+ // Al cargar el componente, leemos los estados dinámicos
   const estadosGuardados = JSON.parse(localStorage.getItem('estados_inmuebles') || '{}');
 
-  const DIRECCIONES OFICIALES = {
+  const DIRECCIONES_OFICIALES = {
     1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250 m²', estado: estadosGuardados[1] || 'Activo' },
     2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200 m²', estado: estadosGuardados[2] || 'Inactivo' }
   };
-
+  
   const inmueblesAsignados = [
     { id: 1, ...DIRECCIONES_OFICIALES[1] },
     { id: 2, ...DIRECCIONES_OFICIALES[2] }
