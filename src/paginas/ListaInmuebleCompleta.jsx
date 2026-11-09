@@ -1,29 +1,70 @@
-import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Building2, Search, MapPin, ChevronRight } from 'lucide-react';
 import './ListaInmuebleCompleta.css';
 
-export default function ListaInmuebleCompleta({ onCambiarVista }) {
+// Listado base inicial
+const inmueblesBase = [
+  {
+    id: 1,
+    nombre: "Edificio Torres del Limay",
+    domicilio: "Av. Argentina 1234, Neuquén",
+    tipo: "Edificio residencial",
+    categoria: "residencial",
+    superficie: "1.250 m²",
+  },
+  {
+    id: 2,
+    nombre: "Consorcio Los Teros",
+    domicilio: "Calle San Martín 567, Neuquén",
+    tipo: "Edificio residencial",
+    categoria: "residencial",
+    superficie: "1.100 m²",
+  },
+  {
+    id: 3,
+    nombre: "Hotel del Comahue",
+    domicilio: "Av. Olascoaga 890, Neuquén",
+    tipo: "Hotel",
+    categoria: "hotel",
+    superficie: "2.400 m²",
+  },
+  {
+    id: 4,
+    nombre: "Centro Médico Neuquén",
+    domicilio: "Calle Roca 345, Neuquén",
+    tipo: "Centro de salud",
+    categoria: "salud",
+    superficie: "950 m²",
+  },
+  {
+    id: 5,
+    nombre: "Supermercado La Anónima",
+    domicilio: "Av. Argentina 2200, Neuquén",
+    tipo: "Local comercial",
+    categoria: "comercial",
+    superficie: "1.800 m²",
+  },
+];
+
+export default function ListaInmuebleCompleta() {
+  const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState('');
+  const [inmuebles, setInmuebles] = useState(inmueblesBase);
 
-  // Al cargar el componente, leemos los estados dinámicos
- // Al cargar el componente, leemos los estados dinámicos
- // Al cargar el componente, leemos los estados dinámicos
-  const estadosGuardados = JSON.parse(localStorage.getItem('estados_inmuebles') || '{}');
+  // Efecto para cargar también los inmuebles que se hayan registrado y guardado en localStorage
+  useEffect(() => {
+    const inmueblesGuardados = JSON.parse(localStorage.getItem('inmuebles_registrados') || '[]');
+    if (inmueblesGuardados.length > 0) {
+      // Combinamos los base con los nuevos sin duplicar
+      setInmuebles([...inmueblesBase, ...inmueblesGuardados]);
+    }
+  }, []);
 
-  const DIRECCIONES_OFICIALES = {
-    1: { nombre: 'Edificio Torres del Limay', domicilio: 'Av. Argentina 1234, Neuquén', tipo: 'Comercial', superficie: '1.250 m²', estado: estadosGuardados[1] || 'Activo' },
-    2: { nombre: 'Galería Comercial Centro', domicilio: 'Gral. Las Heras 450, Neuquén', tipo: 'Residencial', superficie: '1.200 m²', estado: estadosGuardados[2] || 'Inactivo' }
-  };
-  
-  const inmueblesAsignados = [
-    { id: 1, ...DIRECCIONES_OFICIALES[1] },
-    { id: 2, ...DIRECCIONES_OFICIALES[2] }
-  ];
-
-  const inmueblesFiltrados = inmueblesAsignados.filter(inm => 
-    inm.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    inm.domicilio.toLowerCase().includes(busqueda.toLowerCase()) ||
-    inm.tipo.toLowerCase().includes(busqueda.toLowerCase())
+  const inmueblesFiltrados = inmuebles.filter(inm => 
+    (inm.nombre && inm.nombre.toLowerCase().includes(busqueda.toLowerCase())) ||
+    (inm.domicilio && inm.domicilio.toLowerCase().includes(busqueda.toLowerCase())) ||
+    (inm.tipo && inm.tipo.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
   return (
@@ -33,12 +74,18 @@ export default function ListaInmuebleCompleta({ onCambiarVista }) {
       <div className="breadcrumb-bar" style={{ marginBottom: '20px' }}>
         <button 
           className="btn-back-link" 
-          onClick={() => {
-            if (typeof onCambiarVista === 'function') {
-              onCambiarVista('mapa'); // O la vista principal que corresponda
-            } else {
-              window.location.hash = "#mapa";
-            }
+          onClick={() => navigate('/')}
+          style={{ 
+            background: 'transparent', 
+            border: 'none', 
+            color: '#38bdf8', 
+            cursor: 'pointer', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            fontSize: '14px', 
+            fontWeight: '500', 
+            padding: 0 
           }}
         >
           <ArrowLeft size={16} /> Volver al panel principal
@@ -47,8 +94,8 @@ export default function ListaInmuebleCompleta({ onCambiarVista }) {
 
       <header className="ficha-header" style={{ marginBottom: '25px' }}>
         <div className="title-group">
-          <h1>Inmuebles Asignados</h1>
-          <p style={{ color: '#94a3b8', marginTop: '5px' }}>Listado general de inmuebles bajo tu supervisión y conservación técnica.</p>
+          <h1>Todos los Inmuebles Registrados</h1>
+          <p style={{ color: '#94a3b8', marginTop: '5px' }}>Listado general y completo de inmuebles bajo supervisión y control municipal.</p>
         </div>
       </header>
 
@@ -77,14 +124,12 @@ export default function ListaInmuebleCompleta({ onCambiarVista }) {
       {/* GRILLA DE INMUEBLES DINÁMICA */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
         {inmueblesFiltrados.length > 0 ? (
-          inmueblesFiltrados.map((inm) => {
+          inmueblesFiltrados.map((inm, index) => {
             return (
               <div 
-                key={inm.id}
+                key={inm.id || index}
                 onClick={() => {
-                  if (typeof onCambiarVista === 'function') {
-                    onCambiarVista(`detalle-${inm.id}`);
-                  }
+                  navigate(`/historial-inmueble/${inm.id || index}`);
                 }}
                 className="card-panel" 
                 style={{ 
@@ -119,12 +164,12 @@ export default function ListaInmuebleCompleta({ onCambiarVista }) {
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', fontSize: '13px', marginBottom: '15px' }}>
                     <MapPin size={14} />
-                    <span>{inm.domicilio}</span>
+                    <span>{inm.domicilio || inm.direccion}</span>
                   </div>
 
                   <div style={{ display: 'flex', gap: '10px', fontSize: '12px', color: '#cbd5e1', marginBottom: '15px' }}>
                     <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>Tipo: {inm.tipo}</span>
-                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>Superficie: {inm.superficie}</span>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px' }}>Superficie: {inm.superficie || 'A confirmar'}</span>
                   </div>
                 </div>
 
