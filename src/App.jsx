@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
+import SolicitudesPropietarios from './paginas/SolicitudesPropietarios';
 import PaginaMunicipal from './paginas/PaginaMunicipal';
 import Navbar from "./componentes/navbar";
 import Footer from "./componentes/footer";
@@ -120,6 +121,7 @@ function Contenido() {
               element={rol === "municipal" ? <Navigate to="/" replace /> : <Conservadores />} 
             />
 
+            <Route path="/solicitudes-propietarios" element={<SolicitudesPropietarios />} />
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/clientes/:id" element={<Clientes />} />
             <Route path="/inspecciones" element={<Inspecciones />} />
