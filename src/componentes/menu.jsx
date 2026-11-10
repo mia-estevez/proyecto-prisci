@@ -118,6 +118,12 @@ function Menu({ rol, onCerrarSesion }) {
                     Mis inmuebles
                 </Link>
 
+               
+                <Link to="/propietario/solicitudes" className={location.pathname === "/propietario/solicitudes" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-file-earmark-text"></i>
+                    Mis Solicitudes
+                </Link>
+
                 <Link to="/propietario/historial" className={location.pathname === "/propietario/historial" ? "menu-link active" : "menu-link"}>
                     <i className="bi bi-clock-history"></i>
                     Historial
