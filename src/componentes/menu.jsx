@@ -47,6 +47,11 @@ function Menu({ rol, onCerrarSesion }) {
                     Historial
                 </Link>
 
+                <Link to="/solicitudes-municipales" className={location.pathname === "/solicitudes-municipales" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-file-earmark-person"></i>
+                    Solicitudes Propietarios
+                </Link>
+
                 <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                     <i className="bi bi-box-arrow-right"></i>
                     Cerrar sesión
