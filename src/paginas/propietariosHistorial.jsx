@@ -14,13 +14,13 @@ function PropietariosHistorial() {
     const obtenerDatos = async () => {
       try {
         setCargando(true);
-        // Obtener datos del inmueble
+        // busca datos del inmueble
         const resInm = await fetch(`http://localhost:3001/api/propietario/inmuebles/${id}`);
         if (resInm.ok) {
           setInmueble(await resInm.json());
         }
 
-        // Obtener historial de inspecciones
+        // busca el historial de inspecciones
         const resInsp = await fetch(`http://localhost:3001/api/inmuebles/${id}/inspecciones`);
         if (resInsp.ok) {
           setInspecciones(await resInsp.json());

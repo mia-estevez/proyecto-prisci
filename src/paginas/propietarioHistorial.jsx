@@ -11,7 +11,6 @@ function PropietarioHistorial() {
   const [inmueblesPropietario, setInmueblesPropietario] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  // Filtros
   const [busqueda, setBusqueda] = useState('');
   const [filtroInmueble, setFiltroInmueble] = useState('todos');
   const [filtroEstado, setFiltroEstado] = useState('todos');
@@ -22,11 +21,9 @@ function PropietarioHistorial() {
       try {
         setCargando(true);
 
-        // 1. Obtener los inmuebles del propietario actual
         const resInm = await fetch(`http://localhost:3001/api/propietario/${ID_PROPIETARIO}/inmuebles`);
         let listaInm = resInm.ok ? await resInm.json() : [];
 
-        // Fallback por si la API devuelve vacío en entorno de pruebas
         if (!Array.isArray(listaInm) || listaInm.length === 0) {
           listaInm = [
             { IdInmueble: 1, Nombre: 'Edificio Torres del Limay', Domicilio: 'Av. Argentina 1234, Neuquén' },
@@ -35,7 +32,6 @@ function PropietarioHistorial() {
         }
         setInmueblesPropietario(listaInm);
 
-        // 2. Traer el historial de inspecciones de cada uno de sus inmuebles
         let todasInsp = [];
         for (const inm of listaInm) {
           const idInm = inm.IdInmueble || inm.id;
@@ -119,7 +115,7 @@ function PropietarioHistorial() {
           }
         }
 
-        // Ordenar por fecha más reciente (descendente)
+        //ordeno las insp por mas reciente
         todasInsp.sort((a, b) => b.rawFecha - a.rawFecha);
         setInspecciones(todasInsp);
 
@@ -133,7 +129,7 @@ function PropietarioHistorial() {
     cargarHistorialPropietario();
   }, [ID_PROPIETARIO]);
 
-  // Función para descargar el acta en PDF
+  // descargar el acta en PDF
   const handleDescargarPDF = (item) => {
     const ventanaPDF = window.open('', '_blank', 'width=800,height=900');
     if (!ventanaPDF) {
@@ -208,7 +204,6 @@ function PropietarioHistorial() {
     ventanaPDF.document.close();
   };
 
-  // Filtrado múltiple
   const inspeccionesFiltradas = inspecciones.filter(item => {
     const coincideTexto = 
       item.nombreInmueble.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -250,7 +245,6 @@ function PropietarioHistorial() {
         <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Historial técnico y certificados de las instalaciones de tus inmuebles.</p>
       </div>
 
-      {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '18px', marginBottom: '25px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
         
         <div style={{ position: 'relative', width: '100%' }}>
@@ -317,7 +311,6 @@ function PropietarioHistorial() {
         </div>
       </div>
 
-      {/* LISTADO DE INSPECCIONES */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {cargando ? (
           <p style={{ color: '#94a3b8', textAlign: 'center', padding: '30px 0' }}>Cargando historial...</p>

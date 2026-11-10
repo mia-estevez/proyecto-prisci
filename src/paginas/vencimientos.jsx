@@ -8,13 +8,12 @@ function Vencimientos() {
   const [inmueblesCalculados, setInmueblesCalculados] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
-  const [filtroEstado, setFiltroEstado] = useState('todos'); // 'todos', 'vencido', 'pendiente'
+  const [filtroEstado, setFiltroEstado] = useState('todos'); 
 
   useEffect(() => {
     const obtenerDatosYCalcularVencimientos = async () => {
       try {
         setCargando(true);
-        // 1. Obtener la lista general de inmuebles
         const resInm = await fetch('http://localhost:3001/api/todos-inmuebles');
         let inmuebles = resInm.ok ? await resInm.json() : [];
 
@@ -28,7 +27,6 @@ function Vencimientos() {
         const hoy = new Date();
         const listaProcesada = [];
 
-        // 2. Para cada inmueble, buscar su última inspección registrada
         for (const inm of inmuebles) {
           const idInmueble = inm.IdInmueble || inm.id;
           const resInsp = await fetch(`http://localhost:3001/api/inmuebles/${idInmueble}/inspecciones`);
@@ -38,13 +36,11 @@ function Vencimientos() {
           let ultimoDetalle = 'Sin inspecciones registradas';
 
           if (inspecciones && inspecciones.length > 0) {
-            // La primera es la más reciente (ordenadas por fecha DESC)
             const ultimaInsp = inspecciones[0];
             if (ultimaInsp.Fecha) {
               ultimaFecha = new Date(ultimaInsp.Fecha);
             }
 
-            // Extraer detalle sin JSON en bruto
             const raw = ultimaInsp.Detalle || ultimaInsp.detalle || ultimaInsp.Observaciones || '';
             try {
               const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
@@ -60,26 +56,25 @@ function Vencimientos() {
             }
           }
 
-          // Calculate elapsed days
-          let diasSinInspeccion = 999; // Si nunca se inspeccionó, asignamos valor alto
+          // calculando dias sin inspeccion
+          let diasSinInspeccion = 999; // si nunca se inspecciono asignamos valor alto
           if (ultimaFecha) {
             const diferenciaMs = hoy.getTime() - ultimaFecha.getTime();
             diasSinInspeccion = Math.floor(diferenciaMs / (1000 * 3600 * 24));
           }
 
-          // Determinar estado según requerimiento
           let estado = 'vencido';
           let etiquetaEstado = 'Vencido (+90 días)';
-          let colorBadge = '#ef4444'; // Rojo
+          let colorBadge = '#ef4444'; 
 
           if (diasSinInspeccion >= 60 && diasSinInspeccion <= 90) {
             estado = 'pendiente';
             etiquetaEstado = 'Pendiente (60-90 días)';
-            colorBadge = '#f59e0b'; // Amarillo / Naranja
+            colorBadge = '#f59e0b'; 
           } else if (diasSinInspeccion < 60 && ultimaFecha !== null) {
             estado = 'vigente';
             etiquetaEstado = 'En Regla (<60 días)';
-            colorBadge = '#10b981'; // Verde
+            colorBadge = '#10b981'; 
           }
 
           listaProcesada.push({
@@ -97,7 +92,6 @@ function Vencimientos() {
           });
         }
 
-        // 3. Ordenar: los que llevan MÁS TIEMPO sin ser revisados aparecen PRIMERO
         listaProcesada.sort((a, b) => b.diasNumero - a.diasNumero);
 
         setInmueblesCalculados(listaProcesada);
@@ -111,7 +105,6 @@ function Vencimientos() {
     obtenerDatosYCalcularVencimientos();
   }, []);
 
-  // Filtrado dinámico por búsqueda de texto y filtro de estado
   const inmueblesFiltrados = inmueblesCalculados.filter(item => {
     const coincideTexto = 
       item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -124,7 +117,6 @@ function Vencimientos() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto' }}>
-      {/* BOTÓN VOLVER */}
       <button 
         onClick={() => navigate('/conservadores')}
         style={{ background: 'transparent', border: 'none', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '20px' }}
@@ -132,7 +124,6 @@ function Vencimientos() {
         <ArrowLeft size={18} /> Volver al panel de conservadores
       </button>
 
-      {/* ENCABEZADO */}
       <div style={{ textAlign: 'center', marginBottom: '25px' }}>
         <h1 style={{ fontSize: '26px', color: '#f8fafc', marginBottom: '6px' }}>Estado de Inspecciones y Vencimientos</h1>
         <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>
@@ -140,10 +131,8 @@ function Vencimientos() {
         </p>
       </div>
 
-      {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '25px', display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
         
-        {/* Buscador de texto */}
         <div style={{ position: 'relative', flex: 1, minWidth: '260px' }}>
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
           <input 
@@ -155,7 +144,6 @@ function Vencimientos() {
           />
         </div>
 
-        {/* Selector de Filtro por Estado */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Filter size={16} color="#38bdf8" />
           <span style={{ fontSize: '13px', color: '#cbd5e1' }}>Filtrar estado:</span>
@@ -172,7 +160,6 @@ function Vencimientos() {
         </div>
       </div>
 
-      {/* LISTA DE INMUEBLES PRIORIZADOS */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         {cargando ? (
           <p style={{ color: '#94a3b8', textAlign: 'center', padding: '40px 0' }}>Calculando estados y vencimientos...</p>
@@ -196,7 +183,6 @@ function Vencimientos() {
                 flexWrap: 'wrap'
               }}
             >
-              {/* Información Principal del Inmueble */}
               <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flex: 1, minWidth: '280px' }}>
                 <div style={{ background: 'rgba(56, 189, 248, 0.1)', padding: '12px', borderRadius: '10px', marginTop: '2px' }}>
                   <Building2 size={22} color="#38bdf8" />
@@ -225,7 +211,6 @@ function Vencimientos() {
                 </div>
               </div>
 
-              {/* Badge de Estado y Botón de Acción */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
                 <span 
                   style={{ 

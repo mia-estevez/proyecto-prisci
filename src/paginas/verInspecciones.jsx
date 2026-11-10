@@ -9,13 +9,11 @@ function VerInspecciones() {
   const [inmuebles, setInmuebles] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  // Filtros
   const [busqueda, setBusqueda] = useState('');
   const [filtroInmueble, setFiltroInmueble] = useState('todos');
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroFecha, setFiltroFecha] = useState('');
 
-  // Modal para seleccionar inmueble y cargar nueva inspección
   const [mostrarModal, setMostrarModal] = useState(false);
   const [inmuebleSeleccionadoModal, setInmuebleSeleccionadoModal] = useState('');
 
@@ -24,7 +22,6 @@ function VerInspecciones() {
       try {
         setCargando(true);
         
-        // 1. Obtener inmuebles asignados
         const resInm = await fetch('http://localhost:3001/api/todos-inmuebles');
         let listaInm = resInm.ok ? await resInm.json() : [];
 
@@ -36,7 +33,6 @@ function VerInspecciones() {
         }
         setInmuebles(listaInm);
 
-        // 2. Traer inspecciones de todos los inmuebles
         let todasInsp = [];
         for (const inm of listaInm) {
           const idInm = inm.IdInmueble || inm.id;
@@ -57,7 +53,6 @@ function VerInspecciones() {
                   parte = parsed.parteNro || parsed.Parte || 'S/N';
                   obsGenerales = parsed.observacionesGenerales || parsed.detalle || '';
 
-                  // RECORRER SECCIONES Y VERIFICAR SOLO MARCADOS COMO "CON OBSERVACIONES"
                   const objetoRelevamiento = parsed.relevamiento || parsed;
                   
                   Object.keys(objetoRelevamiento).forEach(clave => {
@@ -65,7 +60,6 @@ function VerInspecciones() {
                     if (typeof itemSeccion === 'object' && itemSeccion !== null) {
                       const estNorm = String(itemSeccion.estado || '').toLowerCase().replace(/_/g, ' ').trim();
                       
-                      // Solo si fue explícitamente marcado "Con observaciones"
                       if (estNorm === 'con observaciones') {
                         tieneFallaMarcada = true;
                         if (itemSeccion.obs && itemSeccion.obs.trim() !== '') {
@@ -81,7 +75,6 @@ function VerInspecciones() {
                 }
               } catch (e) {}
 
-              // Construir texto descriptivo
               let detalleTexto = obsGenerales.trim();
               if (observacionesEspecificas.length > 0) {
                 const textoObs = observacionesEspecificas.join(' | ');
@@ -92,7 +85,6 @@ function VerInspecciones() {
                 detalleTexto = 'Relevamiento completado sin observaciones.';
               }
 
-              // DETERMINAR ESTADO FINAL EXACTO
               let estadoFinal = 'Aprobado';
               const textoAnalisis = (detalleTexto + ' ' + (item.Estado || '')).toLowerCase();
 
@@ -108,7 +100,6 @@ function VerInspecciones() {
                 estadoFinal = 'Aprobado';
               }
 
-              // Normalizar fecha para ordenamiento estricto
               const fechaObj = item.Fecha ? new Date(item.Fecha) : new Date(0);
 
               todasInsp.push({
@@ -127,7 +118,6 @@ function VerInspecciones() {
           }
         }
 
-        // ORDENAMIENTO PREDETERMINADO: MÁS RECIENTES PRIMERO (DESC)
         todasInsp.sort((a, b) => b.rawFecha - a.rawFecha);
         setInspecciones(todasInsp);
 
@@ -141,7 +131,6 @@ function VerInspecciones() {
     cargarDatos();
   }, []);
 
-  // Generación de Acta PDF
   const handleDescargarPDF = (item) => {
     const ventanaPDF = window.open('', '_blank', 'width=800,height=900');
     if (!ventanaPDF) {
@@ -225,7 +214,6 @@ function VerInspecciones() {
     navigate(`/inspecciones/${inmuebleSeleccionadoModal}`);
   };
 
-  // Filtrado
   const inspeccionesFiltradas = inspecciones.filter(item => {
     const coincideTexto = 
       item.nombreInmueble.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -276,7 +264,6 @@ function VerInspecciones() {
         </button>
       </div>
 
-      {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '18px', marginBottom: '25px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
         
         <div style={{ position: 'relative', width: '100%' }}>
@@ -343,7 +330,6 @@ function VerInspecciones() {
         </div>
       </div>
 
-      {/* LISTADO DE INSPECCIONES ORDENADAS DE MÁS RECIENTES A MÁS ANTIGUAS */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {cargando ? (
           <p style={{ color: '#94a3b8', textAlign: 'center', padding: '30px 0' }}>Cargando inspecciones...</p>
@@ -410,7 +396,6 @@ function VerInspecciones() {
         )}
       </div>
 
-      {/* MODAL PARA SELECCIONAR INMUEBLE */}
       {mostrarModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '25px', width: '90%', maxWidth: '450px' }}>

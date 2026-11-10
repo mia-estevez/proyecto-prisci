@@ -75,12 +75,11 @@
   display: block;
 }
 
-/* REJILLA PRINCIPAL (IGUALAR ALTURAS AL RANGO DE LA LÍNEA ROJA) */
 .main-grid {
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: 20px;
-  align-items: stretch; /* Estira ambas tarjetas a la misma altura exactamente */
+  align-items: stretch; /* Estira las dos tarjetas a la misma altura*/
   width: 100%;
 }
 
@@ -161,11 +160,10 @@
   overflow: hidden;
 }
 
-/* LISTA LATERAL: ALINEADA DESDE ARRIBA (JUSTIFY-CONTENT: FLEX-START) */
 .list-section {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Alinea los ítems desde arriba */
+  justify-content: flex-start; 
   height: 100%;
   box-sizing: border-box;
 }
@@ -228,7 +226,6 @@
 
 .arrow { color: #64748b; }
 
-/* EL BOTÓN FINAL QUEDA ABAJO DE TODO ALINEADO CON LA BASE DEL MAPA */
 .btn-link-all {
   width: 100%;
   background: none;
@@ -238,14 +235,13 @@
   cursor: pointer;
   text-align: center;
   padding-top: 12px;
-  margin-top: auto; /* Empuja el botón al borde inferior del contenedor */
+  margin-top: auto; 
 }
 
 .btn-link-all:hover {
   text-decoration: underline;
 }
 
-/* FILTRO DESPLEGABLE */
 .filter-dropdown-wrapper {
   position: relative;
 }
@@ -306,13 +302,12 @@
   font-weight: 600;
 }
 
-/* MARCADOR SELECCIONADO EN LISTA */
+
 .inmueble-item.item-selected {
   border-color: #38bdf8 !important;
   background-color: rgba(56, 189, 248, 0.08) !important;
 }
 
-/* POPUP DEL MAPA */
 .popup-container {
   display: flex;
   flex-direction: column;

@@ -187,7 +187,7 @@ function Clientes() {
           Registrado
         </span><button 
   onClick={() => {
-    // Busca el ID sin importar si viene como id, IdInmueble o idInmueble
+    // busca el id sin importar como viene escrito la página
     const idReal = inmueble?.IdInmueble || inmueble?.id || inmueble?.idInmueble || inm?.IdInmueble || inm?.id;
     if (idReal) {
       navigate(`/propietario/solicitud/nuevo/${idReal}`);
@@ -203,7 +203,6 @@ function Clientes() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr 1.2fr', gap: '20px', alignItems: 'stretch' }}>
         
-        {/* COLUMNA 1: IMAGEN Y SERVICIOS */}
         <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <img 
             src="/assets/edificio_ejemplo.jpg" 
@@ -224,7 +223,6 @@ function Clientes() {
           </div>
         </div>
 
-        {/* COLUMNA 2: INFORMACIÓN Y DOCUMENTACIÓN */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
             <h3 style={{ fontSize: '16px', color: '#f8fafc', marginBottom: '15px' }}>Información del inmueble</h3>
@@ -256,7 +254,6 @@ function Clientes() {
           </div>
         </div>
 
-        {/* COLUMNA 3: HISTORIAL DE INSPECCIONES Y BOTÓN DE CARGA ABAJO */}
         <div style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -295,7 +292,6 @@ function Clientes() {
             </div>
           </div>
 
-          {/* BOTÓN MANTENIDO AL PIE DE LA COLUMNA DE INSPECCIONES */}
           <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             <button 
               onClick={() => navigate(`/inspecciones/${id}`)}
