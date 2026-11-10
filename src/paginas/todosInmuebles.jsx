@@ -7,7 +7,6 @@ function TodosInmuebles() {
   const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState('');
 
-  // Al cargar el componente, leemos los estados dinámicos
   const estadosGuardados = JSON.parse(localStorage.getItem('estados_inmuebles') || '{}');
 
   const DIRECCIONES_OFICIALES = {
@@ -29,7 +28,6 @@ function TodosInmuebles() {
   return (
     <div className="clientes-page-container" style={{ padding: '30px' }}>
 
-      {/* BARRA DE NAVEGACIÓN / BREADCRUMB */}
       <div className="breadcrumb-bar" style={{ marginBottom: '20px' }}>
         <button className="btn-back-link" onClick={() => navigate('/conservadores')}>
           <ArrowLeft size={16} /> Volver al panel principal
@@ -43,7 +41,6 @@ function TodosInmuebles() {
         </div>
       </header>
 
-      {/* BUSCADOR */}
       <div className="card-panel" style={{ width: '100%', padding: '20px', marginBottom: '25px', display: 'flex', alignItems: 'center' }}>
         <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
@@ -65,7 +62,6 @@ function TodosInmuebles() {
         </div>
       </div>
 
-      {/* GRILLA DE INMUEBLES DINÁMICA */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
         {inmueblesFiltrados.length > 0 ? (
           inmueblesFiltrados.map((inm) => {

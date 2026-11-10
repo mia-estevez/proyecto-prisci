@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FichaInm from '../componentes/fichaInm.jsx';
-
-// Componentes de React-Leaflet
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
-// Íconos vectoriales de Lucide React
+//iconos 
 import { 
   Home, 
   ClipboardList, 
@@ -21,10 +19,8 @@ import {
 import 'leaflet/dist/leaflet.css';
 import './conservadores.css';
 
-// Coordenadas fijas del centro de Neuquén Capital
 const CENTRO_NEUQUEN = [-38.9516, -68.0591];
 
-// DIBUJO VECTORIAL SVG PARA LOS MARCADORES
 const crearIcono = (colorHex) => {
   const svg = `
     <svg width="32" height="44" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -40,10 +36,9 @@ const crearIcono = (colorHex) => {
   });
 };
 
-const iconoRojo = crearIcono('#ef4444');  // Marcador Rojo (Sin seleccionar)
-const iconoAzul = crearIcono('#38bdf8');  // Marcador Azul (Seleccionado)
+const iconoRojo = crearIcono('#ef4444');  //sin seleccionar en el mapa
+const iconoAzul = crearIcono('#38bdf8');  
 
-// COMPONENTE PARA GESTIONAR EL ZOOM Y RECENTREADO AUTOMÁTICO (Con protección contra errores de desmontaje)
 function ControladorMapa({ inmuebles, inmuebleSeleccionado }) {
   const map = useMap();
 
@@ -65,7 +60,6 @@ function ControladorMapa({ inmuebles, inmuebleSeleccionado }) {
         map.fitBounds(bounds, { padding: [60, 60] });
       }
     } catch (error) {
-      // Previene excepciones al desmontar el mapa
     }
   }, [inmuebles, inmuebleSeleccionado, map]);
 
@@ -76,7 +70,6 @@ function Conservadores() {
   const navigate = useNavigate();
   const ID_CONSERVADOR = localStorage.getItem('usuarioId') || 1;
 
-  // ESTADOS DINÁMICOS
   const [nombreUsuario, setNombreUsuario] = useState('Profesional');
   const [resumen, setResumen] = useState({ inmuebles: 2, servicios: 5, vencimientos: 0 });
   const [inmuebles, setInmuebles] = useState([]);
@@ -87,7 +80,6 @@ function Conservadores() {
   const [filtroTipo, setFiltroTipo] = useState('Todos');
   const [mostrarMenuFiltro, setMostrarMenuFiltro] = useState(false);
 
-  // Controla la apertura y el cierre de la ficha
   const [fichaAbierta, setFichaAbierta] = useState(false);
   const [inmuebleParaFicha, setInmuebleParaFicha] = useState(null);
 
@@ -100,7 +92,6 @@ function Conservadores() {
     setFichaAbierta(false);
   };
 
-  // Cargar nombre del usuario autenticado dinámicamente
   useEffect(() => {
     const nombreGuardado = localStorage.getItem('usuarioNombre');
     if (nombreGuardado) {
@@ -115,13 +106,11 @@ function Conservadores() {
     }
   }, []);
 
-  // DIRECCIONES Y COORDENADAS GPS EN NEUQUÉN CAPITAL
   const DIRECCIONES_REALES = {
     1: { lat: -38.9425, lng: -68.0588, dir: 'Av. Argentina 1234, Neuquén' },
     2: { lat: -38.9580, lng: -68.0720, dir: 'Gral. Las Heras 450, Neuquén' }
   };
 
-  // Cálculo dinámico robusto de vencimientos con fallback ante errores 404
   useEffect(() => {
     const calcularVencimientosDinamicos = async () => {
       try {
@@ -258,13 +247,11 @@ function Conservadores() {
   return (
     <div className="clientes-page-container" style={{ padding: '30px' }}>
 
-      {/* HEADER DE BIENVENIDA DINÁMICO */}
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h1 style={{ fontSize: '28px', color: '#f8fafc', marginBottom: '8px' }}>¡Hola, {nombreUsuario}!</h1>
         <p style={{ color: '#94a3b8', fontSize: '14px' }}>Gestioná y consultá la información de los inmuebles asignados.</p>
       </div>
 
-      {/* TARJETAS DE RESUMEN KPI (3 Tarjetas) */}
       <div className="kpi-grid" style={{ marginBottom: '30px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
         <div className="kpi-card" onClick={() => navigate('/todos-inmuebles')}>
           <div className="kpi-icon-wrapper blue">
@@ -297,17 +284,14 @@ function Conservadores() {
         </div>
       </div>
 
-      {/* MAPA Y LISTA DE INMUEBLES */}
       <div className="main-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
         
-        {/* PANEL MAPA */}
         <section className="card-panel map-section" style={{ margin: 0, padding: '20px', display: 'flex', flexDirection: 'column' }}>
           <div className="panel-header" style={{ marginBottom: '15px' }}>
             <h3 style={{ fontSize: '16px', color: '#f8fafc', marginBottom: '4px' }}>Mapa de mis inmuebles</h3>
             <p style={{ fontSize: '12px', color: '#94a3b8' }}>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
           </div>
 
-          {/* BÚSQUEDA Y FILTRO */}
           <div className="map-search-bar" style={{ display: 'flex', gap: '10px', marginBottom: '15px', position: 'relative' }}>
             <div style={{ position: 'relative', flex: 1 }}>
               <Search size={16} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
@@ -358,7 +342,6 @@ function Conservadores() {
             </div>
           </div>
 
-          {/* MAPA LEAFLET */}
           <div className="map-display" style={{ flex: 1, minHeight: '340px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
             <MapContainer 
               center={CENTRO_NEUQUEN} 
@@ -418,7 +401,6 @@ function Conservadores() {
           </div>
         </section>
 
-        {/* LISTA LATERAL */}
         <aside className="card-panel list-section" style={{ margin: 0, padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div className="panel-header flex-between" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>

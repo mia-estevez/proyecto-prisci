@@ -90,9 +90,9 @@ function Propietarios() {
         <p style={{ color: '#94a3b8', fontSize: '14px' }}>Gestioná y consultá la información de los inmuebles asignados.</p>
       </div>
 
-      {/* MAPA Y LISTA LATERAL */}
+      {/* mapa */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
-        {/* PANEL MAPA */}
+        {/* panel */}
         <section style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ fontSize: '16px', color: '#f8fafc', marginBottom: '4px' }}>Mapa de mis Inmuebles</h3>
           <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '15px' }}>Visualizá la ubicación de todos los inmuebles con instalaciones de seguridad contra incendios.</p>
@@ -138,7 +138,6 @@ function Propietarios() {
           </div>
         </section>
 
-        {/* LISTA DE MIS INMUEBLES */}
         <aside style={{ background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>

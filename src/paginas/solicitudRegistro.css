@@ -1,8 +1,3 @@
-
-/* ========================================
-   FONDO OSCURO DETRÁS DEL MODAL
-======================================== */
-
 .solicitud-modal-overlay {
   position: fixed;
   inset: 0;
@@ -15,11 +10,6 @@
   background-color: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(3px);
 }
-
-/* ========================================
-   CONTENEDOR PRINCIPAL DEL MODAL
-======================================== */
-
 .solicitud-modal {
   width: 100%;
   max-width: 650px;
@@ -31,10 +21,6 @@
   box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
 }
-
-/* ========================================
-   ENCABEZADO DEL MODAL
-======================================== */
 
 .solicitud-modal-header {
   display: flex;
@@ -58,8 +44,6 @@
   line-height: 1.5;
 }
 
-/* Botón para cerrar el modal */
-
 .solicitud-cerrar {
   display: flex;
   align-items: center;
@@ -79,25 +63,15 @@
   background-color: var(--acento-hover);
 }
 
-/* ========================================
-   CUERPO DEL FORMULARIO
-======================================== */
-
 .solicitud-modal-body {
   padding: 24px 28px 10px;
 }
-
-/* Distribución de los campos en dos columnas */
 
 .solicitud-campos-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 18px;
 }
-
-/* ========================================
-   CAMPOS DEL FORMULARIO
-======================================== */
 
 .solicitud-field {
   display: flex;
@@ -112,8 +86,6 @@
   font-size: 14px;
   font-weight: 500;
 }
-
-/* Estilos compartidos de los campos */
 
 .solicitud-field input,
 .solicitud-field textarea,
@@ -132,14 +104,10 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Texto de ayuda dentro de los campos */
-
 .solicitud-field input::placeholder,
 .solicitud-field textarea::placeholder {
   color: var(--texto-secundario);
 }
-
-/* Efecto al seleccionar un campo */
 
 .solicitud-field input:focus,
 .solicitud-field textarea:focus,
@@ -148,16 +116,10 @@
   box-shadow: 0 0 0 2px var(--acento-hover);
 }
 
-/* Área para escribir el motivo */
-
 .solicitud-field textarea {
   resize: vertical;
   min-height: 90px;
 }
-
-/* ========================================
-   AVISO INFORMATIVO
-======================================== */
 
 .solicitud-modal-aviso {
   display: flex;
@@ -183,10 +145,6 @@
   line-height: 1.6;
 }
 
-/* ========================================
-   PIE Y BOTONES DEL MODAL
-======================================== */
-
 .solicitud-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -194,8 +152,6 @@
   padding: 18px 28px 24px;
   border-top: 1px solid var(--borde-tarjeta);
 }
-
-/* Estilos compartidos de los botones */
 
 .solicitud-modal-footer button {
   width: auto;
@@ -209,8 +165,6 @@
   transition: background-color 0.2s, border-color 0.2s;
 }
 
-/* Botón para cancelar */
-
 .solicitud-btn-cancelar {
   border: 1px solid var(--borde-tarjeta);
   background-color: var(--bg-input);
@@ -221,8 +175,6 @@
   border-color: var(--acento-azul);
 }
 
-/* Botón para enviar */
-
 .solicitud-modal-footer .solicitud-btn-enviar {
   border: none;
   background-color: var(--acento-azul);
@@ -232,9 +184,6 @@
 .solicitud-modal-footer .solicitud-btn-enviar:hover {
   background-color: var(--acento-hover);
 }
-
-/* ADAPTACIÓN A CELULARES */
-
 @media (max-width: 600px) {
   .solicitud-modal-overlay {
     align-items: center;
@@ -258,7 +207,6 @@
     padding: 20px 20px 8px;
   }
 
-  /* Los campos pasan a una sola columna */
   .solicitud-campos-grid {
     grid-template-columns: 1fr;
     gap: 0;

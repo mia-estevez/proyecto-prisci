@@ -11,25 +11,20 @@ function PropietarioSolicitudes() {
   const [inmuebles, setInmuebles] = useState([]);
   const [cargando, setCargando] = useState(true);
   
-  // Estado para el Modal de Selección de Inmueble
   const [modalAbierto, setModalAbierto] = useState(false);
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
         setCargando(true);
-        // 1. Obtener inmuebles del propietario
         const resInm = await fetch(`http://localhost:3001/api/propietario/${ID_PROPIETARIO}/inmuebles`);
         const dataInm = resInm.ok ? await resInm.json() : [];
         setInmuebles(dataInm);
-
-        // 2. Obtener solicitudes enviadas por este propietario (o general del sistema)
         const resSol = await fetch(`http://localhost:3001/api/propietario/${ID_PROPIETARIO}/solicitudes`);
         if (resSol.ok) {
           const dataSol = await resSol.json();
           setSolicitudes(dataSol);
         } else {
-          // Datos de respaldo / pruebas en caso de que la API esté pendiente
           setSolicitudes([
             { id: 1, inmuebleNombre: 'Edificio Torres del Limay', motivo: 'Cambio de titularidad y actualización de planos', estado: 'Pendiente', fecha: '05/11/2026' },
             { id: 2, inmuebleNombre: 'Galería Comercial Centro', motivo: 'Modificación en cantidad de extintores y red de agua', estado: 'Aprobada', fecha: '20/10/2026' }
@@ -69,7 +64,6 @@ function PropietarioSolicitudes() {
         </button>
       </div>
 
-      {/* LISTADO DE SOLICITUDES */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {cargando ? (
           <p style={{ color: '#94a3b8', textAlign: 'center', padding: '30px' }}>Cargando solicitudes...</p>
@@ -125,7 +119,7 @@ function PropietarioSolicitudes() {
         )}
       </div>
 
-      {/* MODAL PARA SELECCIONAR INMUEBLE ANTES DE IR AL FORMULARIO */}
+      {/* modal*/}
       {modalAbierto && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000, padding: '20px' }}>
           <div style={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '25px', width: '100%', maxWidth: '450px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>

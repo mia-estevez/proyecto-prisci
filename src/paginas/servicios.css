@@ -72,7 +72,6 @@
   cursor: pointer;
 }
 
-/* Lista estilo Filas (Foto 2) */
 .services-table-list {
   display: flex;
   flex-direction: column;
@@ -131,7 +130,6 @@
   color: #e2e8f0;
 }
 
-/* Badge de Estado Pendiente (Amarillo) */
 .status-badge-yellow {
   background-color: rgba(234, 179, 8, 0.15);
   color: #eab308;
@@ -144,7 +142,6 @@
   text-align: center;
 }
 
-/* Fila con borde de advertencia/vencimiento (Foto 3) */
 .service-card-row.warning-border-row {
   border: 1px solid rgba(239, 68, 68, 0.35);
   background-color: rgba(15, 23, 42, 0.95);
@@ -156,7 +153,6 @@
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
 }
 
-/* Badge de Vencimiento Rojo */
 .status-badge-red {
   background-color: rgba(239, 68, 68, 0.15);
   color: #f87171;
@@ -182,6 +178,6 @@
   margin: 0 auto;
   padding: 1.5rem 2rem;
   box-sizing: border-box;
-  background-color: transparent; /* Permite tomar el fondo oscuro de App.jsx */
+  background-color: transparent; 
   color: #f1f5f9;
 }

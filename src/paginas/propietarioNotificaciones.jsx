@@ -33,7 +33,6 @@ function PropietarioNotificaciones() {
       try {
         setCargando(true);
 
-        // Obtener los inmuebles del propietario
         let inmuebles = [];
 
         const resInm = await fetch(
@@ -44,7 +43,7 @@ function PropietarioNotificaciones() {
           inmuebles = await resInm.json();
         }
 
-        // Inmuebles de respaldo si el endpoint no devuelve datos
+        // respaldo si el endpoint no devuelve datos
         if (!Array.isArray(inmuebles) || inmuebles.length === 0) {
           inmuebles = [
             {
@@ -62,7 +61,7 @@ function PropietarioNotificaciones() {
 
         const listaNotif = [];
 
-        // Obtener las inspecciones de cada inmueble
+        // busca las inspecciones de cada inmueble
         for (const inm of inmuebles) {
           const idInmueble = inm.id || inm.IdInmueble;
 
@@ -101,7 +100,7 @@ function PropietarioNotificaciones() {
                     'Relevamiento completado sin observaciones.';
                 }
               } catch (e) {
-                // Si las observaciones no son JSON, se conservan como texto.
+                // si las observaciones no son JSON, se conservan como texto.
               }
 
               const idInspeccion =
@@ -136,7 +135,7 @@ function PropietarioNotificaciones() {
           }
         }
 
-        // Ordenar de la inspección más reciente a la más antigua
+        // orden de la inspección más nueva a la más vieja
         listaNotif.sort((a, b) => b.rawFecha - a.rawFecha);
 
         if (!cancelado) {
@@ -165,7 +164,6 @@ function PropietarioNotificaciones() {
     };
   }, [idPropietario]);
 
-  // Guardar las notificaciones leídas
   const guardarLeidas = (actualizadas) => {
     const idsLeidos = actualizadas
       .filter((notif) => notif.leida)
@@ -178,13 +176,11 @@ function PropietarioNotificaciones() {
 
     setNotificaciones(actualizadas);
 
-    // Avisar al navbar que cambió el estado
     window.dispatchEvent(
       new Event('notificacionesActualizadas')
     );
   };
 
-  // Marcar una notificación como leída
   const marcarComoLeida = (id) => {
     const actualizadas = notificaciones.map((notif) =>
       notif.id === id
@@ -195,7 +191,6 @@ function PropietarioNotificaciones() {
     guardarLeidas(actualizadas);
   };
 
-  // Marcar todas como leídas
   const marcarTodasComoLeidas = () => {
     const actualizadas = notificaciones.map((notif) => ({
       ...notif,
@@ -217,7 +212,6 @@ function PropietarioNotificaciones() {
         margin: '0 auto'
       }}
     >
-      {/* Botón para volver */}
       <button
         onClick={() => navigate('/propietario')}
         style={{
@@ -235,7 +229,6 @@ function PropietarioNotificaciones() {
         Volver al panel principal
       </button>
 
-      {/* Encabezado */}
       <div
         style={{
           background: 'rgba(30, 41, 59, 0.7)',
@@ -298,7 +291,6 @@ function PropietarioNotificaciones() {
         </span>
       </div>
 
-      {/* Acciones de notificaciones */}
       {pendientes > 0 && !cargando && (
         <div
           style={{
@@ -324,7 +316,6 @@ function PropietarioNotificaciones() {
         </div>
       )}
 
-      {/* Lista de notificaciones */}
       <div
         style={{
           display: 'flex',
