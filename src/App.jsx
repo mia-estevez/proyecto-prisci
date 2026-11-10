@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import PaginaMunicipal from './paginas/PaginaMunicipal';
@@ -15,7 +15,7 @@ import NotificacionesConservadores from "./paginas/notificacionesConservadores";
 import ServiciosMes from './paginas/serviciosMes';
 import Vencimientos from './paginas/vencimientos';
 import HistorialInmueble from './paginas/historialInmueble';
-import TodosInmuebles from './paginas/todosInmuebles';
+import ListaInmuebleCompleta from './paginas/ListaInmuebleCompleta';
 import Bomberos from './paginas/bomberos';
 import Propietarios from './paginas/propietarios';
 import FichaPropietario from './paginas/fichaPropietarios';
@@ -106,26 +106,20 @@ function Contenido() {
           <Routes>
             <Route
               path="/"
-              element={
-                rol === "municipal" ? (
-                  <PaginaMunicipal />
-                ) : rol === "bomberos" ? (
-                  <Bomberos />
-                ) : rol === "profesional" ? (
-                  <Conservadores />
-                ) : rol === "propietario" ? (
-                  <Propietarios />
-                ) : (
-                  <PaginaMunicipal />
-                )
-              }
+              element={<PaginaMunicipal />}
             />
             <Route
               path="/login"
               element={<Login onLogin={iniciarSesion} />}
             />
             <Route path="/notificaciones" element={<Notificaciones />} />
-            <Route path="/conservadores" element={<Conservadores />} />
+            
+            {/* RUTA PROTEGIDA: Si es municipal, no lo deja entrar acá y lo manda al inicio */}
+            <Route 
+              path="/conservadores" 
+              element={rol === "municipal" ? <Navigate to="/" replace /> : <Conservadores />} 
+            />
+
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/clientes/:id" element={<Clientes />} />
             <Route path="/inspecciones" element={<Inspecciones />} />
@@ -134,7 +128,7 @@ function Contenido() {
             <Route path="/servicios-mes" element={<ServiciosMes />} />
             <Route path="/vencimientos" element={<Vencimientos />} />
             <Route path='/historial-inmueble/:id' element={<HistorialInmueble />} />
-            <Route path='/todos-inmuebles' element={<TodosInmuebles />} />
+            <Route path='/todos-inmuebles' element={<ListaInmuebleCompleta />} />
             <Route path="/propietario" element={<Propietarios />} />
             <Route path="/propietario/inmuebles/:id" element={<FichaPropietario />} />
             <Route path="/propietario/inmuebles/:id/historial" element={<PropietariosHistorial />} />
