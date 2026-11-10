@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, FileText, CheckCircle, XCircle, Clock, User, Building } from 'lucide-react';
-import './SolicitudesMunicipales.css';
+import './SolicitudesPropietarios.css';
 
 export default function SolicitudesMunicipales() {
   const navigate = useNavigate();
