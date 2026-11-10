@@ -37,7 +37,7 @@ function Contenido() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [usuario, setUsuario] = useState(() => {
+const [usuario, setUsuario] = useState(() => {
     const usuarioGuardado = sessionStorage.getItem("usuario");
     if (usuarioGuardado) {
       try {
@@ -46,7 +46,7 @@ function Contenido() {
         sessionStorage.removeItem("usuario");
       }
     }
-    return { nombre: "María", rol: "municipal", idRol: 1 };
+    return null; // En vez de meterte a vos por defecto, devuelve null y las manda al login si no están logueadas
   });
 
   const esLogin = location.pathname === "/login";
