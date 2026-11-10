@@ -47,7 +47,10 @@ function Menu({ rol, onCerrarSesion }) {
                     Historial
                 </Link>
 
-
+                <Link to="/propietario/solicitudes" className={location.pathname === "/propietario/solicitudes" ? "menu-link active" : "menu-link"}>
+                    <i className="bi bi-file-earmark-text"></i>
+                    Solicitudes Propietarios
+                </Link>
 
                 <button type="button" className="menu-logout" onClick={onCerrarSesion}>
                     <i className="bi bi-box-arrow-right"></i>
@@ -105,37 +108,7 @@ function Menu({ rol, onCerrarSesion }) {
         );
     }
 
-    if (rol === "propietario") {
-        return (
-            <aside className="menu">
-                <Link to="/" className={location.pathname === "/" ? "menu-link active" : "menu-link"}>
-                    <i className="bi bi-map"></i>
-                    Mapa de inmuebles
-                </Link>
-
-                <Link to="/propietario/todos-inmuebles" className={location.pathname === "/propietario/todos-inmuebles" || location.pathname.startsWith("/propietario/inmuebles") ? "menu-link active" : "menu-link"}>
-                    <i className="bi bi-building"></i>
-                    Mis inmuebles
-                </Link>
-
-               
-                <Link to="/propietario/solicitudes" className={location.pathname === "/propietario/solicitudes" ? "menu-link active" : "menu-link"}>
-                    <i className="bi bi-file-earmark-text"></i>
-                    Mis Solicitudes
-                </Link>
-
-                <Link to="/propietario/historial" className={location.pathname === "/propietario/historial" ? "menu-link active" : "menu-link"}>
-                    <i className="bi bi-clock-history"></i>
-                    Historial
-                </Link>
-
-                <button type="button" className="menu-logout" onClick={onCerrarSesion}>
-                    <i className="bi bi-box-arrow-right"></i>
-                    Cerrar sesión 
-                </button>
-            </aside>
-        );
-    }
+    
 
     return null;
 }
