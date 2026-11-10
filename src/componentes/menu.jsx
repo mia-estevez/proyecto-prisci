@@ -47,7 +47,7 @@ function Menu({ rol, onCerrarSesion }) {
                     Historial
                 </Link>
 
-                <Link to="/solicitudes-municipales" className={location.pathname === "/solicitudes-municipales" ? "menu-link active" : "menu-link"}>
+                <Link to="/solicitudes-propietarios" className={location.pathname === "/solicitudes-propietarios" ? "menu-link active" : "menu-link"}>
                     <i className="bi bi-file-earmark-person"></i>
                     Solicitudes Propietarios
                 </Link>
